@@ -1,3 +1,4 @@
+const dev = !(process.env.NODE_ENV === 'production')
 
 module.exports = {
   mode: 'universal',
@@ -45,6 +46,7 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    https: !dev
   },
   /*
   ** Build configuration

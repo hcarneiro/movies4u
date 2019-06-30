@@ -3,5 +3,6 @@
   "query_logging": true,
   "redis": {
     "host": "127.0.0.1"
-  }
+  },
+  "host": "http://localhost:3000/"
 }

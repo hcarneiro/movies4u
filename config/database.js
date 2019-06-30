@@ -1,6 +1,6 @@
 const path = require('path')
 const Sequelize = require('sequelize')
-const env = (process.env.NODE_ENV).toLowerCase()
+const env = process.env.NODE_ENV
 const config = require(path.resolve(__dirname, './local-config.json'))
 const redis = require('redis')
 const bluebird = require('bluebird')
