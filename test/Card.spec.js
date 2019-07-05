@@ -13,7 +13,7 @@ describe('Card', () => {
     nuxt = new Nuxt(config)
     await new Builder(nuxt).build()
     await nuxt.listen(3000)
-  }, 60000))
+  }, 60000)
 
   afterAll(async () => {
     await nuxt.close()
