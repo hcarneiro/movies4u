@@ -1,6 +1,7 @@
 const _ = require('lodash')
 const Sequelize = require('sequelize')
-const crypt = require('crypt3')
+const bcrypt = require('bcrypt')
+const saltRounds = 10
 const md5 = require('md5')
 const casual = require('casual')
 const database = require('../../config/database')
@@ -97,11 +98,12 @@ User.prototype.invalidateAuthToken = function () {
 }
 
 User.prototype.isValidPassword = function (password) {
-  return crypt(password, this.password) === this.password || md5(password) === this.password
+  return bcrypt.compareSync(password, this.password)
 }
 
 User.prototype.setPassword = function (value) {
-  const newPassword = crypt(value)
+  const salt = bcrypt.genSaltSync(saltRounds)
+  const newPassword = bcrypt.hashSync(value, salt)
 
   const minLength = 6
   if (value.length < minLength) {

@@ -2,7 +2,8 @@ const path = require('path')
 const _ = require('lodash')
 const express = require('express')
 const casual = require('casual')
-const crypt = require('crypt3')
+const bcrypt = require('bcrypt')
+const saltRounds = 10
 const md5 = require('md5')
 const async = require('async')
 const Sequelize = require('sequelize')
@@ -62,6 +63,10 @@ router.post('/login', bruteforce.prevent, function (req, res) {
     const isValidPassword = dbUser && dbUser.isValidPassword(password)
     const isValidPasswordToken = dbUser && password && passport && dbUser.auth_token && password === dbUser.auth_token
 
+    console.log('USER', dbUser)
+    console.log('PASS', password)
+    console.log('PASSPORT', passport)
+    console.log('AUTH', dbUser.auth_token)
     if (isValidPassword || isValidPasswordToken) {
       user = dbUser
 
@@ -152,7 +157,7 @@ router.post('/login', bruteforce.prevent, function (req, res) {
       cookie.set(res, authToken, cookieOptions)
 
       const data = _.pick(user, ['id', 'email', 'auth_token', 'createdAt'])
-      data.host = isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
+      data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
       data.trusted = !!deviceIsTrusted
 
       if (req.session) {
@@ -406,7 +411,8 @@ router.post('/reset/:token', (req, res) => {
     return res.status(400).send({ message: 'Password is required' })
   }
 
-  const newPassword = crypt(password)
+  const salt = bcrypt.genSaltSync(saltRounds)
+  const newPassword = bcrypt.hashSync(password, salt)
   return database.db.models.user.findOne({
     attributes: ['id'],
     where: {
