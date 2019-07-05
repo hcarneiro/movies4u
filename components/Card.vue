@@ -1,27 +1,49 @@
 <template>
-  <div class="column">
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title has-text-grey">
-          {{ title }}
-        </p>
-      </header>
-      <div class="card-content">
-        <div class="content has-text-centered">
-          <b-icon
-            :icon="icon"
-            size="is-large"
-            type="is-primary"
-          />
+  <div class="card">
+    <div class="card-image">
+      <figure class="image is-2by3">
+        <img :src="thumb" alt="Placeholder image">
+      </figure>
+    </div>
+    <div class="card-content">
+      <p class="title">
+        {{ title }}
+      </p>
+      <div class="content has-text-grey">
+        <template v-for="(tag, index) in tags">
+          <nuxt-link :key="index" to="/">
+            <b-tag rounded>
+              {{ tag }}
+            </b-tag>
+          </nuxt-link>
+        </template>
+        <div class="ss-rating level">
+          <div class="level-left">
+            <no-ssr>
+              <vue-circle
+                :progress="percentage"
+                :size="40"
+                line-cap="round"
+                :fill="fill"
+                empty-fill="#5c7784"
+                :thickness="5"
+                :start-angle="4.7"
+                :animation="false"
+                insert-mode="append"
+                :show-percent="true"
+              />
+            </no-ssr>
+          </div>
+          <div class="level-right">
+            <b-button
+              rounded
+              size="is-small"
+            >
+              More info
+            </b-button>
+          </div>
         </div>
       </div>
-      <footer class="card-footer">
-        <div class="card-footer-item">
-          <span>
-            <slot />
-          </span>
-        </div>
-      </footer>
     </div>
   </div>
 </template>
@@ -33,9 +55,29 @@ export default {
       type: String,
       required: true
     },
-    icon: {
+    tags: {
+      type: Array,
+      required: true
+    },
+    rating: {
       type: String,
       required: true
+    },
+    thumb: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      fill: {
+        color: '#00d1b2'
+      }
+    }
+  },
+  computed: {
+    percentage() {
+      return (this.rating / 10) * 100
     }
   }
 }
