@@ -1,4 +1,4 @@
-export function generateStubs(component) {
+module.exports.generateStubs = (component) => {
   const children = component instanceof Function
     ? component.extendOptions.components
     : component.components

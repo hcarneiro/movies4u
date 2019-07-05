@@ -1,8 +1,7 @@
 import { shallow, createLocalVue, RouterLinkStub } from '@vue/test-utils'
 import NuxtBuefy from 'nuxt-buefy'
+import { generateStubs } from './fixture/stubs'
 import Card from '@/components/Card.vue'
-const path = require('path')
-const generateStubs = require(path.resolve(__dirname, './fixture/stubs'))
 
 describe('Card', () => {
   let wrapper
