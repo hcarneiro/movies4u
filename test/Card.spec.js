@@ -1,34 +1,47 @@
 import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils'
+import { Nuxt, Builder } from 'nuxt'
 import NuxtBuefy from 'nuxt-buefy'
-import VueCircle from 'vue2-circle-progress'
 import Card from '@/components/Card.vue'
 
-let wrapper
-
-beforeEach(() => {
-  wrapper = shallowMount(Card, {
-    propsData: {
-      title: 'foo',
-      tags: ['bar', 'foobar'],
-      rating: '9.0',
-      thumb: 'https://via.placeholder.com/150'
-    },
-    stubs: {
-      'nuxt-link': RouterLinkStub,
-      'no-ssr': true
-    }
-  })
-})
-
-afterEach(() => {
-  wrapper.destroy()
-})
+const config = require('./fixture/nuxt.config')
 
 describe('Card', () => {
+  let wrapper
+  let nuxt
+
+  beforeAll(beforeAll(async () => {
+    nuxt = new Nuxt(config)
+    await new Builder(nuxt).build()
+    await nuxt.listen(3000)
+  }, 60000))
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  beforeEach(() => {
+    wrapper = shallowMount(Card, {
+      propsData: {
+        title: 'foo',
+        tags: ['bar', 'foobar'],
+        rating: '9.0',
+        thumb: 'https://via.placeholder.com/150'
+      },
+      stubs: {
+        'nuxt-link': RouterLinkStub,
+        'no-ssr': true,
+        'vue-circle': true
+      }
+    })
+  })
+
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
   test('is a Vue instance', () => {
     const localVue = createLocalVue()
     localVue.use(NuxtBuefy)
-    localVue.component('vue-circle', VueCircle)
     expect(wrapper.isVueInstance()).toBeTruthy()
   })
 })
