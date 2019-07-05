@@ -1,4 +1,4 @@
-import { shallow, createLocalVue, RouterLinkStub } from '@vue/test-utils'
+import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils'
 import NuxtBuefy from 'nuxt-buefy'
 // import { generateStubs } from './fixture/stubs'
 import Card from '@/components/Card.vue'
@@ -9,7 +9,7 @@ describe('Card', () => {
   localVue.use(NuxtBuefy)
 
   beforeEach(() => {
-    wrapper = shallow(Card, {
+    wrapper = shallowMount(Card, {
       propsData: {
         title: 'foo',
         tags: ['bar', 'foobar'],
