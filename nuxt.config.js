@@ -24,11 +24,13 @@ module.exports = {
   ** Global CSS
   */
   css: [
+    '@/assets/scss/index.scss'
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
+    { src: '~/plugins/vue-circle.js', ssr: false }
   ],
   /*
   ** Nuxt.js modules
@@ -39,6 +41,7 @@ module.exports = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    'nuxt-webfontloader',
     '@nuxtjs/eslint-module'
   ],
   /*
@@ -49,6 +52,14 @@ module.exports = {
     https: !dev
   },
   /*
+  ** Google Fonts
+  */
+  webfontloader: {
+    google: {
+      families: ['Rubik:300,400,500,700'] // Loads Lato font with weights 400 and 700
+    }
+  },
+  /*
   ** Build configuration
   */
   build: {
@@ -56,6 +67,7 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend(config, ctx) {
+      config.resolve.alias.vue = 'vue/dist/vue.common'
     }
   }
 }
