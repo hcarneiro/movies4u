@@ -10,13 +10,15 @@
         {{ title }}
       </p>
       <div class="content has-text-grey">
-        <template v-for="(tag, index) in tags">
-          <nuxt-link :key="index" to="/">
-            <b-tag rounded>
-              {{ tag }}
-            </b-tag>
-          </nuxt-link>
-        </template>
+        <div class="ss-tag-holder">
+          <template v-for="(tag, index) in tags">
+            <nuxt-link :key="index" to="/">
+              <b-tag rounded>
+                {{ tag }}
+              </b-tag>
+            </nuxt-link>
+          </template>
+        </div>
         <div class="ss-rating level">
           <div class="level-left">
             <no-ssr>

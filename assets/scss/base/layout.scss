@@ -95,6 +95,11 @@
     text-overflow: ellipsis;
   }
 
+  .ss-tag-holder {
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+  }
+
   .tag {
     background-color: transparent;
     color: $brand-primary;
@@ -106,5 +111,15 @@
 
   .ss-rating {
     margin-top: 1.5rem;
+  }
+}
+
+@include below ($tablet-size) {
+  .level {
+    display: flex;
+  }
+
+  .level-left + .level-right {
+    margin-top: 0;
   }
 }

@@ -41,7 +41,7 @@
         In Theaters
       </h2>
       <div class="columns">
-        <div class="column">
+        <div class="column is-one-third">
           <card
             title="Avengers: Endgame"
             :tags="['Action', 'Adventure', 'Science Fiction']"
@@ -49,7 +49,7 @@
             thumb="https://image.tmdb.org/t/p/w370_and_h556_bestv2/or06FN3Dka5tukK1e9sl16pB3iy.jpg"
           />
         </div>
-        <div class="column">
+        <div class="column is-one-third">
           <card
             title="Spider-Man: Far from Home"
             :tags="['Action', 'Adventure', 'Science Fiction']"
@@ -57,7 +57,7 @@
             thumb="https://image.tmdb.org/t/p/w370_and_h556_bestv2/2cAc4qH9Uh2NtSujJ90fIAMrw7T.jpg"
           />
         </div>
-        <div class="column">
+        <div class="column is-one-third">
           <card
             title="Captain Marvel"
             :tags="['Action', 'Adventure', 'Science Fiction']"
