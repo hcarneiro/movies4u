@@ -63,10 +63,6 @@ router.post('/login', bruteforce.prevent, function (req, res) {
     const isValidPassword = dbUser && dbUser.isValidPassword(password)
     const isValidPasswordToken = dbUser && password && passport && dbUser.auth_token && password === dbUser.auth_token
 
-    console.log('USER', dbUser)
-    console.log('PASS', password)
-    console.log('PASSPORT', passport)
-    console.log('AUTH', dbUser.auth_token)
     if (isValidPassword || isValidPasswordToken) {
       user = dbUser
 
