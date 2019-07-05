@@ -1,0 +1,38 @@
+.card {
+  box-shadow: 0px 6px 20px 0px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+
+  .card-image {
+    img {
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px;
+    }
+  }
+
+  .title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ss-tag-holder {
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+  }
+
+  .tag {
+    background-color: transparent;
+    color: $brand-primary;
+
+    &:hover {
+      background-color: rgba(#000000, 0.05);
+    }
+  }
+
+  .ss-rating {
+    margin-top: 1.5rem;
+  }
+}
