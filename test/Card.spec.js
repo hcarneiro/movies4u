@@ -20,7 +20,7 @@ describe('Card', () => {
       stubs: {
         'nuxt-link': RouterLinkStub,
         'no-ssr': true,
-        'vue-circle': true
+        'vue-circle': true,
         'b-tag': true,
         'b-button': true
       }
