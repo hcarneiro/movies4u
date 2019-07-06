@@ -63,7 +63,12 @@ import { mapState } from 'vuex'
 import Card from '~/components/Card'
 
 export default {
-  name: 'HomePage',
+  head() {
+    return {
+      title: 'Movies 4 U',
+      titleTemplate: null
+    }
+  },
   components: {
     Card
   },
