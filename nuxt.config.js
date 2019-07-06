@@ -30,7 +30,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    { src: '~/plugins/vue-circle.js', ssr: false }
+    { src: '~/plugins/vue-circle.js', ssr: false },
+    { src: '~/plugins/infinite-scroll.js', ssr: false }
   ],
   /*
   ** Nuxt.js modules
