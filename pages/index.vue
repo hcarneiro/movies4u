@@ -38,45 +38,93 @@
     </section>
     <div class="container ss-container">
       <h2 class="title">
-        In Theaters
+        UPCOMING MOVIES
       </h2>
-      <div class="columns">
-        <div class="column is-one-third">
+      <div class="columns is-multiline">
+        <div v-for="(movie, index) in movies" :key="index" class="column is-4">
           <card
-            title="Avengers: Endgame"
-            :tags="['Action', 'Adventure', 'Science Fiction']"
-            rating="8.4"
-            thumb="https://image.tmdb.org/t/p/w370_and_h556_bestv2/or06FN3Dka5tukK1e9sl16pB3iy.jpg"
-          />
-        </div>
-        <div class="column is-one-third">
-          <card
-            title="Spider-Man: Far from Home"
-            :tags="['Action', 'Adventure', 'Science Fiction']"
-            rating="7.8"
-            thumb="https://image.tmdb.org/t/p/w370_and_h556_bestv2/2cAc4qH9Uh2NtSujJ90fIAMrw7T.jpg"
-          />
-        </div>
-        <div class="column is-one-third">
-          <card
-            title="Captain Marvel"
-            :tags="['Action', 'Adventure', 'Science Fiction']"
-            rating="7.0"
-            thumb="https://image.tmdb.org/t/p/w370_and_h556_bestv2/AtsgWhDnHTq68L0lLsUrCnM7TjG.jpg"
+            :title="movie.title"
+            :tags="getTags(movie.genre_ids)"
+            :rating="movie.vote_average"
+            :thumb="getThumb(movie.poster_path)"
           />
         </div>
       </div>
+      <no-ssr>
+        <infinite-loading v-if="movies && movies.length" @infinite="infiniteHandler" />
+      </no-ssr>
     </div>
   </div>
 </template>
 
 <script>
+import { find, forEach } from 'lodash'
+import { mapState } from 'vuex'
 import Card from '~/components/Card'
 
 export default {
   name: 'HomePage',
   components: {
     Card
+  },
+  computed: {
+    ...mapState({
+      movies: (state) => {
+        return state.movies.list
+      },
+      page: (state) => {
+        return state.movies.page
+      },
+      totalPages: (state) => {
+        return state.movies.totalPages
+      },
+      totalResults: (state) => {
+        return state.movies.totalResults
+      },
+      genres: (state) => {
+        return state.movies.genres
+      }
+    })
+  },
+  created() {
+    this.getMovies()
+  },
+  methods: {
+    getMovies() {
+      return this.$store.dispatch('movies/getMovies')
+    },
+    infiniteHandler($state) {
+      this.$store.dispatch('movies/updateMovies', this.page + 1)
+        .then((response) => {
+          if (response.results.length) {
+            $state.loaded()
+          } else {
+            $state.complete()
+          }
+        })
+    },
+    getThumb(path) {
+      if (!path) {
+        return
+      }
+
+      return `https://image.tmdb.org/t/p/w500${path}`
+    },
+    getTags(ids) {
+      const genres = []
+
+      forEach(ids, (id) => {
+        const genre = find(this.genres, (genre) => {
+          return genre.id === id
+        })
+
+        if (genre) {
+          genres.push(genre.name)
+        }
+      })
+
+      return genres
+    }
   }
 }
 </script>
