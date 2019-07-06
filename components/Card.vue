@@ -2,7 +2,8 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-2by3">
-        <img :src="thumb" alt="Placeholder image">
+        <img v-if="thumb" :src="thumb" alt="title">
+        <img v-else src="~assets/no-poster.png" alt="No poster available">
       </figure>
     </div>
     <div class="card-content">
@@ -26,8 +27,8 @@
                 :progress="percentage"
                 :size="40"
                 line-cap="round"
-                :fill="fill"
-                empty-fill="#5c7784"
+                :fill="getFillColor"
+                :empty-fill="getEmptyFillColor"
                 :thickness="5"
                 :start-angle="4.7"
                 :animation="false"
@@ -63,24 +64,64 @@ export default {
       required: true
     },
     rating: {
-      type: String,
+      type: Number,
       required: true
     },
     thumb: {
       type: String,
-      required: true
+      default: undefined,
+      required: false
     }
   },
   data() {
     return {
       fill: {
         color: '#00d1b2'
-      }
+      },
+      emptyFill: '#5c7784'
     }
   },
   computed: {
     percentage() {
       return (this.rating / 10) * 100
+    },
+    getFillColor() {
+      if (this.percentage >= 0 && this.percentage <= 40) {
+        return {
+          color: '#ff3860'
+        }
+      }
+
+      if (this.percentage >= 41 && this.percentage <= 60) {
+        return {
+          color: '#ffdd57'
+        }
+      }
+
+      if (this.percentage >= 61 && this.percentage <= 100) {
+        return {
+          color: '#00d1b2'
+        }
+      }
+
+      return {
+        color: '#00d1b2'
+      }
+    },
+    getEmptyFillColor() {
+      if (this.percentage >= 0 && this.percentage <= 40) {
+        return 'rgba(255, 56, 96, 0.3)'
+      }
+
+      if (this.percentage >= 41 && this.percentage <= 60) {
+        return 'rgba(255, 221, 87, 0.3)'
+      }
+
+      if (this.percentage >= 61 && this.percentage <= 100) {
+        return 'rgba(0, 209, 178, 0.3)'
+      }
+
+      return 'rgba(0, 209, 178, 0.3)'
     }
   }
 }
