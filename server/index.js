@@ -1,5 +1,6 @@
 const express = require('express')
 const expressValidator = require('express-validator')
+const cors = require('cors')
 const helmet = require('helmet')
 const busboy = require('connect-busboy')
 const bodyParser = require('body-parser')
@@ -19,6 +20,8 @@ require('../api/models/index')
 app.use(helmet({
   hidePoweredBy: { setTo: 'The Geek Developers' }
 }))
+
+app.use(cors())
 
 app.set('etag', false)
 app.use(busboy())
