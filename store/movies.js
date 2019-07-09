@@ -312,5 +312,21 @@ export const actions = {
       .catch((error) => {
         throw new Error(error)
       })
+  },
+  getVideos({ rootState }, movieId) {
+    return this.$axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${rootState.env.TMDB_API_KEY}&language=en-US`)
+      .then((response) => {
+        if (response.status === 200) {
+          const videos = response.data.results
+          const video = _.find(videos, { type: 'Trailer' })
+          const videoURL = `https://www.youtube.com/embed/${video.key}?rel=0&modestbranding=1`
+          return Promise.resolve(videoURL)
+        }
+
+        return Promise.reject(response)
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
   }
 }

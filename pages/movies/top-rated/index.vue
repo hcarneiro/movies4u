@@ -22,7 +22,7 @@
               </h2>
 
               <div class="hero-tools">
-                <b-button rounded>
+                <b-button rounded @click="openVideoModal(movie.id)">
                   <span>
                     Watch trailer
                   </span>
@@ -37,6 +37,18 @@
         </div>
         <div class="swiper-pagination swiper-pagination-bullets" />
       </div>
+      <b-modal :active.sync="isModalActive">
+        <div class="video-container">
+          <iframe
+            width="560"
+            height="315"
+            :src="modalVideoUrl"
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+        </div>
+      </b-modal>
     </section>
     <div class="container ss-container">
       <p class="subtitle">
@@ -81,6 +93,8 @@ export default {
   },
   data() {
     return {
+      isModalActive: false,
+      modalVideoUrl: undefined,
       swiperOption: {
         pagination: {
           el: '.swiper-pagination',
@@ -143,6 +157,13 @@ export default {
       }
 
       return `https://image.tmdb.org/t/p/original${path}`
+    },
+    openVideoModal(id) {
+      this.isModalActive = !this.isModalActive
+      this.getMovieVideo(id)
+    },
+    async getMovieVideo(id) {
+      this.modalVideoUrl = await this.$store.dispatch('movies/getVideos', id)
     }
   }
 }
