@@ -14,14 +14,22 @@
           >
         </nuxt-link>
 
-        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="ss-main-menu">
+        <a
+          role="button"
+          class="navbar-burger burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="ss-main-menu"
+          :class="{ 'is-active': burgerIsActive }"
+          @click="toggleBurgerMenu"
+        >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
           <span aria-hidden="true" />
         </a>
       </div>
 
-      <div id="ss-main-menu" class="navbar-menu">
+      <div id="ss-main-menu" class="navbar-menu" :class="{ 'is-active': burgerIsActive }">
         <div class="navbar-start">
           <div class="navbar-item has-dropdown is-hoverable">
             <nuxt-link to="/movies" class="navbar-link">
@@ -121,35 +129,25 @@
 </template>
 
 <script>
+import $ from 'jquery'
+
 export default {
   data() {
     return {
-      isScrolled: false
+      isScrolled: false,
+      burgerIsActive: false,
+      menuLinks: '.navbar-item, navbar-link'
     }
   },
   mounted() {
     this.attachHandlers()
   },
   methods: {
-    burgerMenuHandler() {
-      // Get all "navbar-burger" elements
-      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0)
-
-      // Check if there are any navbar burgers
-      if ($navbarBurgers.length > 0) {
-        // Add a click event on each of them
-        $navbarBurgers.forEach((el) => {
-          el.addEventListener('click', () => {
-            // Get the target from the "data-target" attribute
-            const target = el.dataset.target
-            const $target = document.getElementById(target)
-
-            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-            el.classList.toggle('is-active')
-            $target.classList.toggle('is-active')
-          })
-        })
+    toggleBurgerMenu(value) {
+      if (typeof value === 'undefined' || typeof value !== 'boolean') {
+        value = !this.burgerIsActive
       }
+      this.burgerIsActive = value
     },
     onScroll() {
       const top = window.pageYOffset
@@ -161,7 +159,10 @@ export default {
       }
     },
     attachHandlers() {
-      this.burgerMenuHandler()
+      $(document).on('click', this.menuLinks, () => {
+        this.toggleBurgerMenu(false)
+      })
+
       window.addEventListener('scroll', this.onScroll)
     }
   }
