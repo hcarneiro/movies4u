@@ -12,10 +12,15 @@
   .title {
     font-size: 1.2rem;
     font-weight: 500;
-    margin-bottom: 0.5rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    color: lighten(#333333, 40%);
   }
 
   .ss-tag-holder {

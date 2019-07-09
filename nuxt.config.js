@@ -6,7 +6,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    titleTemplate: '%s - The Geek Developer',
+    titleTemplate: '%s - Movie lists to watch',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -25,14 +25,17 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    '@/assets/scss/index.scss'
+    '@/assets/scss/index.scss',
+    'swiper/dist/css/swiper.css'
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
     { src: '~/plugins/vue-circle.js', ssr: false },
-    { src: '~/plugins/infinite-scroll.js', ssr: false }
+    { src: '~/plugins/infinite-scroll.js', ssr: false },
+    { src: '~/plugins/swiper.js', ssr: false },
+    { src: '~/plugins/filters.js' }
   ],
   /*
   ** Nuxt.js modules
@@ -44,7 +47,14 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     'nuxt-webfontloader',
-    '@nuxtjs/eslint-module'
+    '@nuxtjs/eslint-module',
+    'nuxt-sass-resources-loader'
+  ],
+  /*
+  ** SASS Resources
+  */
+  sassResources: [
+    '@/assets/scss/base/variables.sass'
   ],
   /*
   ** Axios module configuration

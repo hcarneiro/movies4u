@@ -7,7 +7,7 @@
   @include transition(all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1));
 
   &.is-scrolled {
-    background-color: rgba(#333333, 0.8);
+    background-color: rgba(#004357, 0.8);
   }
 
   .navbar-start {
@@ -20,9 +20,66 @@
     color: #ffffff;
 
     &:hover,
-    &.nuxt-link-active {
+    &:focus
+    &.has-dropdown:focus,
+    &.nuxt-link-exact-active {
       background-color: transparent;
       color: $brand-primary;
+
+      .navbar-link {
+        background-color: transparent;
+        color: $brand-primary;
+      }
+    }
+
+    :after {
+      display: none;
+    }
+  }
+
+  .navbar-link {
+    padding-right: 0.75rem;
+  }
+
+  .navbar-burger {
+    color: #ffffff;
+  }
+
+  .navbar-dropdown {
+    a.navbar-item:focus,
+    a.navbar-item:hover {
+      background-color: transparent;
+      color: $brand-primary;
+    }
+  }
+
+  @include below ($desktop-small-size) {
+    .navbar-menu {
+      background-color: #004357;
+    }
+  }
+
+  @include above ($desktop-small-size) {
+    .navbar-dropdown {
+      background-color: #004357;
+      border-top: none;
+    }
+
+    .navbar-item {
+      &.has-dropdown {
+        .navbar-link {
+          &.nuxt-link-active {
+            color: $brand-primary;
+          }
+        }
+      }
+
+      &.has-dropdown:focus {
+        .navbar-link {
+          background-color: transparent;
+          color: $brand-primary;
+        }
+      }
     }
   }
 }

@@ -23,15 +23,46 @@
 
       <div id="ss-main-menu" class="navbar-menu">
         <div class="navbar-start">
-          <nuxt-link to="/movies" class="navbar-item">
-            Movies
-          </nuxt-link>
-          <nuxt-link to="/tv-shows" class="navbar-item">
-            TV Shows
-          </nuxt-link>
-          <nuxt-link to="/news" class="navbar-item">
-            News
-          </nuxt-link>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <nuxt-link to="/movies" class="navbar-link">
+              Movies
+            </nuxt-link>
+
+            <div class="navbar-dropdown">
+              <nuxt-link to="/movies" class="navbar-item">
+                Popular
+              </nuxt-link>
+              <nuxt-link to="/movies/top-rated" class="navbar-item">
+                Top Rated
+              </nuxt-link>
+              <nuxt-link to="/movies/upcoming" class="navbar-item">
+                Upcoming
+              </nuxt-link>
+              <nuxt-link to="/movies/now-playing" class="navbar-item">
+                Now Playing
+              </nuxt-link>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <nuxt-link to="/tv" class="navbar-link">
+              TV Shows
+            </nuxt-link>
+
+            <div class="navbar-dropdown">
+              <nuxt-link to="/tv" class="navbar-item">
+                Popular
+              </nuxt-link>
+              <nuxt-link to="/tv/top-rated" class="navbar-item">
+                Top rated
+              </nuxt-link>
+              <nuxt-link to="/tv/on-tv" class="navbar-item">
+                On TV
+              </nuxt-link>
+              <nuxt-link to="/tv/airing-today" class="navbar-item">
+                Airing Today
+              </nuxt-link>
+            </div>
+          </div>
         </div>
         <div class="navbar-end">
           <b-dropdown position="is-bottom-left" aria-role="menu">
@@ -41,12 +72,12 @@
               role="button"
             >
               <span>Login</span>
-              <b-icon icon="menu-down" />
+              <b-icon icon="menu-down is-hidden-touch" />
             </a>
 
             <b-dropdown-item aria-role="menu-item" custom paddingless>
-              <form action="">
-                <div class="modal-card" style="width:300px;">
+              <form>
+                <div class="modal-card login-form">
                   <section class="modal-card-body">
                     <b-field label="Email">
                       <b-input

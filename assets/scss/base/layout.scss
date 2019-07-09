@@ -1,61 +1,72 @@
-.hero {
+.ss-top-hero {
   position: relative;
+  text-transform: uppercase;
+  min-height: 750px;
 
-  &.ss-top-hero {
+  .hero-body {
+    position: relative;
+    z-index: 2;
+    padding: 14rem 10rem;
+    min-height: 265px;
+  }
+
+  .title {
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: 0.2rem;
+    color: #ffffff;
+    text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .subtitle {
+    margin-left: -0.75em;
+    margin-right: -0.75em;
+  }
+
+  .hero-tools {
+    display: flex;
+    align-items: center;
+    margin-top: 3rem;
+  }
+
+  .tag {
+    background-color: transparent;
+    font-size: 1.2rem;
+    color: #ffffff;
+
+    &:hover {
+      background-color: rgba(#000000, 0.2);
+    }
+  }
+
+  .button {
+    font-size: 1.2rem;
+    padding-right: 1.5em;
+    padding-left: 1.5em;
+    height: 2.75em;
+    background-color: $brand-primary;
+    border-color: lighten($brand-primary, 10%);
+    box-shadow: 0px 6px 10px 0px rgba(#000000, 0.2);
+    @include transition(all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1));
+
+    &:active,
+    &:active:hover {
+      box-shadow: 0px 2px 6px 0px rgba(#000000, 0.2);
+    }
+  }
+
+  .swiper-slide {
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
-    text-transform: uppercase;
+  }
 
-    .hero-body {
-      padding: 14rem 10rem;
+  .swiper-container-horizontal > .swiper-pagination-bullets {
+    bottom: 90px;
+  }
 
-      @include below ($tablet-size) {
-        padding: 10rem 2rem;
-      }
-    }
-  
-    .title {
-      font-size: 4rem;
-      font-weight: 700;
-      letter-spacing: 0.2rem;
-      color: #ffffff;
-    }
-
-    .subtitle {
-      margin-left: -0.75em;
-      margin-right: -0.75em;
-    }
-
-    .hero-tools {
-      margin-top: 3rem;
-    }
-  
-    .tag {
-      background-color: transparent;
-      font-size: 1.2rem;
-      color: #ffffff;
-  
-      &:hover {
-        background-color: rgba(#000000, 0.2);
-      }
-    }
-
-    .button {
-      font-size: 1.2rem;
-      padding-right: 1.5em;
-      padding-left: 1.5em;
-      height: 2.75em;
-      background-color: $brand-primary;
-      border-color: lighten($brand-primary, 10%);
-      box-shadow: 0px 6px 10px 0px rgba(#000000, 0.2);
-      @include transition(all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1));
-
-      &:active,
-      &:active:hover {
-        box-shadow: 0px 2px 6px 0px rgba(#000000, 0.2);
-      }
-    }
+  .swiper-pagination-bullet-active {
+    background-color: $brand-primary;
   }
 
   .ss-hero-screen {
@@ -64,11 +75,69 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(darken($brand-warning, 50%), 0.4);
+    z-index: 1;
+    background-color: rgba(#004357, 0.65);
+  }
+
+  .more-info {
+    color: $brand-primary;
+    padding: 12px 15px;
+    margin-left: 15px;
+    border-radius: 50px;
+
+    &:hover {
+      background-color: rgba(#000000, 0.2);
+    }
+  }
+
+  @include below ($tablet-size) {
+    min-height: 585px;
+
+    .hero-body {
+      min-height: 265px;
+      padding: 10rem 2rem;
+    }
+
+    .title {
+      font-size: 3rem;
+    }
+
+    .tag {
+      font-size: 1rem;
+    }
+  }
+
+  @include below ($mobile-big-size) {
+    min-height: 550px;
+
+    .hero-body {
+      min-height: 230px;
+      padding: 10rem 2rem;
+    }
+
+    .title {
+      font-size: 2rem;
+    }
+
+    .tag {
+      font-size: 0.8rem;
+    }
+
+    .button {
+      padding-right: 1em;
+      padding-left: 1em;
+      height: 2em;
+    }
+
+    .more-info {
+      padding: 10px 12px;
+      margin-left: 10px;
+    }
   }
 }
 
 .ss-container {
+  z-index: 5;
   background-color: #ffffff;
   margin-top: -80px;
   padding: 2rem;
@@ -83,5 +152,17 @@
 
   .level-left + .level-right {
     margin-top: 0;
+  }
+}
+
+.modal-card {
+  margin: 0;
+
+  @include above ($desktop-small-size) {
+    width: 300px;
+  }
+
+  .modal-card-foot {
+    background-color: #ffffff;
   }
 }

@@ -1,3 +1,5 @@
+@import "~bulma/sass/utilities/_all";
+
 $brand-primary: hsl(45, 100%, 51%) !default;
 $brand-secondary: hsl(200, 18%, 46%) !default;
 $brand-info: hsl(204, 86%, 53%) !default;
@@ -6,4 +8,17 @@ $brand-warning: hsl(48, 100%, 67%) !default;
 $brand-danger: hsl(348, 100%, 61%) !default;
 $brand-default: hsl(0, 0%, 96%) !default;
 
+$primary: $brand-primary;
+$primary-invert: findColorInvert($primary);
+$link: $brand-primary;
+
+$colors: (
+  "primary": ($primary, $primary-invert),
+);
+
+$desktop-small-size: 1023px !default;
 $tablet-size: 768px !default;
+$mobile-big-size: 420px !default;
+
+@import "~bulma";
+@import "~buefy/src/scss/buefy";

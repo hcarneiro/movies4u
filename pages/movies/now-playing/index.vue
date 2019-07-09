@@ -40,17 +40,17 @@
     </section>
     <div class="container ss-container">
       <p class="subtitle">
-        Movies - Today
+        Movies
       </p>
       <h2 class="title">
-        TRENDING
+        NOW PLAYING
       </h2>
       <div class="columns is-multiline">
         <div v-for="(movie, index) in movies" :key="index" class="column is-4">
           <card
             :id="movie.id"
-            :title="movie | movieTitle"
-            :release-date="movie | movieDate"
+            :title="movie.title"
+            :release-date="movie.release_date"
             :tags="getTags(movie.genre_ids)"
             :rating="movie.vote_average"
             :thumb="movie.poster_path | getBackdrop"
@@ -73,8 +73,7 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Movie list to watch',
-      titleTemplate: null
+      title: 'Upcoming movies'
     }
   },
   components: {
@@ -93,19 +92,13 @@ export default {
   computed: {
     ...mapState({
       movies: (state) => {
-        return state.movies.trendingList
+        return state.movies.nowPlayingList
       },
       bannerMovies: (state) => {
-        return state.movies.trendingList.slice(0, 4)
+        return state.movies.nowPlayingList.slice(0, 4)
       },
       page: (state) => {
-        return state.movies.trendingPage
-      },
-      totalPages: (state) => {
-        return state.movies.totalTrendingPages
-      },
-      totalResults: (state) => {
-        return state.movies.totalTrendingResults
+        return state.movies.nowPlayingPage
       },
       genres: (state) => {
         return state.genres
@@ -117,10 +110,10 @@ export default {
   },
   methods: {
     getMovies() {
-      return this.$store.dispatch('movies/getTrending')
+      return this.$store.dispatch('movies/getNowPlaying')
     },
     infiniteHandler($state) {
-      this.$store.dispatch('movies/updateTrending', this.page + 1)
+      this.$store.dispatch('movies/updateNowPlaying', this.page + 1)
         .then((response) => {
           if (response.results.length) {
             $state.loaded()

@@ -2,13 +2,18 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-2by3">
-        <img v-if="thumb" :src="thumb" alt="title">
-        <img v-else src="~assets/no-poster.png" alt="No poster available">
+        <nuxt-link :to="baseUrl + id">
+          <img v-if="thumb" :src="thumb" alt="title">
+          <img v-else src="~assets/no-poster.png" alt="No poster available">
+        </nuxt-link>
       </figure>
     </div>
     <div class="card-content">
       <p class="title">
         {{ title }}
+      </p>
+      <p class="subtitle">
+        {{ releaseDate | formatDate }}
       </p>
       <div class="content has-text-grey">
         <div class="ss-tag-holder">
@@ -38,12 +43,9 @@
             </no-ssr>
           </div>
           <div class="level-right">
-            <b-button
-              rounded
-              size="is-small"
-            >
+            <nuxt-link tag="button" :to="baseUrl + id" class="button is-small is-rounded">
               More info
-            </b-button>
+            </nuxt-link>
           </div>
         </div>
       </div>
@@ -55,9 +57,18 @@
 export default {
   name: 'Card',
   props: {
+    id: {
+      type: Number,
+      required: true
+    },
     title: {
       type: String,
       required: true
+    },
+    releaseDate: {
+      type: String,
+      default: '',
+      required: false
     },
     tags: {
       type: Array,
@@ -71,6 +82,10 @@ export default {
       type: String,
       default: undefined,
       required: false
+    },
+    baseUrl: {
+      type: String,
+      required: true
     }
   },
   data() {
