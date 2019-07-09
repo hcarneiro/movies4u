@@ -73,7 +73,7 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Upcoming movies'
+      title: 'Top rated movies'
     }
   },
   components: {
