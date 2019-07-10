@@ -21,10 +21,18 @@ export const state = () => ({
   totalTopRatedResults: 0,
   totalNowPlayingPages: 0,
   nowPlayingPage: 1,
-  totalNowPlayingResults: 0
+  totalNowPlayingResults: 0,
+  crew: undefined,
+  cast: undefined
 })
 
 export const mutations = {
+  setCrew(state, crew) {
+    state.crew = crew
+  },
+  setCast(state, cast) {
+    state.cast = cast
+  },
   setMovies(state, movies) {
     state.list = movies
   },
@@ -116,6 +124,19 @@ export const mutations = {
 }
 
 export const actions = {
+  getCrew({ commit, rootState }, id) {
+    return this.$axios.get(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${rootState.env.TMDB_API_KEY}`)
+      .then((response) => {
+        if (response.status === 200) {
+          commit('setCast', response.data.cast)
+          commit('setCrew', response.data.crew)
+          return Promise.resolve(response.data)
+        }
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+  },
   getTrending({ commit, rootState }) {
     return this.$axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=1&append_to_response=videos`)
       .then((response) => {
@@ -238,7 +259,7 @@ export const actions = {
       })
   },
   updateTrending({ commit, rootState }, page) {
-    const currentPage = page || rootState.movies.page
+    const currentPage = page || rootState.movies.trendingPage
 
     return this.$axios.get(`https://api.themoviedb.org/3/trending/all/day?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
       .then((response) => {
@@ -257,7 +278,7 @@ export const actions = {
       })
   },
   updatePopular({ commit, rootState }, page) {
-    const currentPage = page || rootState.movies.page
+    const currentPage = page || rootState.movies.popularPage
 
     return this.$axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
       .then((response) => {
@@ -276,7 +297,7 @@ export const actions = {
       })
   },
   updateTopRated({ commit, rootState }, page) {
-    const currentPage = page || rootState.movies.page
+    const currentPage = page || rootState.movies.topRatedPage
 
     return this.$axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
       .then((response) => {
@@ -295,7 +316,7 @@ export const actions = {
       })
   },
   updateNowPlaying({ commit, rootState }, page) {
-    const currentPage = page || rootState.movies.page
+    const currentPage = page || rootState.movies.nowPlayingPage
 
     return this.$axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
       .then((response) => {
@@ -317,6 +338,10 @@ export const actions = {
     return this.$axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${rootState.env.TMDB_API_KEY}&language=en-US`)
       .then((response) => {
         if (response.status === 200) {
+          if (!response.data.results.length) {
+            return Promise.resolve('')
+          }
+
           const videos = response.data.results
           const video = _.find(videos, { type: 'Trailer' })
           const videoURL = `https://www.youtube.com/embed/${video.key}?rel=0&modestbranding=1`

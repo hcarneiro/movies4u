@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="ss-top-hero">
-      <div v-swiper:mySwiper="swiperOption">
+      <div v-if="isReady" v-swiper:mySwiper="swiperOption">
         <div class="swiper-wrapper">
           <div v-for="(movie, index) in bannerMovies" :key="index" class="swiper-slide" :style="`background-image: url(${getBackground(movie.backdrop_path)})`">
             <div class="ss-hero-screen" />
@@ -11,18 +11,18 @@
               </h1>
               <h2 class="subtitle">
                 <nuxt-link
-                  v-for="(tag, idx) in getTags(movie.genre_ids)"
+                  v-for="(tag, idx) in getTags(movie.genre_ids, genres)"
                   :key="idx"
-                  to="/"
+                  :to="`/genres/${tag.id}/movies`"
                 >
                   <b-tag rounded>
-                    {{ tag }}
+                    {{ tag.name }}
                   </b-tag>
                 </nuxt-link>
               </h2>
 
-              <div class="hero-tools">
-                <b-button rounded @click="openVideoModal(movie.id)">
+              <div class="hero-tools" :class="{ 'is-one-button': !movie.hasTrailer }">
+                <b-button v-if="movie.hasTrailer" rounded @click="openVideoModal(movie.id)">
                   <span>
                     Watch trailer
                   </span>
@@ -63,10 +63,10 @@
             :id="movie.id"
             :title="movie | movieTitle"
             :release-date="movie | movieDate"
-            :tags="getTags(movie.genre_ids)"
+            :tags="getTags(movie.genre_ids, genres)"
             :rating="movie.vote_average"
             :thumb="movie.poster_path | getBackdrop"
-            base-url="/movies/"
+            base-url="/movies"
           />
         </div>
       </div>
@@ -78,8 +78,8 @@
 </template>
 
 <script>
-import { find, forEach } from 'lodash'
 import { mapState } from 'vuex'
+import getTags from '~/plugins/get-tags'
 import Card from '~/components/Card'
 
 export default {
@@ -93,6 +93,7 @@ export default {
   },
   data() {
     return {
+      isReady: false,
       isModalActive: false,
       modalVideoUrl: undefined,
       swiperOption: {
@@ -100,7 +101,8 @@ export default {
           el: '.swiper-pagination',
           clickable: true
         }
-      }
+      },
+      getTags: getTags
     }
   },
   computed: {
@@ -119,6 +121,11 @@ export default {
       }
     })
   },
+  watch: {
+    bannerMovies() {
+      this.checkIfHasVideo()
+    }
+  },
   created() {
     this.getMovies()
   },
@@ -136,21 +143,6 @@ export default {
           }
         })
     },
-    getTags(ids) {
-      const genres = []
-
-      forEach(ids, (id) => {
-        const genre = find(this.genres, (genre) => {
-          return genre.id === id
-        })
-
-        if (genre) {
-          genres.push(genre.name)
-        }
-      })
-
-      return genres
-    },
     getBackground(path) {
       if (!path) {
         return ''
@@ -162,8 +154,31 @@ export default {
       this.isModalActive = !this.isModalActive
       this.getMovieVideo(id)
     },
-    async getMovieVideo(id) {
-      this.modalVideoUrl = await this.$store.dispatch('movies/getVideos', id)
+    getMovieVideo(id) {
+      if (!id) {
+        return false
+      }
+
+      return this.$store.dispatch('movies/getVideos', id)
+        .then((result) => {
+          this.modalVideoUrl = result
+          return Promise.resolve(result)
+        })
+    },
+    checkIfHasVideo() {
+      const promises = []
+      this.bannerMovies.forEach((show, index) => {
+        promises.push(this.getMovieVideo(show.id)
+          .then((result) => {
+            show.hasTrailer = result
+            this.$set(this.bannerMovies, index, show)
+          }))
+      })
+
+      Promise.all(promises)
+        .then(() => {
+          this.isReady = true
+        })
     }
   }
 }

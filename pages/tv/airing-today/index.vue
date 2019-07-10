@@ -3,17 +3,17 @@
     <section class="ss-top-hero">
       <div v-if="isReady" v-swiper:mySwiper="swiperOption">
         <div class="swiper-wrapper">
-          <div v-for="(movie, index) in bannerMovies" :key="index" class="swiper-slide" :style="`background-image: url(${getBackground(movie.backdrop_path)})`">
+          <div v-for="(tvShow, index) in bannerTvShows" :key="index" class="swiper-slide" :style="`background-image: url(${getBackground(tvShow.backdrop_path)})`">
             <div class="ss-hero-screen" />
             <div class="hero-body">
               <h1 class="title">
-                {{ movie | movieTitle }}
+                {{ tvShow | movieTitle }}
               </h1>
               <h2 class="subtitle">
                 <nuxt-link
-                  v-for="(tag, idx) in getTags(movie.genre_ids, genres)"
+                  v-for="(tag, idx) in getTags(tvShow.genre_ids, genres)"
                   :key="idx"
-                  :to="`/genres/${tag.id}/movies`"
+                  :to="`/genres/${tag.id}/tv`"
                 >
                   <b-tag rounded>
                     {{ tag.name }}
@@ -21,14 +21,14 @@
                 </nuxt-link>
               </h2>
 
-              <div class="hero-tools" :class="{ 'is-one-button': !movie.hasTrailer }">
-                <b-button v-if="movie.hasTrailer" rounded @click="openVideoModal(movie.id)">
+              <div class="hero-tools" :class="{ 'is-one-button': !tvShow.hasTrailer }">
+                <b-button v-if="tvShow.hasTrailer" rounded @click="openVideoModal(tvShow.id)">
                   <span>
                     Watch trailer
                   </span>
                   <b-icon icon="play-circle-outline" size="is-small" />
                 </b-button>
-                <nuxt-link :to="`/movies/${movie.id}`" class="more-info">
+                <nuxt-link :to="`/tv/${tvShow.id}`" class="more-info">
                   More info
                 </nuxt-link>
               </div>
@@ -52,26 +52,26 @@
     </section>
     <div class="container ss-container">
       <p class="subtitle">
-        Movies - Today
+        TV Shows
       </p>
       <h2 class="title">
-        TRENDING
+        AIRING TODAY
       </h2>
       <div class="columns is-multiline">
-        <div v-for="(movie, index) in movies" :key="index" class="column is-4">
+        <div v-for="(tvShow, index) in tvShows" :key="index" class="column is-4">
           <card
-            :id="movie.id"
-            :title="movie | movieTitle"
-            :release-date="movie | movieDate"
-            :tags="getTags(movie.genre_ids, genres)"
-            :rating="movie.vote_average"
-            :thumb="movie.poster_path | getBackdrop"
-            base-url="/movies"
+            :id="tvShow.id"
+            :title="tvShow | movieTitle"
+            :release-date="tvShow | movieDate"
+            :tags="getTags(tvShow.genre_ids, genres)"
+            :rating="tvShow.vote_average"
+            :thumb="tvShow.poster_path | getBackdrop"
+            base-url="/tv"
           />
         </div>
       </div>
       <no-ssr>
-        <infinite-loading v-if="movies && movies.length" @infinite="infiniteHandler" />
+        <infinite-loading v-if="tvShows && tvShows.length" @infinite="infiniteHandler" />
       </no-ssr>
     </div>
   </div>
@@ -85,8 +85,7 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Movie list to watch',
-      titleTemplate: null
+      title: 'Airing Today Shows'
     }
   },
   components: {
@@ -108,14 +107,14 @@ export default {
   },
   computed: {
     ...mapState({
-      movies: (state) => {
-        return state.movies.trendingList
+      tvShows: (state) => {
+        return state.tv.airingTodayList
       },
-      bannerMovies: (state) => {
-        return state.movies.trendingList.slice(0, 4)
+      bannerTvShows: (state) => {
+        return state.tv.airingTodayList.slice(0, 4)
       },
       page: (state) => {
-        return state.movies.trendingPage
+        return state.tv.airingTodayList
       },
       genres: (state) => {
         return state.genres
@@ -123,19 +122,19 @@ export default {
     })
   },
   watch: {
-    bannerMovies() {
+    bannerTvShows() {
       this.checkIfHasVideo()
     }
   },
   created() {
-    this.getMovies()
+    this.getTvShows()
   },
   methods: {
-    getMovies() {
-      return this.$store.dispatch('movies/getTrending')
+    getTvShows() {
+      return this.$store.dispatch('tv/getAiringToday')
     },
     infiniteHandler($state) {
-      this.$store.dispatch('movies/updateTrending', this.page + 1)
+      this.$store.dispatch('tv/updateAiringToday', this.page + 1)
         .then((response) => {
           if (response.results.length) {
             $state.loaded()
@@ -153,14 +152,14 @@ export default {
     },
     openVideoModal(id) {
       this.isModalActive = !this.isModalActive
-      this.getMovieVideo(id)
+      this.getTvVideo(id)
     },
-    getMovieVideo(id) {
+    getTvVideo(id) {
       if (!id) {
         return false
       }
 
-      return this.$store.dispatch('movies/getVideos', id)
+      return this.$store.dispatch('tv/getVideos', id)
         .then((result) => {
           this.modalVideoUrl = result
           return Promise.resolve(result)
@@ -168,11 +167,11 @@ export default {
     },
     checkIfHasVideo() {
       const promises = []
-      this.bannerMovies.forEach((show, index) => {
-        promises.push(this.getMovieVideo(show.id)
+      this.bannerTvShows.forEach((show, index) => {
+        promises.push(this.getTvVideo(show.id)
           .then((result) => {
             show.hasTrailer = result
-            this.$set(this.bannerMovies, index, show)
+            this.$set(this.bannerTvShows, index, show)
           }))
       })
 

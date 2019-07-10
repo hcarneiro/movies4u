@@ -2,12 +2,24 @@
   position: relative;
   text-transform: uppercase;
   min-height: 750px;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: rgba(#004357, 0.65);
+
+  &.is-smaller {
+    min-height: 500px;
+
+    @include below ($tablet-size) {
+      min-height: 350px;
+    }
+  }
 
   .hero-body {
     position: relative;
     z-index: 2;
     padding: 14rem 10rem;
-    min-height: 265px;
+    min-height: 354px;
   }
 
   .title {
@@ -27,6 +39,11 @@
     display: flex;
     align-items: center;
     margin-top: 3rem;
+
+    &.is-one-button {
+      margin-left: -0.75em;
+      margin-right: -0.75em;
+    }
   }
 
   .tag {
@@ -77,16 +94,24 @@
     left: 0;
     z-index: 1;
     background-color: rgba(#004357, 0.65);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
   }
 
   .more-info {
     color: $brand-primary;
     padding: 12px 15px;
-    margin-left: 15px;
+    margin-left: 0;
     border-radius: 50px;
 
     &:hover {
       background-color: rgba(#000000, 0.2);
+    }
+  }
+
+  .button {
+    + .more-info {
+      margin-left: 15px;
     }
   }
 
@@ -143,6 +168,77 @@
   padding: 2rem;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
+}
+
+.ss-detail-container {
+  z-index: 5;
+  margin-top: -15rem;
+  padding: calc(15rem + 40px) 2rem 2rem;
+}
+
+.ss-detail-heading-holder {
+  position: relative;
+}
+
+.ss-poster-holder {
+  position: absolute;
+  top: calc(-15rem - 40px);
+  left: 0;
+  width: 33.3333%;
+
+  .ss-circle-holder {
+    position: absolute;
+    bottom: calc(50% - 54px);
+    left: calc(50% - 54px);
+  }
+
+  .ss-movie-poster {
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0px 8px 20px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  @include below ($tablet-size) {
+    width: 260px;
+    left: calc(50% - 130px);
+  }
+}
+
+.ss-detail-heading {
+  padding-left: 40px;
+
+  .tag {
+    background-color: transparent;
+    color: $brand-primary;
+
+    &:hover {
+      background-color: rgba(#000000, 0.05);
+    }
+  }
+
+  .ss-detail-heading-tools {
+    margin-top: 30px;
+    display: flex;
+  }
+
+  .ss-tool-holder {
+    .ss-circle-holder {
+      display: flex;
+
+      @include below ($desktop-small-size) {
+        justify-content: center;
+      }
+    }
+
+    .header {
+      font-weight: 700;
+    }
+  }
+
+  @include below ($tablet-size) {
+    padding-left: 0.75rem;
+    padding-top: 9rem;
+  }
 }
 
 @include below ($tablet-size) {

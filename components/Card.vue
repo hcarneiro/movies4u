@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-2by3">
-        <nuxt-link :to="baseUrl + id">
+        <nuxt-link :to="`${baseUrl}/${id}`">
           <img v-if="thumb" :src="thumb" alt="title">
           <img v-else src="~assets/no-poster.png" alt="No poster available">
         </nuxt-link>
@@ -18,9 +18,9 @@
       <div class="content has-text-grey">
         <div class="ss-tag-holder">
           <template v-for="(tag, index) in tags">
-            <nuxt-link :key="index" to="/">
+            <nuxt-link :key="index" :to="`/genres/${tag.id}${baseUrl}`">
               <b-tag rounded>
-                {{ tag }}
+                {{ tag.name }}
               </b-tag>
             </nuxt-link>
           </template>
@@ -43,7 +43,7 @@
             </no-ssr>
           </div>
           <div class="level-right">
-            <nuxt-link tag="button" :to="baseUrl + id" class="button is-small is-rounded">
+            <nuxt-link tag="button" :to="`${baseUrl}/${id}`" class="button is-small is-rounded">
               More info
             </nuxt-link>
           </div>

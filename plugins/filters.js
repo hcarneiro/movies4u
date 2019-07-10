@@ -6,7 +6,7 @@ Vue.filter('formatDate', (value) => {
 })
 
 Vue.filter('movieTitle', (movie) => {
-  return movie.title || movie.original_name || movie.original_title
+  return movie.title || movie.name || movie.original_name || movie.original_title
 })
 
 Vue.filter('movieDate', (movie) => {
@@ -27,4 +27,13 @@ Vue.filter('getBackground', (path) => {
   }
 
   return `https://image.tmdb.org/t/p/original${path}`
+})
+
+Vue.filter('timeConvert', (n) => {
+  const num = n
+  const hours = (num / 60)
+  const rhours = Math.floor(hours)
+  const minutes = (hours - rhours) * 60
+  const rminutes = Math.round(minutes)
+  return `${rhours}h ${rminutes}m`
 })
