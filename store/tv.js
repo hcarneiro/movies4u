@@ -17,10 +17,18 @@ export const state = () => ({
   totalOnTvResults: 0,
   totalAiringTodayPages: 0,
   airingTodayPage: 1,
-  totalAiringTodayResults: 0
+  totalAiringTodayResults: 0,
+  crew: undefined,
+  cast: undefined
 })
 
 export const mutations = {
+  setCrew(state, crew) {
+    state.crew = crew
+  },
+  setCast(state, cast) {
+    state.cast = cast
+  },
   setPopularShows(state, shows) {
     state.popularList = shows
   },
@@ -95,6 +103,19 @@ export const mutations = {
 }
 
 export const actions = {
+  getCrew({ commit, rootState }, id) {
+    return this.$axios.get(`https://api.themoviedb.org/3/tv/${id}/credits?api_key=${rootState.env.TMDB_API_KEY}`)
+      .then((response) => {
+        if (response.status === 200) {
+          commit('setCast', response.data.cast)
+          commit('setCrew', response.data.crew)
+          return Promise.resolve(response.data)
+        }
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+  },
   getPopular({ commit, rootState }) {
     return this.$axios.get(`https://api.themoviedb.org/3/tv/popular?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=1&append_to_response=videos`)
       .then((response) => {

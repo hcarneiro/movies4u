@@ -73,7 +73,7 @@
                 {{ item.job }}
               </p>
             </div>
-            <div class="column is-half-mobile is-one-fifth-desktop ss-tool-holder">
+            <div v-if="movie.runtime" class="column is-half-mobile is-one-fifth-desktop ss-tool-holder">
               <p class="header">
                 {{ movie.runtime | timeConvert }}
               </p>
@@ -95,9 +95,9 @@ import { mapState } from 'vuex'
 export default {
   head() {
     return {
-      title: this.movie.title,
+      title: this.$options.filters.movieTitle(this.movie),
       meta: [
-        { hid: 'description', name: 'description', content: this.movie.title },
+        { hid: 'description', name: 'description', content: this.movie.overview },
         { hid: 'og-image', property: 'og:image', content: this.getBackground(this.movie.backdrop_path) },
         { hid: 'keywords', name: 'keywords', keywords: this.compileTags(this.movie.genres) }
       ]
