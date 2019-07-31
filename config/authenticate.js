@@ -3,42 +3,23 @@ const _ = require('lodash')
 const User = require('../api/models/user')
 const cookie = require(path.resolve(__dirname, './cookie'))
 
-const userAttributes = ['id', 'email', 'auth_token', 'firstName', 'lastName', 'preferences', 'userBio', 'userCountry', 'userCity', 'profilePicture', 'createdAt']
+const userAttributes = ['id', 'email', 'auth_token', 'firstName', 'lastName', 'preferences', 'userBio', 'userCountry', 'userCity', 'profilePicture', 'createdAt', 'facebookId', 'googleId']
 
 function authenticate(req, res, next) {
   loadUser(req, res, () => {
     if (!req.auth_token) {
-      return res.status(401).format({
-        'application/json': () => {
-          res.send({
-            error: 'auth_token not provided',
-            message: 'Please include a valid auth_token when accessing this resource.'
-          })
-        },
-        'text/html': () => {
-          res.render('login', {
-            redirect: req.originalUrl
-          })
-        }
+      return res.status(401).send({
+        error: 'auth_token not provided',
+        message: 'Please include a valid auth_token when accessing this resource.'
       })
     }
 
     if (!req.user) {
       const errorMessage = req.authenticationError || 'The auth_token provided doesn\'t belong to any user'
 
-      return res.status(401).format({
-        'application/json': () => {
-          res.send({
-            error: 'not authorised',
-            message: errorMessage
-          })
-        },
-        'text/html': () => {
-          res.render('error', {
-            message: 'Not Authorised',
-            description: errorMessage
-          })
-        }
+      return res.status(401).send({
+        error: 'not authorised',
+        message: errorMessage
       })
     }
 
@@ -80,20 +61,22 @@ function loadUser(req, res, next) {
       auth_token: req.auth_token
     }
   }).then((user) => {
-    if (user) {
-      req.login(user, function(err) {
-        if (err) {
-          return next(err)
-        }
-
-        // Renew cookie when forced to be set
-        if (req.query.setCookie) {
-          cookie.set(res, req.auth_token)
-        }
-      })
+    if (!user) {
+      return next()
     }
 
-    next()
+    req.login(user, function(err) {
+      if (err) {
+        return next(err)
+      }
+
+      // Renew cookie when forced to be set
+      if (req.query.setCookie) {
+        cookie.set(res, req.auth_token)
+      }
+
+      next()
+    })
   }, next)
 }
 
