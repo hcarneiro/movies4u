@@ -72,7 +72,7 @@ const User = database.db.define('user', {
 }, {
   paranoid: true,
   getterMethods: {
-    fullName: function () {
+    fullName() {
       return [this.firstName, this.lastName].join(' ').trim()
     }
   },
