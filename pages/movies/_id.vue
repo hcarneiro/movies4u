@@ -137,6 +137,7 @@ export default {
   },
   created() {
     this.id = this.$route.params.id
+    this.$store.dispatch('movies/clearData', this.id)
     this.$store.dispatch('movies/getMovie', this.id)
     this.$store.dispatch('movies/getCrew', this.id)
   },

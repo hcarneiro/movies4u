@@ -23,6 +23,11 @@ export const state = () => ({
 })
 
 export const mutations = {
+  unsetData(state) {
+    state.crew = undefined
+    state.cast = undefined
+    state.tvShow = {}
+  },
   setCrew(state, crew) {
     state.crew = crew
   },
@@ -103,6 +108,15 @@ export const mutations = {
 }
 
 export const actions = {
+  clearData({ commit, state }, id) {
+    if (state.tvShow && state.tvShow.id) {
+      const savedId = state.tvShow.id.toString()
+
+      if (savedId !== id) {
+        commit('unsetData')
+      }
+    }
+  },
   getCrew({ commit, rootState }, id) {
     return this.$axios.get(`https://api.themoviedb.org/3/tv/${id}/credits?api_key=${rootState.env.TMDB_API_KEY}`)
       .then((response) => {
