@@ -23,7 +23,7 @@ const User = database.db.define('user', {
   },
   password: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
   },
   auth_token: {
     type: Sequelize.STRING,
@@ -68,6 +68,14 @@ const User = database.db.define('user', {
     type: Sequelize.JSONB,
     allowNull: true,
     defaultValue: {}
+  },
+  facebookId: {
+    type: Sequelize.STRING,
+    unique: true
+  },
+  googleId: {
+    type: Sequelize.STRING,
+    unique: true
   }
 }, {
   paranoid: true,
