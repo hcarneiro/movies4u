@@ -11,6 +11,7 @@ const uuid = require('uuid/v4')
 const passport = require('passport')
 const { Nuxt, Builder } = require('nuxt')
 const authenticate = require('../config/authenticate')
+const User = require('../api/models/user')
 const app = express()
 
 // Import and Set Nuxt.js options
@@ -18,7 +19,6 @@ const config = require('../nuxt.config.js')
 config.dev = !(process.env.NODE_ENV === 'production')
 
 require('../api/models/index')
-const User = require('../api/models/user')
 
 app.use(helmet({
   hidePoweredBy: { setTo: 'The Geek Developers' }
@@ -52,12 +52,8 @@ passport.serializeUser((user, done) => {
   done(null, user.id)
 })
 
-passport.deserializeUser((userId, done) => {
-  User.find({
-    where: {
-      id: userId
-    }
-  }, (err, user) => {
+passport.deserializeUser((id, done) => {
+  User.findByPk(id, (err, user) => {
     done(err, user)
   })
 })

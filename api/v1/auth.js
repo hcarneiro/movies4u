@@ -165,7 +165,7 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
         },
         dynamicData: {
           firstName: user.firstName || '',
-          verificationUrl: verificationUrl,
+          verificationUrl,
           subject: 'Welcome! Confirm Your Email'
         }
       }

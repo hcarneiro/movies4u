@@ -13,7 +13,7 @@ Models.User.belongsToMany(Models.List, { through: Models.ListUser })
 
 // { force: true } - TO REMOVE ROW
 database.db.sync()
-  // .then(function () {
-  //   console.log('Migration completed.');
-  //   return Promise.resolve();
-  // });
+// .then(function () {
+//   console.log('Migration completed.');
+//   return Promise.resolve();
+// });
