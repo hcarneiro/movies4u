@@ -41,14 +41,6 @@ export const actions = {
         return response.data
       })
   },
-  loginFacebook({ dispatch }) {
-    return this.$axios.get('/api/v1/auth/facebook')
-      .then((response) => {
-        console.log(response)
-        // dispatch('onLogin', response.data.auth_token)
-        // return response.data
-      })
-  },
   logout({ commit }) {
     return this.$axios.post('/api/v1/auth/logout')
       .then(() => {

@@ -71,7 +71,7 @@
         </div>
       </div>
       <div class="navbar-end">
-        <b-dropdown position="is-bottom-left" aria-role="menu">
+        <b-dropdown v-if="!userAuthenticated" position="is-bottom-left" aria-role="menu">
           <a
             slot="trigger"
             class="navbar-item"
@@ -129,32 +129,40 @@
                       </span>
                     </div>
                     <div class="ss-social-buttons">
-                      <button
-                        class="button is-primary is-facebook"
-                        :class="{ 'is-disabled': isAuthenticating }"
-                        @click.prevent="loginFacebook"
+                      <a
+                        href="/api/v1/auth/facebook"
                       >
-                        <span v-if="isAuthenticating">Please wait...</span>
-                        <span v-else>
-                          <b-icon
-                            icon="facebook"
-                            size="is-small"
-                          /> Login with Facebook
-                        </span>
-                      </button>
-                      <button
-                        class="button is-primary is-google"
-                        :class="{ 'is-disabled': isAuthenticating }"
-                        @click.prevent="loginGoogle"
+                        <button
+                          type="button"
+                          class="button is-primary is-facebook"
+                          :class="{ 'is-disabled': isAuthenticating }"
+                        >
+                          <span v-if="isAuthenticating">Please wait...</span>
+                          <span v-else>
+                            <b-icon
+                              icon="facebook"
+                              size="is-small"
+                            /> Login with Facebook
+                          </span>
+                        </button>
+                      </a>
+                      <a
+                        href="/api/v1/auth/google"
                       >
-                        <span v-if="isAuthenticating">Please wait...</span>
-                        <span v-else>
-                          <b-icon
-                            icon="google"
-                            size="is-small"
-                          /> Login with Google
-                        </span>
-                      </button>
+                        <button
+                          type="button"
+                          class="button is-primary is-google"
+                          :class="{ 'is-disabled': isAuthenticating }"
+                        >
+                          <span v-if="isAuthenticating">Please wait...</span>
+                          <span v-else>
+                            <b-icon
+                              icon="google"
+                              size="is-small"
+                            /> Login with Google
+                          </span>
+                        </button>
+                      </a>
                     </div>
                   </div>
                 </footer>
@@ -162,7 +170,10 @@
             </form>
           </b-dropdown-item>
         </b-dropdown>
-        <nuxt-link to="/signup" class="navbar-item">
+        <a v-else class="navbar-item" @click.prevent="logout">
+          Logout
+        </a>
+        <nuxt-link v-if="!userAuthenticated" to="/signup" class="navbar-item">
           Signup
         </nuxt-link>
       </div>
@@ -171,6 +182,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   data() {
     return {
@@ -183,6 +196,16 @@ export default {
       isAuthenticating: false,
       remember: false
     }
+  },
+  computed: {
+    ...mapState({
+      user: (state) => {
+        return state.auth.currentUser
+      },
+      userAuthenticated: (state) => {
+        return state.auth.authenticated
+      }
+    })
   },
   mounted() {
     this.attachHandlers()
@@ -261,25 +284,8 @@ export default {
           }
         })
     },
-    loginFacebook() {
-      if (this.isAuthenticating) {
-        return
-      }
-
-      this.isAuthenticating = true
-      this.error = ''
-
-      this.$store.dispatch('auth/loginFacebook')
-      console.log('Facebook login')
-    },
-    loginGoogle() {
-      if (this.isAuthenticating) {
-        return
-      }
-
-      this.isAuthenticating = true
-      this.error = ''
-      console.log('Google login')
+    logout() {
+      this.$store.dispatch('auth/logout')
     }
   }
 }

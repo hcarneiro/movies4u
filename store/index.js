@@ -22,7 +22,11 @@ export const mutations = {
 }
 
 export const actions = {
-  nuxtServerInit({ commit, dispatch }) {
+  nuxtServerInit({ commit, dispatch }, { req }) {
+    if (req.session && req.user) {
+      dispatch('auth/onLogin', req.user.auth_token)
+    }
+
     // read runtime environment everytimes and set to store
     const env = {}
     env.NODE_ENV = process.env.NODE_ENV || 'development'

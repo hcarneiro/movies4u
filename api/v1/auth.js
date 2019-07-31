@@ -68,6 +68,7 @@ passport.use(new FacebookStrategy(
     clientID: !isDev ? process.env.FACEBOOK_CLIENT_ID : privateConfig.FACEBOOK.CLIENT_ID,
     clientSecret: !isDev ? process.env.FACEBOOK_CLIENT_SECRET : privateConfig.FACEBOOK.CLIENT_SECRET,
     callbackURL: 'http://localhost:3000/api/v1/auth/facebook/callback',
+    enableProof: true,
     profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
   }, (accessToken, refreshToken, profile, done) => {
     User.findOne({
@@ -143,7 +144,7 @@ router.post('/login', bruteforce.prevent, (req, res) => {
   passport.authenticate('local', (err, user, info) => {
     const errorMessage = 'Email/password combination does not match'
 
-    if (err) { 
+    if (err) {
       console.error(err)
     }
 
@@ -193,7 +194,7 @@ router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }))
 
 router.get('/facebook/callback', (req, res) => {
   passport.authenticate('facebook', (err, user, info) => {
-    if (err) { 
+    if (err) {
       console.error(err)
     }
 
@@ -215,12 +216,8 @@ router.get('/facebook/callback', (req, res) => {
 
     tokenPromise
       .then(() => {
-        const data = _.pick(user, ['id', 'facebookId', 'email', 'auth_token', 'createdAt'])
-        data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
-
         cookie.set(res, user.auth_token)
-
-        return res.send(data)
+        return res.redirect('/')
       })
       .catch((err) => {
         console.error(err)
@@ -237,7 +234,7 @@ router.get('/google', passport.authenticate('google', {
 
 router.get('/google/callback', (req, res) => {
   passport.authenticate('google', (err, user, info) => {
-    if (err) { 
+    if (err) {
       console.error(err)
     }
 
@@ -259,12 +256,8 @@ router.get('/google/callback', (req, res) => {
 
     tokenPromise
       .then(() => {
-        const data = _.pick(user, ['id', 'googleId', 'email', 'auth_token', 'createdAt'])
-        data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
-
         cookie.set(res, user.auth_token)
-
-        return res.send(data)
+        return res.redirect('/')
       })
       .catch((err) => {
         console.error(err)
@@ -458,8 +451,8 @@ router.post('/forgot', bruteforce.prevent, (req, res) => {
           },
           dynamicData: {
             firstName: user.firstName || '',
-            token: token,
-            resetUrl: resetUrl,
+            token,
+            resetUrl,
             subject: 'Reset account password'
           }
         }
