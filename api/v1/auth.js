@@ -13,6 +13,7 @@ const userSignupSchema = require(path.resolve(__dirname, './validators/userSignu
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
+const GoogleStrategy = require('passport-google-oauth2').Strategy
 
 // Models
 const User = require('../models/user')
@@ -34,68 +35,107 @@ try {
 const isDev = process.env.NODE_ENV !== 'production'
 
 // Strategies
-passport.use(new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-},
-(email, password, done) => {
-  return User.findOne({
-    attributes: ['id', 'password', 'email', 'auth_token', 'preferences', 'createdAt'],
-    where: {
-      email: email.toLowerCase()
-    }
-  })
-    .then((user) => {
-      if (!user) {
-        return done(null, false, { message: 'Email/password combination does not match' })
+passport.use(new LocalStrategy(
+  {
+    usernameField: 'email',
+    passwordField: 'password'
+  }, (email, password, done) => {
+    return User.findOne({
+      attributes: ['id', 'password', 'email', 'auth_token', 'preferences', 'createdAt'],
+      where: {
+        email: email.toLowerCase()
       }
-
-      if (!user.isValidPassword(password)) {
-        return done(null, false, { message: 'Email/password combination does not match' })
-      }
-
-      return done(null, user)
     })
-    .catch((err) => {
-      return done(err)
-    })
-}))
+      .then((user) => {
+        if (!user) {
+          return done(null, false, { message: 'Email/password combination does not match' })
+        }
 
-passport.use(new FacebookStrategy({
-  clientID: !isDev ? process.env.FACEBOOK_CLIENT_ID : privateConfig.FACEBOOK.CLIENT_ID,
-  clientSecret: !isDev ? process.env.FACEBOOK_CLIENT_SECRET : privateConfig.FACEBOOK.CLIENT_SECRET,
-  callbackURL: 'http://localhost:3000/api/v1/auth/facebook/callback',
-  profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
-},
-(accessToken, refreshToken, profile, done) => {
-  User.findOne({
-    where: {
-      facebookId: profile.id
-    }
-  })
-    .then((user) => {
-      if (user) {
+        if (!user.isValidPassword(password)) {
+          return done(null, false, { message: 'Email/password combination does not match' })
+        }
+
         return done(null, user)
-      }
-
-      const newUser = database.db.models.user.build({
-        firstName: profile.name.givenName,
-        lastName: profile.name.familyName,
-        email: profile.emails[0].value
       })
+      .catch((err) => {
+        return done(err)
+      })
+  }
+))
 
-      newUser.facebookId = profile.id
-      newUser.auth_token = accessToken
+passport.use(new FacebookStrategy(
+  {
+    clientID: !isDev ? process.env.FACEBOOK_CLIENT_ID : privateConfig.FACEBOOK.CLIENT_ID,
+    clientSecret: !isDev ? process.env.FACEBOOK_CLIENT_SECRET : privateConfig.FACEBOOK.CLIENT_SECRET,
+    callbackURL: 'http://localhost:3000/api/v1/auth/facebook/callback',
+    profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
+  }, (accessToken, refreshToken, profile, done) => {
+    User.findOne({
+      where: {
+        facebookId: profile.id
+      }
+    })
+      .then((user) => {
+        if (user) {
+          return done(null, user)
+        }
 
-      return newUser.save()
-        .then(() => {
-          return done(null, newUser)
+        const newUser = database.db.models.user.build({
+          firstName: profile.name.givenName,
+          lastName: profile.name.familyName,
+          email: profile.emails[0].value
         })
+
+        newUser.facebookId = profile.id
+        newUser.auth_token = accessToken
+
+        return newUser.save()
+          .then(() => {
+            return done(null, newUser)
+          })
+      })
+      .catch((err) => {
+        return done(err)
+      })
+  }
+))
+
+passport.use(new GoogleStrategy(
+  {
+    clientID: !isDev ? process.env.GOOGLE_CLIENT_ID : privateConfig.GOOGLE.CLIENT_ID,
+    clientSecret: !isDev ? process.env.GOOGLE_CLIENT_SECRET : privateConfig.GOOGLE.CLIENT_SECRET,
+    callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
+    profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
+  }, (accessToken, refreshToken, profile, done) => {
+    User.findOne({
+      where: {
+        googleId: profile.id
+      }
     })
-    .catch((err) => {
-      return done(err)
-    })
-}))
+      .then((user) => {
+        if (user) {
+          return done(null, user)
+        }
+
+        const newUser = database.db.models.user.build({
+          firstName: profile.given_name,
+          lastName: profile.family_name,
+          email: profile.email
+        })
+
+        newUser.googleId = profile.id
+        newUser.auth_token = accessToken
+
+        return newUser.save()
+          .then(() => {
+            return done(null, newUser)
+          })
+      })
+      .catch((err) => {
+        return done(err)
+      })
+  }
+))
 
 const router = express.Router()
 
@@ -176,6 +216,50 @@ router.get('/facebook/callback', (req, res) => {
     tokenPromise
       .then(() => {
         const data = _.pick(user, ['id', 'facebookId', 'email', 'auth_token', 'createdAt'])
+        data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
+
+        cookie.set(res, user.auth_token)
+
+        return res.send(data)
+      })
+      .catch((err) => {
+        console.error(err)
+        return res.status(400).send({
+          message: err.description || err.message || err
+        })
+      })
+  })(req, res)
+})
+
+router.get('/google', passport.authenticate('google', {
+  scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
+}))
+
+router.get('/google/callback', (req, res) => {
+  passport.authenticate('google', (err, user, info) => {
+    if (err) { 
+      console.error(err)
+    }
+
+    if (!user) {
+      return res.status(401).send({
+        message: info,
+        error: err
+      })
+    }
+
+    user.lastAuthenticatedAt = Sequelize.literal('CURRENT_TIMESTAMP')
+    let tokenPromise
+
+    if (user.auth_token) {
+      tokenPromise = user.save()
+    } else {
+      tokenPromise = user.generateAuthToken()
+    }
+
+    tokenPromise
+      .then(() => {
+        const data = _.pick(user, ['id', 'googleId', 'email', 'auth_token', 'createdAt'])
         data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
 
         cookie.set(res, user.auth_token)
