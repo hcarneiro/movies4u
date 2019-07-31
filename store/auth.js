@@ -36,12 +36,17 @@ export const actions = {
     credentials = credentials || {}
 
     return this.$axios.post('/api/v1/auth/login', credentials)
-      .then((res) => {
-        return res
-      })
       .then((response) => {
         dispatch('onLogin', response.data.auth_token, credentials)
         return response.data
+      })
+  },
+  loginFacebook({ dispatch }) {
+    return this.$axios.get('/api/v1/auth/facebook')
+      .then((response) => {
+        console.log(response)
+        // dispatch('onLogin', response.data.auth_token)
+        // return response.data
       })
   },
   logout({ commit }) {
