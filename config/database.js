@@ -13,6 +13,9 @@ const DATABASE_URL = !dev ? process.env.DATABASE_URL : config.DATABASE_URL
 const database = {}
 
 database.redis = redis.createClient(!dev ? process.env.REDIS_URL : config.redis)
+database.redis.on('error', function (error) {
+  console.error('[REDIS ERROR]', error)
+})
 
 const operationsColors = {
   INSERT: 32, // green
