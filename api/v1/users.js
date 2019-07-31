@@ -11,8 +11,7 @@ router.get('/', (req, res) => {
     user.auth_token = req.auth_token
 
     res.send({
-      user,
-      session: req.session
+      user
     })
   }
 })
