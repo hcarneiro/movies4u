@@ -111,7 +111,7 @@ export default {
         return state.movies.topRatedList
       },
       bannerMovies: (state) => {
-        return state.movies.topRatedList.slice(0, 4)
+        return state.movies.topRatedList.slice(0, 5)
       },
       page: (state) => {
         return state.movies.topRatedPage

@@ -111,7 +111,7 @@ export default {
         return state.movies.list
       },
       bannerMovies: (state) => {
-        return state.movies.list.slice(0, 4)
+        return state.movies.list.slice(0, 5)
       },
       page: (state) => {
         return state.movies.page

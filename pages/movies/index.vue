@@ -111,7 +111,7 @@ export default {
         return state.movies.popularList
       },
       bannerMovies: (state) => {
-        return state.movies.popularList.slice(0, 4)
+        return state.movies.popularList.slice(0, 5)
       },
       page: (state) => {
         return state.movies.popularPage

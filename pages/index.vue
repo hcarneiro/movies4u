@@ -112,7 +112,7 @@ export default {
         return state.movies.trendingList
       },
       bannerMovies: (state) => {
-        return state.movies.trendingList.slice(0, 4)
+        return state.movies.trendingList.slice(0, 5)
       },
       page: (state) => {
         return state.movies.trendingPage

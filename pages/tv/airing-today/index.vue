@@ -111,7 +111,7 @@ export default {
         return state.tv.airingTodayList
       },
       bannerTvShows: (state) => {
-        return state.tv.airingTodayList.slice(0, 4)
+        return state.tv.airingTodayList.slice(0, 5)
       },
       page: (state) => {
         return state.tv.airingTodayList

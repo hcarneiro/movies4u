@@ -111,7 +111,7 @@ export default {
         return state.tv.onTvList
       },
       bannerTvShows: (state) => {
-        return state.tv.onTvList.slice(0, 4)
+        return state.tv.onTvList.slice(0, 5)
       },
       page: (state) => {
         return state.tv.onTvList

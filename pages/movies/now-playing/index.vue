@@ -111,7 +111,7 @@ export default {
         return state.movies.nowPlayingList
       },
       bannerMovies: (state) => {
-        return state.movies.nowPlayingList.slice(0, 4)
+        return state.movies.nowPlayingList.slice(0, 5)
       },
       page: (state) => {
         return state.movies.nowPlayingPage

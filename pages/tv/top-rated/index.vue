@@ -111,7 +111,7 @@ export default {
         return state.tv.topRatedList
       },
       bannerTvShows: (state) => {
-        return state.tv.topRatedList.slice(0, 4)
+        return state.tv.topRatedList.slice(0, 5)
       },
       page: (state) => {
         return state.tv.topRatedPage

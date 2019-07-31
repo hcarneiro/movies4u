@@ -111,7 +111,7 @@ export default {
         return state.tv.popularList
       },
       bannerTvShows: (state) => {
-        return state.tv.popularList.slice(0, 4)
+        return state.tv.popularList.slice(0, 5)
       },
       page: (state) => {
         return state.tv.popularPage
