@@ -1,5 +1,5 @@
 const express = require('express')
-const expressValidator = require('express-validator')
+const session = require('express-session')
 const cors = require('cors')
 const helmet = require('helmet')
 const busboy = require('connect-busboy')
@@ -7,15 +7,18 @@ const bodyParser = require('body-parser')
 const busboyBodyParser = require('busboy-body-parser')
 const cookieParser = require('cookie-parser')
 const consola = require('consola')
+const uuid = require('uuid/v4')
+const passport = require('passport')
 const { Nuxt, Builder } = require('nuxt')
+const authenticate = require('../config/authenticate')
 const app = express()
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
-const authenticate = require('../config/authenticate')
 config.dev = !(process.env.NODE_ENV === 'production')
 
 require('../api/models/index')
+const User = require('../api/models/user')
 
 app.use(helmet({
   hidePoweredBy: { setTo: 'The Geek Developers' }
@@ -30,7 +33,34 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '1000mb', parameterLimit:
 app.use(bodyParser.text())
 app.use(busboyBodyParser())
 app.use(cookieParser())
-app.use(expressValidator())
+
+// Express Session
+app.use(session({
+  genid: () => {
+    return uuid()
+  },
+  secret: 'secret',
+  saveUninitialized: true,
+  resave: true
+}))
+
+// Passport init
+app.use(passport.initialize())
+app.use(passport.session())
+
+passport.serializeUser((user, done) => {
+  done(null, user.id)
+})
+
+passport.deserializeUser((userId, done) => {
+  User.find({
+    where: {
+      id: userId
+    }
+  }, (err, user) => {
+    done(err, user)
+  })
+})
 
 app.use(authenticate.loadUser)
 

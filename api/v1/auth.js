@@ -1,93 +1,75 @@
 const path = require('path')
 const _ = require('lodash')
 const express = require('express')
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 const casual = require('casual')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const md5 = require('md5')
-const async = require('async')
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op
-const cookie = require('../../config/cookie')
-const passports = require('../../config/passport')
+const { checkSchema, validationResult } = require('express-validator')
+const userSignupSchema = require(path.resolve(__dirname, './validators/userSignup'))
+
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+
+// Models
 const User = require('../models/user')
+
+// Configs
+const cookie = require('../../config/cookie')
 const database = require('../../config/database')
 const config = require('../../config/local-config.json')
 const email = require('../../config/email')
 const bruteforce = require('../../config/bruteforce')
-const userSignupSchema = require(path.resolve(__dirname, './validators/userSignup'))
+
 const isDev = process.env.NODE_ENV !== 'production'
+
+// Strategies
+passport.use(new LocalStrategy(
+  {
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  (email, password, done) => {
+    return User.findOne({
+      attributes: ['id', 'password', 'email', 'auth_token', 'preferences', 'createdAt'],
+      where: {
+        email: email.toLowerCase()
+      }
+    })
+      .then((user) => {
+        if (!user) {
+          return done(null, false, { message: 'Email/password combination does not match' })
+        }
+
+        if (!user.isValidPassword(password)) {
+          return done(null, false, { message: 'Email/password combination does not match' })
+        }
+
+        return done(null, user)
+      })
+      .catch((err) => {
+        return done(err)
+      })
+  }
+))
 
 const router = express.Router()
 
-router.post('/login', bruteforce.prevent, function (req, res) {
-  req.passport = passports.get('localLogin')
+router.post('/login', bruteforce.prevent, (req, res) => {
+  passport.authenticate('local', (err, user, info) => {
+    const errorMessage = 'Email/password combination does not match'
 
-  const email = req.body.email
-  const password = req.body.password
-  const createSession = !!req.body.session // Flag to create a session if needed
-  const passport = !!req.body.passport // Flag store passport under the session (only works with ^^)
-  let user
-  let deviceIsTrusted
-  let errorMessage
-
-  // Only reuse the given user when a passport is being used
-  if (!passport) {
-    delete req.user
-    delete req.session
-  }
-
-  if (!email || !password) {
-    const message = `${!email ? 'Email' : 'Password'} is required`
-
-    return res.status(400).format({
-      'application/json': () => {
-        res.send({
-          message
-        })
-      },
-      'text/html': () => {
-        // Display interactive login
-        req.body.error = message
-        res.render('login', req.body)
-      }
-    })
-  }
-
-  return User.findOne({
-    attributes: ['id', 'password', 'email', 'auth_token', 'preferences', 'createdAt'],
-    where: {
-      email: email.toLowerCase()
-    }
-  }).then((dbUser) => {
-    const isValidPassword = dbUser && dbUser.isValidPassword(password)
-    const isValidPasswordToken = dbUser && password && passport && dbUser.auth_token && password === dbUser.auth_token
-
-    if (isValidPassword || isValidPasswordToken) {
-      user = dbUser
-
-      if (isValidPasswordToken) {
-        deviceIsTrusted = true
-      }
+    if (err) { 
+      console.error(err)
     }
 
-    proceed()
-  }, (err) => {
-    proceed(err)
-  })
-
-  function proceed(err) {
-    if (err || !user) {
-      errorMessage = errorMessage || 'Email/password combination does not match'
-
-      if (err) {
-        console.error(err)
-      }
-
+    if (!user) {
       return res.status(401).format({
         'application/json': () => {
           res.send({
-            message: errorMessage,
+            message: info || errorMessage,
             error: err
           })
         },
@@ -98,92 +80,52 @@ router.post('/login', bruteforce.prevent, function (req, res) {
       })
     }
 
-    async.waterfall([
-      function generateAuthToken(next) {
-        user.lastAuthenticatedAt = Sequelize.literal('CURRENT_TIMESTAMP')
+    user.lastAuthenticatedAt = Sequelize.literal('CURRENT_TIMESTAMP')
+    let tokenPromise
 
-        if (user.auth_token) {
-          return user.save().then(() => {
-            next()
-          }, next)
+    if (user.auth_token) {
+      tokenPromise = user.save()
+    } else {
+      tokenPromise = user.generateAuthToken()
+    }
+
+    tokenPromise
+      .then(() => {
+        if (req.body.remember === false) {
+          // @TODO:
+          // What to do if Remember Me is not checked
         }
 
-        user.generateAuthToken().then(() => {
-          next()
-        }, next)
-      },
-      function (next) {
-        if (!createSession) {
-          return next()
+        const data = _.pick(user, ['id', 'email', 'auth_token', 'createdAt'])
+        data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
+
+        if (req.body.redirect) {
+          return res.redirect(req.body.redirect)
         }
+        cookie.set(res, user.auth_token)
 
-        req.user = user
-        passports.createSessionIfNeeded(req, res)
-          .then(() => {
-            // This flag is used to store the login under zeusLogin
-            if (passport) {
-              req.passport = passports.get('zeusLogin')
-              return passports.storeDetails(req, {
-                email: user.email,
-                auth_token: user.auth_token
-              }).then(() => {
-                next()
-              })
-            }
-
-            next()
-          }, next)
-      }
-    ], (err) => {
-      if (err) {
+        return res.send(data)
+      })
+      .catch((err) => {
         console.error(err)
         return res.status(400).send({
           message: err.description || err.message || err
         })
-      }
-
-      const authToken = req.session && req.session.auth_token || user.auth_token
-      const cookieOptions = {}
-
-      if (req.body.remember === false) {
-        cookieOptions.expires = 0 // session cookie. expires when browser is closed.
-      }
-
-      // Set the cookie to authenticate requests
-      cookie.set(res, authToken, cookieOptions)
-
-      const data = _.pick(user, ['id', 'email', 'auth_token', 'createdAt'])
-      data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
-      data.trusted = !!deviceIsTrusted
-
-      if (req.session) {
-        data.session = req.session
-        data.auth_token = req.session.auth_token
-      }
-
-      if (req.body.redirect) {
-        return res.redirect(req.body.redirect)
-      }
-
-      res.send(data)
-    })
-  };
+      })
+  })(req, res)
 })
 
-router.post('/logout', function onLogout(req, res) {
-  if (req.session) {
-    req.session.destroy()
-  }
-
-  // Unset auth token from the cookies
+router.post('/logout', (req, res) => {
+  req.logout()
+  req.auth_token = undefined
   cookie.set(res, '')
 
-  res.send()
+  res.send({
+    message: 'User logged out!'
+  })
 })
 
-router.post('/signup', function signupUser(req, res) {
-  req.checkBody(userSignupSchema)
-
+router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
   req.db = database.db
 
   if (!req.db) {
@@ -192,8 +134,9 @@ router.post('/signup', function signupUser(req, res) {
     })
   }
 
-  const errors = req.validationErrors()
-  if (errors) {
+  const errors = validationResult(req).array()
+
+  if (errors && errors.length) {
     return res.status(400).send({
       message: 'Validation failed',
       errors
@@ -293,8 +236,6 @@ router.post('/signup', function signupUser(req, res) {
 })
 
 router.post('/verify/:token', (req, res) => {
-  console.log('PARAMS', req.params)
-
   database.db.models.user.findOne({
     attributes: ['id', 'firstName', 'lastName', 'email', 'auth_token'],
     where: {
@@ -304,7 +245,6 @@ router.post('/verify/:token', (req, res) => {
       }
     }
   }).then((user) => {
-    console.log('USER', user)
     if (!user) {
       return Promise.reject('Invalid or expired token')
     }
