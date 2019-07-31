@@ -8,6 +8,9 @@ $brand-warning: hsl(48, 100%, 67%) !default;
 $brand-danger: hsl(348, 100%, 61%) !default;
 $brand-default: hsl(0, 0%, 96%) !default;
 
+$brand-facebook: #4267b2 !default;
+$brand-facebook-hover: #365899 !default;
+
 $primary: $brand-primary;
 $primary-invert: findColorInvert($primary);
 $link: $brand-primary;

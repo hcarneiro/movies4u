@@ -20,7 +20,6 @@
         aria-expanded="false"
         data-target="ss-main-menu"
         :class="{ 'is-active': burgerIsActive }"
-        @click="toggleBurgerMenu"
       >
         <span aria-hidden="true" />
         <span aria-hidden="true" />
@@ -110,16 +109,54 @@
                   </b-checkbox>
                 </section>
                 <footer class="modal-card-foot">
-                  <button
-                    class="button is-primary"
-                    :class="{ 'is-disabled': isAuthenticating }"
-                  >
-                    <span v-if="isAuthenticating">Please wait...</span>
-                    <span v-else>Login</span>
-                  </button>
-                  <nuxt-link tag="a" :to="'/forgot-password'">
-                    Forgot password?
-                  </nuxt-link>
+                  <div class="ss-local-login">
+                    <button
+                      class="button is-primary"
+                      :class="{ 'is-disabled': isAuthenticating }"
+                    >
+                      <span v-if="isAuthenticating">Please wait...</span>
+                      <span v-else>Login</span>
+                    </button>
+                    <nuxt-link tag="a" :to="'/forgot-password'">
+                      Forgot password?
+                    </nuxt-link>
+                  </div>
+
+                  <div class="ss-social-login">
+                    <div class="ss-divider">
+                      <span>
+                        OR
+                      </span>
+                    </div>
+                    <div class="ss-social-buttons">
+                      <button
+                        class="button is-primary is-facebook"
+                        :class="{ 'is-disabled': isAuthenticating }"
+                        @click.prevent="loginFacebook"
+                      >
+                        <span v-if="isAuthenticating">Please wait...</span>
+                        <span v-else>
+                          <b-icon
+                            icon="facebook"
+                            size="is-small"
+                          /> Login with Facebook
+                        </span>
+                      </button>
+                      <button
+                        class="button is-primary is-google"
+                        :class="{ 'is-disabled': isAuthenticating }"
+                        @click.prevent="loginGoogle"
+                      >
+                        <span v-if="isAuthenticating">Please wait...</span>
+                        <span v-else>
+                          <b-icon
+                            icon="google"
+                            size="is-small"
+                          /> Login with Google
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 </footer>
               </div>
             </form>
@@ -134,8 +171,6 @@
 </template>
 
 <script>
-import $ from 'jquery'
-
 export default {
   data() {
     return {
@@ -153,11 +188,25 @@ export default {
     this.attachHandlers()
   },
   methods: {
-    toggleBurgerMenu(value) {
-      if (typeof value === 'undefined' || typeof value !== 'boolean') {
-        value = !this.burgerIsActive
+    burgerMenuHandler() {
+      // Get all "navbar-burger" elements
+      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0)
+
+      // Check if there are any navbar burgers
+      if ($navbarBurgers.length > 0) {
+        // Add a click event on each of them
+        $navbarBurgers.forEach((el) => {
+          el.addEventListener('click', () => {
+            // Get the target from the "data-target" attribute
+            const target = el.dataset.target
+            const $target = document.getElementById(target)
+
+            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            el.classList.toggle('is-active')
+            $target.classList.toggle('is-active')
+          })
+        })
       }
-      this.burgerIsActive = value
     },
     onScroll() {
       const top = window.pageYOffset
@@ -169,10 +218,7 @@ export default {
       }
     },
     attachHandlers() {
-      $(document).on('click', this.menuLinks, () => {
-        this.toggleBurgerMenu(false)
-      })
-
+      this.burgerMenuHandler()
       window.addEventListener('scroll', this.onScroll)
     },
     login() {
@@ -214,6 +260,26 @@ export default {
             this.error = 'Could not authenticate. Please try later.'
           }
         })
+    },
+    loginFacebook() {
+      if (this.isAuthenticating) {
+        return
+      }
+
+      this.isAuthenticating = true
+      this.error = ''
+
+      this.$store.dispatch('auth/loginFacebook')
+      console.log('Facebook login')
+    },
+    loginGoogle() {
+      if (this.isAuthenticating) {
+        return
+      }
+
+      this.isAuthenticating = true
+      this.error = ''
+      console.log('Google login')
     }
   }
 }
