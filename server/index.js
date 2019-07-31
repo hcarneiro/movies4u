@@ -53,9 +53,13 @@ passport.serializeUser((user, done) => {
 })
 
 passport.deserializeUser((id, done) => {
-  User.findByPk(id, (err, user) => {
-    done(err, user)
-  })
+  User.findByPk(id)
+    .then((user) => {
+      done(null, user)
+    })
+    .catch((err) => {
+      done(err)
+    })
 })
 
 app.use(authenticate.loadUser)
