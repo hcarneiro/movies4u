@@ -1,5 +1,5 @@
 {
-  "DATABASE_URL": "postgres://hcarneiro@localhost:5433/m4udb",
+  "DATABASE_URL": "postgres://hcarneiro:password@localhost:5433/m4udb",
   "query_logging": true,
   "redis": {
     "host": "127.0.0.1"
