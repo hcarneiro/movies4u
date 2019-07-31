@@ -11,7 +11,7 @@
               </h1>
               <h2 class="subtitle">
                 <nuxt-link
-                  v-for="(tag, idx) in getTags(movie.genre_ids, genres)"
+                  v-for="(tag, idx) in tags(movie.genre_ids, genres)"
                   :key="idx"
                   :to="`/genres/${tag.id}/movies`"
                 >
@@ -63,7 +63,7 @@
             :id="movie.id"
             :title="movie | movieTitle"
             :release-date="movie | movieDate"
-            :tags="getTags(movie.genre_ids, genres)"
+            :tags="tags(movie.genre_ids, genres)"
             :rating="movie.vote_average"
             :thumb="movie.poster_path | getBackdrop"
             base-url="/movies"
@@ -102,7 +102,7 @@ export default {
           clickable: true
         }
       },
-      getTags: getTags
+      tags: getTags
     }
   },
   computed: {
