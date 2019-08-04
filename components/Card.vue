@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-2by3">
-        <nuxt-link :to="`${baseUrl}/${id}`">
+        <nuxt-link :to="`${baseUrl}/${slug}-${id}`">
           <img v-if="thumb" :src="thumb" alt="title">
           <img v-else src="~assets/no-poster.png" alt="No poster available">
         </nuxt-link>
@@ -43,7 +43,7 @@
             </no-ssr>
           </div>
           <div class="level-right">
-            <nuxt-link tag="button" :to="`${baseUrl}/${id}`" class="button is-small is-rounded">
+            <nuxt-link tag="a" :to="`${baseUrl}/${slug}-${id}`" class="button is-small is-rounded">
               More info
             </nuxt-link>
           </div>
@@ -62,6 +62,10 @@ export default {
       required: true
     },
     title: {
+      type: String,
+      required: true
+    },
+    slug: {
       type: String,
       required: true
     },
