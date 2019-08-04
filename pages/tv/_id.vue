@@ -111,7 +111,7 @@
             {{ show.status }}
           </p>
           <h6 class="title is-6">
-           First aired
+            First aired
           </h6>
           <p class="subtitle is-size-6 is-spaced">
             {{ show | movieDate | formatDate }}
