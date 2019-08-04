@@ -22,23 +22,18 @@ export const mutations = {
 }
 
 export const actions = {
-  nuxtServerInit({ commit, dispatch }, { req }) {
-    if (req.session && req.user) {
-      dispatch('auth/onLogin', req.user.auth_token)
-    }
-
+  async nuxtServerInit({ commit, dispatch }, { req }) {
     // read runtime environment everytimes and set to store
     const env = {}
     env.NODE_ENV = process.env.NODE_ENV || 'development'
     env.TMDB_API_KEY = process.env.TMDB_API_KEY || privateConfig.TMDB_API_KEY
     commit('setEnv', env)
 
-    dispatch('movies/getMovieGenres')
-      .then((response) => {
-        commit('setGenres', response.data.genres)
-      })
-      .catch((error) => {
-        throw new Error(error)
-      })
+    if (req.session && req.user) {
+      await dispatch('auth/onLogin', req.user.auth_token)
+    }
+
+    const response = await dispatch('movies/getMovieGenres')
+    commit('setGenres', response.data.genres)
   }
 }
