@@ -3,7 +3,7 @@
     <section class="ss-top-hero is-smaller" :style="`background-image: url(${getBackground(movie.backdrop_path)})`">
       <div class="ss-hero-screen" />
     </section>
-    <div class="container ss-detail-container">
+    <div v-if="isReady" class="container ss-detail-container">
       <div class="ss-detail-heading-holder">
         <div v-if="movie.poster_path" class="ss-poster-holder">
           <p class="image is-2by3 ss-movie-poster">
@@ -84,13 +84,74 @@
           </div>
         </div>
       </div>
+      <div class="ss-detail-cast-holder columns is-variable is-8">
+        <div class="column is-three-quarters">
+          <h4 class="title is-4">
+            Top Billed Cast
+          </h4>
+          <div class="columns is-multiline is-variable is-2-tablet is-4-desktop ss-cast-card-holder">
+            <div v-for="(item, index) in cast" :key="index" class="column is-half-mobile is-one-fifth-tablet">
+              <cast-card
+                :id="item.id"
+                :name="item.name"
+                :character="item.character"
+                :profile-image="getBackground(item.profile_path)"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-quarter ss-facts-holder">
+          <h4 class="title is-4">
+            Facts
+          </h4>
+          <h6 class="title is-6">
+            Status
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ movie.status }}
+          </p>
+          <h6 class="title is-6">
+            Release date
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ movie | formatDate }}
+          </p>
+          <h6 class="title is-6">
+            Original language
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ getLanguage(movie.original_language) }}
+          </p>
+          <h6 class="title is-6">
+            Budget
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ movie.budget | moneyConvert }}
+          </p>
+          <h6 class="title is-6">
+            Revenue
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ movie.revenue | moneyConvert }}
+          </p>
+          <a
+            v-if="movie.homepage"
+            class="button is-rounded"
+            :href="movie.homepage"
+            target="_blank"
+          >
+            Visit website
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { map, filter, uniqBy } from 'lodash'
+import { map, filter, uniqBy, find } from 'lodash'
 import { mapState } from 'vuex'
+import CastCard from '~/components/CastCard'
 
 export default {
   head() {
@@ -103,6 +164,9 @@ export default {
       ]
     }
   },
+  components: {
+    CastCard
+  },
   data() {
     return {
       id: undefined,
@@ -110,7 +174,8 @@ export default {
       fillColor: {
         color: '#00d1b2'
       },
-      emptyFillColor: 'rgba(0, 209, 178, 0.3)'
+      emptyFillColor: 'rgba(0, 209, 178, 0.3)',
+      isReady: false
     }
   },
   computed: {
@@ -119,7 +184,9 @@ export default {
         return state.movies.movie
       },
       cast: (state) => {
-        return state.movies.cast
+        if (state.movies.cast && state.movies.cast.length) {
+          return state.movies.cast.slice(0, 5)
+        }
       },
       crew: (state) => {
         const crew = filter(state.movies.crew, (item) => {
@@ -127,11 +194,18 @@ export default {
         })
 
         return uniqBy(crew, 'job')
+      },
+      languages: (state) => {
+        return state.languages
       }
     })
   },
   watch: {
-    movie() {
+    movie(value) {
+      if (value) {
+        this.isReady = true
+      }
+
       this.getRatingSettings()
     }
   },
@@ -197,6 +271,17 @@ export default {
       }
 
       this.emptyFillColor = 'rgba(0, 209, 178, 0.3)'
+    },
+    getLanguage(iso) {
+      const language = find(this.languages, (lang) => {
+        return lang.iso_639_1 === iso
+      })
+
+      if (!language) {
+        return
+      }
+
+      return language.english_name
     }
   }
 }

@@ -242,6 +242,18 @@
   }
 }
 
+.ss-detail-cast-holder {
+  padding-top: 40px;
+
+  @include above ($desktop-size) {
+    padding-top: 130px;
+  }
+
+  .ss-cast-card-holder {
+    display: flex;
+  }
+}
+
 @include below ($tablet-size) {
   .level {
     display: flex;

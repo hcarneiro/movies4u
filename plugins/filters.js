@@ -37,3 +37,11 @@ Vue.filter('timeConvert', (n) => {
   const rminutes = Math.round(minutes)
   return `${rhours}h ${rminutes}m`
 })
+
+Vue.filter('moneyConvert', (n) => {
+  if (!n) {
+    return '-'
+  }
+
+  return `$${n.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
+})

@@ -9,7 +9,8 @@ export const state = () => ({
   env: {
     NODE_ENV: 'development'
   },
-  genres: undefined
+  genres: undefined,
+  languages: undefined
 })
 
 export const mutations = {
@@ -18,6 +19,9 @@ export const mutations = {
   },
   setGenres(state, genres) {
     state.genres = genres
+  },
+  setLanguages(state, languages) {
+    state.languages = languages
   }
 }
 
@@ -35,5 +39,10 @@ export const actions = {
 
     const response = await dispatch('movies/getMovieGenres')
     commit('setGenres', response.data.genres)
+    const langResponse = await dispatch('getLanguages')
+    commit('setLanguages', langResponse.data)
+  },
+  getLanguages({ state }) {
+    return this.$axios.get(`https://api.themoviedb.org/3/configuration/languages?api_key=${state.env.TMDB_API_KEY}`)
   }
 }

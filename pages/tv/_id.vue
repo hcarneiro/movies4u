@@ -3,7 +3,7 @@
     <section class="ss-top-hero is-smaller" :style="`background-image: url(${getBackground(show.backdrop_path)})`">
       <div class="ss-hero-screen" />
     </section>
-    <div class="container ss-detail-container">
+    <div v-if="isReady" class="container ss-detail-container">
       <div class="ss-detail-heading-holder">
         <div v-if="show.poster_path" class="ss-poster-holder">
           <p class="image is-2by3 ss-movie-poster">
@@ -84,13 +84,76 @@
           </div>
         </div>
       </div>
+      <div class="ss-detail-cast-holder columns is-variable is-8">
+        <div class="column is-three-quarters">
+          <h4 class="title is-4">
+            Top Billed Cast
+          </h4>
+          <div class="columns is-multiline is-variable is-2-tablet is-4-desktop ss-cast-card-holder">
+            <div v-for="(item, index) in cast" :key="index" class="column is-half-mobile is-one-fifth-tablet">
+              <cast-card
+                :id="item.id"
+                :name="item.name"
+                :character="item.character"
+                :profile-image="getBackground(item.profile_path)"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-quarter ss-facts-holder">
+          <h4 class="title is-4">
+            Facts
+          </h4>
+          <h6 class="title is-6">
+            Status
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ show.status }}
+          </p>
+          <h6 class="title is-6">
+           First aired
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ show | movieDate | formatDate }}
+          </p>
+          <template v-is="show.networks && show.networks.length">
+            <h6 class="title is-6">
+              Netwrok
+            </h6>
+            <p class="subtitle is-size-6 is-spaced">
+              {{ getNetwork(show) }}
+            </p>
+          </template>
+          <h6 class="title is-6">
+            Original language
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ getLanguage(show.original_language) }}
+          </p>
+          <h6 class="title is-6">
+            Type
+          </h6>
+          <p class="subtitle is-size-6 is-spaced">
+            {{ show.type }}
+          </p>
+          <a
+            v-if="show.homepage"
+            class="button is-rounded"
+            :href="show.homepage"
+            target="_blank"
+          >
+            Visit website
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { map } from 'lodash'
+import { map, find } from 'lodash'
 import { mapState } from 'vuex'
+import CastCard from '~/components/CastCard'
 
 export default {
   head() {
@@ -103,6 +166,9 @@ export default {
       ]
     }
   },
+  components: {
+    CastCard
+  },
   data() {
     return {
       id: undefined,
@@ -110,7 +176,8 @@ export default {
       fillColor: {
         color: '#00d1b2'
       },
-      emptyFillColor: 'rgba(0, 209, 178, 0.3)'
+      emptyFillColor: 'rgba(0, 209, 178, 0.3)',
+      isReady: false
     }
   },
   computed: {
@@ -119,12 +186,21 @@ export default {
         return state.tv.tvShow
       },
       cast: (state) => {
-        return state.tv.cast
+        if (state.tv.cast && state.tv.cast.length) {
+          return state.tv.cast.slice(0, 5)
+        }
+      },
+      languages: (state) => {
+        return state.languages
       }
     })
   },
   watch: {
-    show() {
+    show(value) {
+      if (value) {
+        this.isReady = true
+      }
+
       this.getRatingSettings()
     }
   },
@@ -190,6 +266,24 @@ export default {
       }
 
       this.emptyFillColor = 'rgba(0, 209, 178, 0.3)'
+    },
+    getLanguage(iso) {
+      const language = find(this.languages, (lang) => {
+        return lang.iso_639_1 === iso
+      })
+
+      if (!language) {
+        return
+      }
+
+      return language.english_name
+    },
+    getNetwork(show) {
+      if (!show || !show.networks || !show.networks.length) {
+        return '-'
+      }
+
+      return show.networks[0].name
     }
   }
 }
