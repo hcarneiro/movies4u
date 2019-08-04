@@ -1,0 +1,24 @@
+.circle {
+  display: flex !important;
+  padding: 4px;
+  border-radius: 200px;
+  background-color: darken($brand-secondary, 15%);
+
+  .circle-percent-text-body {
+    top: 0;
+    left: 0;
+  }
+
+  .percent-text {
+    color: #ffffff;
+  }
+
+  &.is-light {
+    background-color: #ffffff;
+    box-shadow: 0px 0px 40px 40px rgba(0, 0, 0, 0.6);
+
+    .percent-text {
+      color: darken($brand-secondary, 15%);
+    }
+  }
+}

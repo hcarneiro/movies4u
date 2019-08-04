@@ -1,74 +1,29 @@
 <template>
   <div>
-    <nav
-      class="navbar header has-shadow is-primary"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div class="navbar-brand">
-        <a
-          class="navbar-item"
-          href="/"
-        >
-          <img
-            src="~assets/buefy.png"
-            alt="Buefy"
-            height="28"
-          >
-        </a>
+    <navbar />
 
-        <div class="navbar-burger">
-          <span />
-          <span />
-          <span />
-        </div>
-      </div>
-    </nav>
-
-    <section class="main-content columns">
-      <aside class="column is-2 section">
-        <p class="menu-label is-hidden-touch">
-          General
-        </p>
-        <ul class="menu-list">
-          <li
-            v-for="(item, key) of items"
-            :key="key"
-          >
-            <nuxt-link
-              :to="item.to"
-              exact-active-class="is-active"
-            >
-              <b-icon :icon="item.icon" /> {{ item.title }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </aside>
-
-      <div class="container column is-10">
-        <nuxt />
-      </div>
+    <section class="main-content ss-content">
+      <nuxt />
     </section>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p class="is-size-7">
+          Created by <a href="https://www.thegeekdeveloper.com" target="_blank">The Geek Developer</a>
+        </p>
+        <p class="is-size-7">
+          This product uses the <a href="https://www.themoviedb.org/documentation/api" target="_blank">TMDb API</a> but is not endorsed or certified by <a href="https://www.themoviedb.org" target="_blank">TMDb</a>.
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script>
+import Navbar from '~/components/Navbar'
+
 export default {
-  data() {
-    return {
-      items: [
-        {
-          title: 'Home',
-          icon: 'home',
-          to: { name: 'index' }
-        },
-        {
-          title: 'Inspire',
-          icon: 'lightbulb',
-          to: { name: 'inspire' }
-        }
-      ]
-    }
+  components: {
+    Navbar
   }
 }
 </script>

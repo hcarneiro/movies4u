@@ -86,3 +86,6 @@ sw.*
 
 # Mac OSX
 .DS_Store
+
+# Private Configuration
+config/private-config.json

@@ -1,0 +1,61 @@
+html {
+  overflow: initial;
+}
+
+body {
+  font-family: 'Rubik', sans-serif;
+}
+
+.button:focus:not(:active),
+.button.is-focused:not(:active) {
+  box-shadow: 0 0 0 0.125em rgba($brand-primary, 0.25);
+}
+
+.button:focus,
+.button.is-focused {
+  border-color: $brand-primary;
+}
+
+.button.is-facebook {
+  width: 100%;
+  background-color: $brand-facebook;
+  color: #ffffff;
+
+  .icon {
+    margin-right: 5px !important;
+  }
+
+  &:hover,
+  &:focus,
+  &:focus:not(:active),
+  &:active,
+  &:active:hover,
+  &:active:focus {
+    background-color: $brand-facebook-hover;
+    color: #ffffff;
+    box-shadow: none;
+  }
+}
+
+.button.is-google {
+  width: 100%;
+  background-color: #ffffff;
+  color: #6d6d6d;
+  border: 1px solid #cdcdcd;
+
+  .icon {
+    margin-right: 5px !important;
+  }
+
+  &:hover,
+  &:focus,
+  &:focus:not(:active),
+  &:active,
+  &:active:hover,
+  &:active:focus {
+    background-color: #eeeeee;
+    color: #6d6d6d;
+    box-shadow: none;
+    border: 1px solid #cdcdcd;
+  }
+}

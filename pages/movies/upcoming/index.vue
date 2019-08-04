@@ -52,17 +52,16 @@
     </section>
     <div class="container ss-container">
       <p class="subtitle">
-        Movies - Today
+        Movies
       </p>
       <h2 class="title">
-        TRENDING
+        UPCOMING
       </h2>
       <div class="columns is-multiline">
         <div v-for="(movie, index) in movies" :key="index" class="column is-4">
           <card
             :id="movie.id"
             :title="movie | movieTitle"
-            :slug="slug(title(movie))"
             :release-date="movie | movieDate"
             :tags="tags(movie.genre_ids, genres)"
             :rating="movie.vote_average"
@@ -88,8 +87,7 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Movie list to watch',
-      titleTemplate: null
+      title: 'Upcoming movies'
     }
   },
   components: {
@@ -114,13 +112,13 @@ export default {
   computed: {
     ...mapState({
       movies: (state) => {
-        return state.movies.trendingList
+        return state.movies.list
       },
       bannerMovies: (state) => {
-        return state.movies.trendingList.slice(0, 5)
+        return state.movies.list.slice(0, 5)
       },
       page: (state) => {
-        return state.movies.trendingPage
+        return state.movies.page
       },
       genres: (state) => {
         return state.genres
@@ -137,10 +135,10 @@ export default {
   },
   methods: {
     getMovies() {
-      return this.$store.dispatch('movies/getTrending')
+      return this.$store.dispatch('movies/getMovies')
     },
     infiniteHandler($state) {
-      this.$store.dispatch('movies/updateTrending', this.page + 1)
+      this.$store.dispatch('movies/updateMovies', this.page + 1)
         .then((response) => {
           if (response.results.length) {
             $state.loaded()
