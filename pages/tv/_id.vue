@@ -129,7 +129,7 @@ export default {
     }
   },
   created() {
-    this.id = this.$route.params.id
+    this.id = this.$route.params.id.split('-').pop()
     this.$store.dispatch('tv/clearData', this.id)
     this.$store.dispatch('tv/getShow', this.id)
     this.$store.dispatch('tv/getCrew', this.id)

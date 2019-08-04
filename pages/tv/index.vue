@@ -28,7 +28,7 @@
                   </span>
                   <b-icon icon="play-circle-outline" size="is-small" />
                 </b-button>
-                <nuxt-link :to="`/tv/${tvShow.id}`" class="more-info">
+                <nuxt-link :to="`/tv/${slug(title(tvShow))}-${tvShow.id}`" class="more-info">
                   More info
                 </nuxt-link>
               </div>
@@ -62,6 +62,7 @@
           <card
             :id="tvShow.id"
             :title="tvShow | movieTitle"
+            :slug="slug(title(tvShow))"
             :release-date="tvShow | movieDate"
             :tags="tags(tvShow.genre_ids, genres)"
             :rating="tvShow.vote_average"
@@ -80,6 +81,8 @@
 <script>
 import { mapState } from 'vuex'
 import getTags from '~/plugins/get-tags'
+import getSlug from '~/plugins/get-slug'
+import getTitle from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
@@ -102,7 +105,9 @@ export default {
           clickable: true
         }
       },
-      tags: getTags
+      title: getTitle,
+      tags: getTags,
+      slug: getSlug
     }
   },
   computed: {
