@@ -62,7 +62,6 @@
           <card
             :id="movie.id"
             :title="movie | movieTitle"
-            :slug="slug(title(movie))"
             :release-date="movie | movieDate"
             :tags="tags(movie.genre_ids, genres)"
             :rating="movie.vote_average"

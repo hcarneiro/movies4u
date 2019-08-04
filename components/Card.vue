@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-2by3">
-        <nuxt-link :to="`${baseUrl}/${slug}-${id}`">
+        <nuxt-link :to="`${baseUrl}/${slug(title)}-${id}`">
           <img v-if="thumb" :src="thumb" alt="title">
           <img v-else src="~assets/no-poster.png" alt="No poster available">
         </nuxt-link>
@@ -43,7 +43,7 @@
             </no-ssr>
           </div>
           <div class="level-right">
-            <nuxt-link tag="a" :to="`${baseUrl}/${slug}-${id}`" class="button is-small is-rounded">
+            <nuxt-link tag="a" :to="`${baseUrl}/${slug(title)}-${id}`" class="button is-small is-rounded">
               More info
             </nuxt-link>
           </div>
@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import getSlug from '~/plugins/get-slug'
+
 export default {
   name: 'Card',
   props: {
@@ -62,10 +64,6 @@ export default {
       required: true
     },
     title: {
-      type: String,
-      required: true
-    },
-    slug: {
       type: String,
       required: true
     },
@@ -97,7 +95,8 @@ export default {
       fill: {
         color: '#00d1b2'
       },
-      emptyFill: '#5c7784'
+      emptyFill: '#5c7784',
+      slug: getSlug
     }
   },
   computed: {

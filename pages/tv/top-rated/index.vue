@@ -62,7 +62,6 @@
           <card
             :id="tvShow.id"
             :title="tvShow | movieTitle"
-            :slug="slug(title(tvShow))"
             :release-date="tvShow | movieDate"
             :tags="tags(tvShow.genre_ids, genres)"
             :rating="tvShow.vote_average"
