@@ -275,7 +275,7 @@ export const actions = {
   updateTrending({ commit, rootState }, page) {
     const currentPage = page || rootState.movies.trendingPage
 
-    return this.$axios.get(`https://api.themoviedb.org/3/trending/all/day?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
+    return this.$axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
       .then((response) => {
         if (response.status === 200) {
           commit('updateTrending', response.data.results)
