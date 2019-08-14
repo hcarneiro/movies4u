@@ -409,6 +409,14 @@
   }
 }
 
+.silentbox-is-opened {
+  .ss-media-holder {
+    #silentbox-group {
+      overflow: visible;
+    }
+  }
+}
+
 .ss-recommendations-holder {
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
