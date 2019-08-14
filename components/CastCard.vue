@@ -3,8 +3,8 @@
     <div class="card-image">
       <figure class="image is-2by3">
         <!-- <nuxt-link :to="`cast/${slug(name)}-${id}`"> -->
-          <img v-if="profileImage" :src="profileImage" alt="title">
-          <img v-else src="~assets/no-cast.png" alt="No poster available">
+        <img v-if="profileImage" :src="profileImage" alt="title">
+        <img v-else src="~assets/no-cast.png" alt="No poster available">
         <!-- </nuxt-link> -->
       </figure>
     </div>
