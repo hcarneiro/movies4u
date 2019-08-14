@@ -13,7 +13,7 @@
                 <nuxt-link
                   v-for="(tag, idx) in tags(tvShow.genre_ids, genres)"
                   :key="idx"
-                  :to="`/genres/${tag.id}/tv`"
+                  :to="`/genres/${tag.name.toLowerCase()}-${tag.id}/tv`"
                 >
                   <b-tag rounded>
                     {{ tag.name }}

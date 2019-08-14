@@ -55,7 +55,7 @@
         Movies
       </p>
       <h2 class="title">
-        NOW PLAYING
+        {{ genreName }}
       </h2>
       <div class="columns is-multiline">
         <div v-for="(movie, index) in movies" :key="index" class="column is-4">
@@ -78,6 +78,7 @@
 </template>
 
 <script>
+import { find } from 'lodash'
 import { mapState } from 'vuex'
 import getTags from '~/plugins/get-tags'
 import getSlug from '~/plugins/get-slug'
@@ -87,7 +88,7 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Now playing movies'
+      title: `${this.genreName} - Movies`
     }
   },
   components: {
@@ -95,6 +96,7 @@ export default {
   },
   data() {
     return {
+      id: this.$route.params.id.split('-').pop(),
       isReady: false,
       isModalActive: false,
       modalVideoUrl: undefined,
@@ -112,18 +114,21 @@ export default {
   computed: {
     ...mapState({
       movies: (state) => {
-        return state.movies.nowPlayingList
+        return state.movies.discoverList
       },
       bannerMovies: (state) => {
-        return state.movies.nowPlayingList.slice(0, 5)
+        return state.movies.discoverList.slice(0, 5)
       },
       page: (state) => {
-        return state.movies.nowPlayingPage
+        return state.movies.discoverPage
       },
       genres: (state) => {
         return state.genres
       }
-    })
+    }),
+    genreName() {
+      return this.getGenreName()
+    }
   },
   watch: {
     bannerMovies() {
@@ -135,10 +140,10 @@ export default {
   },
   methods: {
     getMovies() {
-      return this.$store.dispatch('movies/getNowPlaying')
+      return this.$store.dispatch('movies/movieDiscover', this.id)
     },
     infiniteHandler($state) {
-      this.$store.dispatch('movies/updateNowPlaying', this.page + 1)
+      this.$store.dispatch('movies/updateDiscover', this.page + 1, this.id)
         .then((response) => {
           if (response.results.length) {
             $state.loaded()
@@ -183,6 +188,10 @@ export default {
         .then(() => {
           this.isReady = true
         })
+    },
+    getGenreName() {
+      const genre = find(this.genres, { id: this.id })
+      return genre.name.toUpperCase()
     }
   }
 }
