@@ -380,6 +380,9 @@
   }
 
   #silentbox-overlay {
+    height: calc(100vh - 52px);
+    top: 52px;
+
     iframe {
       height: inherit;
     }
