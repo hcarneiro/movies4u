@@ -35,6 +35,7 @@ module.exports = {
     { src: '~/plugins/vue-circle.js', ssr: false },
     { src: '~/plugins/infinite-scroll.js', ssr: false },
     { src: '~/plugins/swiper.js', ssr: false },
+    { src: '~/plugins/silentbox.js', ssr: false },
     { src: '~/plugins/filters.js' }
   ],
   /*

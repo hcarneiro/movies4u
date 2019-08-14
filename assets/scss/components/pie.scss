@@ -21,4 +21,8 @@
       color: darken($brand-secondary, 15%);
     }
   }
+
+  &.is-small {
+    padding: 2px;
+  }
 }

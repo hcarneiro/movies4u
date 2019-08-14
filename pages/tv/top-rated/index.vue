@@ -5,7 +5,7 @@
         <div class="swiper-wrapper">
           <div v-for="(tvShow, index) in bannerTvShows" :key="index" class="swiper-slide" :style="`background-image: url(${getBackground(tvShow.backdrop_path)})`">
             <div class="ss-hero-screen" />
-            <div class="hero-body">
+            <div class="container hero-body">
               <h1 class="title">
                 {{ tvShow | movieTitle }}
               </h1>

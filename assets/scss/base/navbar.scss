@@ -83,3 +83,9 @@
     }
   }
 }
+
+.silentbox-is-opened {
+  .ss-navbar {
+    z-index: 0;
+  }
+}

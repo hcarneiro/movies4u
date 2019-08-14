@@ -99,6 +99,56 @@
               />
             </div>
           </div>
+          <template v-if="show.videos && show.videos.results && show.videos.results.length">
+            <h4 class="title is-4">
+              Media
+            </h4>
+            <div class="ss-media-holder">
+              <silentbox-group>
+                <template v-for="(video, index) in show.videos.results">
+                  <silentbox-item :key="index" :src="'https://www.youtube.com/watch?v=' + video.key" :description="video.name" />
+                </template>
+              </silentbox-group>
+            </div>
+          </template>
+          <template v-if="recommendations && recommendations.length">
+            <h4 class="title is-4">
+              Recommendations
+            </h4>
+            <div class="columns is-variable is-2-tablet is-4-desktop ss-recommendations-holder">
+              <div v-for="(recommendation, index) in recommendations" :key="index" class="column is-half-mobile is-one-fifth-tablet">
+                <nuxt-link :to="`${slug(title(recommendation))}-${recommendation.id}`">
+                  <div class="ss-recommendation-card">
+                    <figure class="image is-16by9">
+                      <img :src="getBackground(recommendation.backdrop_path)" :alt="recommendation | movieTitle">
+                    </figure>
+                    <div class="ss-recommendation-card-footer">
+                      <div>
+                        {{ recommendation | movieTitle }}
+                      </div>
+                      <div>
+                        <no-ssr>
+                          <vue-circle
+                            :progress="calculatePercentage(recommendation.vote_average)"
+                            :size="30"
+                            line-cap="round"
+                            :fill="getFillColor(calculatePercentage(recommendation.vote_average))"
+                            :empty-fill="getEmptyFillColor(calculatePercentage(recommendation.vote_average))"
+                            :thickness="3"
+                            :start-angle="4.7"
+                            :animation="false"
+                            insert-mode="append"
+                            :show-percent="true"
+                            class="is-small"
+                          />
+                        </no-ssr>
+                      </div>
+                    </div>
+                  </div>
+                </nuxt-link>
+              </div>
+            </div>
+          </template>
         </div>
         <div class="column is-one-quarter ss-facts-holder">
           <h4 class="title is-4">
@@ -153,6 +203,8 @@
 <script>
 import { map, find } from 'lodash'
 import { mapState } from 'vuex'
+import getSlug from '~/plugins/get-slug'
+import getTitle from '~/plugins/get-title'
 import CastCard from '~/components/CastCard'
 
 export default {
@@ -177,7 +229,9 @@ export default {
         color: '#00d1b2'
       },
       emptyFillColor: 'rgba(0, 209, 178, 0.3)',
-      isReady: false
+      isReady: false,
+      slug: getSlug,
+      title: getTitle
     }
   },
   computed: {
@@ -189,6 +243,9 @@ export default {
         if (state.tv.cast && state.tv.cast.length) {
           return state.tv.cast.slice(0, 5)
         }
+      },
+      recommendations: (state) => {
+        return state.tv.showRecommendations
       },
       languages: (state) => {
         return state.languages
@@ -209,6 +266,7 @@ export default {
     this.$store.dispatch('tv/clearData', this.id)
     this.$store.dispatch('tv/getShow', this.id)
     this.$store.dispatch('tv/getCrew', this.id)
+    this.$store.dispatch('tv/getRecommendations', this.id)
   },
   methods: {
     getBackground(path) {
@@ -228,44 +286,62 @@ export default {
       this.getFillColor()
       this.getEmptyFillColor()
     },
-    calculatePercentage() {
-      this.percentage = (this.show.vote_average / 10) * 100
+    calculatePercentage(average) {
+      const percentage = ((average || this.show.vote_average) / 10) * 100
+
+      if (!average) {
+        this.percentage = percentage
+      }
+
+      return percentage
     },
-    getFillColor() {
-      if (this.percentage >= 0 && this.percentage <= 40) {
-        this.fillColor.color = '#ff3860'
-        return
+    getFillColor(percentage) {
+      const variable = !!percentage
+      percentage = percentage || this.percentage
+      const fillColor = {
+        color: ''
       }
 
-      if (this.percentage >= 41 && this.percentage <= 60) {
-        this.fillColor.color = '#ffdd57'
-        return
+      if (percentage >= 0 && percentage <= 40) {
+        fillColor.color = '#ff3860'
       }
 
-      if (this.percentage >= 61 && this.percentage <= 100) {
-        this.fillColor.color = '#00d1b2'
-        return
+      if (percentage >= 41 && percentage <= 60) {
+        fillColor.color = '#ffdd57'
       }
 
-      this.fillColor.color = '#00d1b2'
+      if (percentage >= 61 && percentage <= 100) {
+        fillColor.color = '#00d1b2'
+      }
+
+      if (variable) {
+        return fillColor
+      }
+
+      this.fillColor.color = fillColor.color
     },
-    getEmptyFillColor() {
-      if (this.percentage >= 0 && this.percentage <= 40) {
-        this.emptyFillColor = 'rgba(255, 56, 96, 0.3)'
-        return
+    getEmptyFillColor(percentage) {
+      const variable = !!percentage
+      percentage = percentage || this.percentage
+      let emptyFillColor
+
+      if (percentage >= 0 && percentage <= 40) {
+        emptyFillColor = 'rgba(255, 56, 96, 0.3)'
       }
 
-      if (this.percentage >= 41 && this.percentage <= 60) {
-        this.emptyFillColor = 'rgba(255, 221, 87, 0.3)'
-        return
+      if (percentage >= 41 && percentage <= 60) {
+        emptyFillColor = 'rgba(255, 221, 87, 0.3)'
       }
 
-      if (this.percentage >= 61 && this.percentage <= 100) {
-        this.emptyFillColor = 'rgba(0, 209, 178, 0.3)'
-        return
+      if (percentage >= 61 && percentage <= 100) {
+        emptyFillColor = 'rgba(0, 209, 178, 0.3)'
       }
 
-      this.emptyFillColor = 'rgba(0, 209, 178, 0.3)'
+      if (variable) {
+        return emptyFillColor
+      }
+
+      this.emptyFillColor = emptyFillColor
     },
     getLanguage(iso) {
       const language = find(this.languages, (lang) => {

@@ -23,7 +23,8 @@ export const state = () => ({
   nowPlayingPage: 1,
   totalNowPlayingResults: 0,
   crew: undefined,
-  cast: undefined
+  cast: undefined,
+  movieRecommendations: undefined
 })
 
 export const mutations = {
@@ -31,6 +32,7 @@ export const mutations = {
     state.crew = undefined
     state.cast = undefined
     state.movie = {}
+    state.movieRecommendations = undefined
   },
   setCrew(state, crew) {
     state.crew = crew
@@ -125,6 +127,9 @@ export const mutations = {
   },
   setNowPlayingPage(state, pageNumber) {
     state.nowPlayingPage = pageNumber
+  },
+  setMovieRecommendations(state, recommendations) {
+    state.movieRecommendations = recommendations
   }
 }
 
@@ -360,6 +365,25 @@ export const actions = {
           const video = _.find(videos, { type: 'Trailer' })
           const videoURL = `https://www.youtube.com/embed/${video.key}?rel=0&modestbranding=1`
           return Promise.resolve(videoURL)
+        }
+
+        return Promise.reject(response)
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+  },
+  getRecommendations({ commit, rootState }, movieId) {
+    return this.$axios.get(`https://api.themoviedb.org/3/movie/${movieId}/recommendations?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=1`)
+      .then((response) => {
+        if (response.status === 200) {
+          if (!response.data.results.length) {
+            return Promise.resolve('')
+          }
+
+          const recommendations = response.data.results.slice(0, 5)
+          commit('setMovieRecommendations', recommendations)
+          return Promise.resolve(recommendations)
         }
 
         return Promise.reject(response)
