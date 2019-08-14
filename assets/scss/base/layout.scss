@@ -363,7 +363,8 @@
   margin-bottom: 30px;
 
   #silentbox-group {
-    overflow-x: auto;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
     overflow-y: hidden;
     display: flex;
     flex-wrap: nowrap;
@@ -406,7 +407,8 @@
 }
 
 .ss-recommendations-holder {
-  overflow-x: auto;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
   overflow-y: hidden;
   display: flex;
   flex-wrap: nowrap;

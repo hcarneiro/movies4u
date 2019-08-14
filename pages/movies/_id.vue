@@ -116,7 +116,7 @@
               Recommendations
             </h4>
             <div class="columns is-variable is-2-tablet is-4-desktop ss-recommendations-holder">
-              <div v-for="(recommendation, index) in recommendations" :key="index" class="column is-half-mobile is-one-fifth-tablet">
+              <div v-for="(recommendation, index) in recommendations" :key="index" class="column is-two-fifths-mobile is-one-fifth-tablet">
                 <nuxt-link :to="`${slug(title(recommendation))}-${recommendation.id}`">
                   <div class="ss-recommendation-card">
                     <figure class="image is-16by9">
