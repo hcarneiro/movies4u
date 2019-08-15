@@ -87,7 +87,11 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Upcoming movies'
+      title: 'Upcoming movies',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Upcoming movies' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Upcoming Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {

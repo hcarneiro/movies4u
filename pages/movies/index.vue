@@ -87,7 +87,11 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Popular movies'
+      title: 'Popular movies',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Popular movies' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Popular Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {

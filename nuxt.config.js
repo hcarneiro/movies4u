@@ -11,7 +11,8 @@ module.exports = {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
-      { hid: 'keywords', name: 'keywords', keywords: 'Movies, TV Shows, People, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      { hid: 'keywords', name: 'keywords', keywords: 'Movies, TV Shows, People, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
+      { hid: 'robots', name: 'robots', content: 'index, follow' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -20,7 +21,10 @@ module.exports = {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#ffc105' },
+  loading: {
+    color: '#ffc105',
+    failedColor: '#ff3860'
+  },
   /*
   ** Global CSS
   */
@@ -65,6 +69,13 @@ module.exports = {
   */
   axios: {
     https: !dev
+  },
+  /*
+  ** Meta configuration
+  */
+  meta: {
+    ogHost: dev ? 'http://localhost:3333' : 'https://geekdev-movies4u.herokuapp.com', 
+    twitterCard: 'summary'
   },
   /*
   ** Google Fonts

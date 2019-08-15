@@ -87,7 +87,11 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Popular TV Shows'
+      title: 'Popular TV Shows',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Popular TV Shows' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Popular TV Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {

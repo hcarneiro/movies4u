@@ -87,7 +87,11 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Now playing movies'
+      title: 'Now playing movies',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Now playing movies' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Now Playing Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {

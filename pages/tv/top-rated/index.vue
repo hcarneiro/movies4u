@@ -87,7 +87,11 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Top Rated TV Shows'
+      title: 'Top Rated TV Shows',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Top Rated TV Shows' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Top Rated Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {

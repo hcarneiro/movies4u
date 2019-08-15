@@ -87,7 +87,11 @@ import Card from '~/components/Card'
 export default {
   head() {
     return {
-      title: 'Airing Today Shows'
+      title: 'Airing Today Shows',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Airing Today Shows' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Airing Today Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {
