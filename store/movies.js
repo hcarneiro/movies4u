@@ -384,6 +384,11 @@ export const actions = {
 
           const videos = response.data.results
           const video = _.find(videos, { type: 'Trailer' })
+
+          if (!video) {
+            return
+          }
+
           const videoURL = `https://www.youtube.com/embed/${video.key}?rel=0&modestbranding=1`
           return Promise.resolve(videoURL)
         }
@@ -414,7 +419,7 @@ export const actions = {
       })
   },
   movieDiscover({ commit, rootState }, genreId) {
-    return this.$axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&with_genres=${genreId}`)
+    return this.$axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_genres=${genreId}`)
       .then((response) => {
         if (response.status === 200) {
           commit('setDiscoverMovies', response.data.results)
@@ -430,10 +435,11 @@ export const actions = {
         throw new Error(error)
       })
   },
-  updateDiscover({ commit, rootState }, page, genreId) {
-    const currentPage = page || rootState.movies.page
+  updateDiscover({ commit, rootState }, options) {
+    options = options || {}
+    const currentPage = options.page || rootState.movies.page
 
-    return this.$axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=${currentPage}&with_genres=${genreId}`)
+    return this.$axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${currentPage}&with_genres=${options.genreId}`)
       .then((response) => {
         if (response.status === 200) {
           commit('updateDiscover', response.data.results)

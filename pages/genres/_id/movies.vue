@@ -96,7 +96,7 @@ export default {
   },
   data() {
     return {
-      id: this.$route.params.id.split('-').pop(),
+      id: parseInt(this.$route.params.id.split('-').pop(), 10),
       isReady: false,
       isModalActive: false,
       modalVideoUrl: undefined,
@@ -108,7 +108,8 @@ export default {
       },
       title: getTitle,
       tags: getTags,
-      slug: getSlug
+      slug: getSlug,
+      genreName: undefined
     }
   },
   computed: {
@@ -125,10 +126,7 @@ export default {
       genres: (state) => {
         return state.genres
       }
-    }),
-    genreName() {
-      return this.getGenreName()
-    }
+    })
   },
   watch: {
     bannerMovies() {
@@ -137,13 +135,17 @@ export default {
   },
   created() {
     this.getMovies()
+    this.getGenreName()
   },
   methods: {
     getMovies() {
       return this.$store.dispatch('movies/movieDiscover', this.id)
     },
     infiniteHandler($state) {
-      this.$store.dispatch('movies/updateDiscover', this.page + 1, this.id)
+      this.$store.dispatch('movies/updateDiscover', {
+        page: this.page + 1,
+        genreId: this.id
+      })
         .then((response) => {
           if (response.results.length) {
             $state.loaded()
@@ -191,7 +193,12 @@ export default {
     },
     getGenreName() {
       const genre = find(this.genres, { id: this.id })
-      return genre.name.toUpperCase()
+
+      if (!genre) {
+        return
+      }
+
+      this.genreName = genre.name.toUpperCase()
     }
   }
 }

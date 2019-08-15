@@ -51,6 +51,9 @@ export const mutations = {
   setAiringTodayShows(state, shows) {
     state.airingTodayList = shows
   },
+  setDiscoverShows(state, shows) {
+    state.discoverList = shows
+  },
   updatePopular(state, shows) {
     _.forEach(shows, (show) => {
       state.popularList.push(show)
@@ -69,6 +72,11 @@ export const mutations = {
   updateAiringToday(state, shows) {
     _.forEach(shows, (show) => {
       state.airingTodayList.push(show)
+    })
+  },
+  updateDiscover(state, shows) {
+    _.forEach(shows, (show) => {
+      state.discoverList.push(show)
     })
   },
   setShow(state, show) {
@@ -315,6 +323,11 @@ export const actions = {
 
           const videos = response.data.results
           const video = _.find(videos, { type: 'Trailer' })
+
+          if (!video) {
+            return
+          }
+
           const videoURL = `https://www.youtube.com/embed/${video.key}?rel=0&modestbranding=1`
           return Promise.resolve(videoURL)
         }
@@ -348,7 +361,7 @@ export const actions = {
     return this.$axios.get(`https://api.themoviedb.org/3/discover/tv?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_null_first_air_dates=false&page=1&with_genres=${genreId}`)
       .then((response) => {
         if (response.status === 200) {
-          commit('setDiscoverMovies', response.data.results)
+          commit('setDiscoverShows', response.data.results)
           commit('setDiscoverTotalPages', response.data.total_pages)
           commit('setDiscoverTotalResults', response.data.total_results)
           commit('setDiscoverPage', response.data.page)
@@ -361,10 +374,11 @@ export const actions = {
         throw new Error(error)
       })
   },
-  updateDiscover({ commit, rootState }, page, genreId) {
-    const currentPage = page || rootState.movies.page
+  updateDiscover({ commit, rootState }, options) {
+    options = options || {}
+    const currentPage = options.page || rootState.movies.page
 
-    return this.$axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_null_first_air_dates=false&page=${currentPage}&with_genres=${genreId}`)
+    return this.$axios.get(`https://api.themoviedb.org/3/discover/tv?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_null_first_air_dates=false&page=${currentPage}&with_genres=${options.genreId}`)
       .then((response) => {
         if (response.status === 200) {
           commit('updateDiscover', response.data.results)

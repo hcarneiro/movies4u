@@ -78,6 +78,7 @@
 </template>
 
 <script>
+import { find } from 'lodash'
 import { mapState } from 'vuex'
 import getTags from '~/plugins/get-tags'
 import getSlug from '~/plugins/get-slug'
@@ -95,6 +96,7 @@ export default {
   },
   data() {
     return {
+      id: parseInt(this.$route.params.id.split('-').pop(), 10),
       isReady: false,
       isModalActive: false,
       modalVideoUrl: undefined,
@@ -106,7 +108,8 @@ export default {
       },
       title: getTitle,
       tags: getTags,
-      slug: getSlug
+      slug: getSlug,
+      genreName: undefined
     }
   },
   computed: {
@@ -123,10 +126,7 @@ export default {
       genres: (state) => {
         return state.genres
       }
-    }),
-    genreName() {
-      return this.getGenreName()
-    }
+    })
   },
   watch: {
     bannerTvShows() {
@@ -135,13 +135,17 @@ export default {
   },
   created() {
     this.getTvShows()
+    this.getGenreName()
   },
   methods: {
     getTvShows() {
       return this.$store.dispatch('tv/tvDiscover', this.id)
     },
     infiniteHandler($state) {
-      this.$store.dispatch('tv/updateDiscover', this.page + 1, this.id)
+      this.$store.dispatch('tv/updateDiscover', {
+        page: this.page + 1,
+        genreId: this.id
+      })
         .then((response) => {
           if (response.results.length) {
             $state.loaded()
@@ -189,7 +193,12 @@ export default {
     },
     getGenreName() {
       const genre = find(this.genres, { id: this.id })
-      return genre.name.toUpperCase()
+
+      if (!genre) {
+        return
+      }
+
+      this.genreName = genre.name.toUpperCase()
     }
   }
 }
