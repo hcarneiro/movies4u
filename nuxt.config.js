@@ -26,7 +26,8 @@ module.exports = {
   */
   css: [
     '@/assets/scss/index.scss',
-    'swiper/dist/css/swiper.css'
+    'swiper/dist/css/swiper.css',
+    'vue-multiselect/dist/vue-multiselect.min.css'
   ],
   /*
   ** Plugins to load before mounting the App
@@ -36,6 +37,7 @@ module.exports = {
     { src: '~/plugins/infinite-scroll.js', ssr: false },
     { src: '~/plugins/swiper.js', ssr: false },
     { src: '~/plugins/silentbox.js', ssr: false },
+    { src: '~/plugins/vue-select.js', ssr: false },
     { src: '~/plugins/filters.js' }
   ],
   /*

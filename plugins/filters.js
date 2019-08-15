@@ -5,6 +5,10 @@ Vue.filter('formatDate', (value) => {
   return moment(value).format('MMM DD, YYYY')
 })
 
+Vue.filter('yearOnly', (value) => {
+  return moment(value).format('YYYY')
+})
+
 Vue.filter('movieTitle', (movie) => {
   return movie.title || movie.name || movie.original_name || movie.original_title
 })

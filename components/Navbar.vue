@@ -14,6 +14,7 @@
       </nuxt-link>
 
       <a
+        ref="navburger"
         role="button"
         class="navbar-burger burger"
         aria-label="menu"
@@ -27,7 +28,7 @@
       </a>
     </div>
 
-    <div id="ss-main-menu" class="navbar-menu" :class="{ 'is-active': burgerIsActive }">
+    <div id="ss-main-menu" ref="mainmenu" class="navbar-menu" :class="{ 'is-active': burgerIsActive }">
       <div class="navbar-start">
         <div class="navbar-item has-dropdown is-hoverable">
           <nuxt-link to="/movies" class="navbar-link">
@@ -71,10 +72,46 @@
         </div>
       </div>
       <div class="navbar-end">
+        <div class="navbar-item search-bar">
+          <no-ssr>
+            <multiselect
+              id="ajax"
+              v-model="selectedResult"
+              label="title"
+              track-by="id"
+              placeholder="Search for a movie or tv show"
+              open-direction="bottom"
+              :custom-label="customLabel"
+              :show-labels="false"
+              :options="results"
+              :multiple="false"
+              :searchable="true"
+              :loading="isLoading"
+              :options-limit="20"
+              :show-no-results="true"
+              :reset-after="true"
+              @select="onSelect"
+              @search-change="onSearch"
+            >
+              <template slot="singleLabel" slot-scope="props">
+                <span class="option__desc">
+                  <span class="option__title">{{ props.option.title }}</span>
+                </span>
+              </template>
+              <template slot="option" slot-scope="props">
+                <div class="option__desc">
+                  <span class="option__title">{{ props.option.title }} ({{ props.option | movieDate | yearOnly }})</span>
+                  <span class="option__small">in <span>{{ props.option.media_type }}</span></span>
+                </div>
+              </template>
+              <span slot="noResult">Nothing found!</span>
+            </multiselect>
+          </no-ssr>
+        </div>
         <b-dropdown v-if="!userAuthenticated" position="is-bottom-left" aria-role="menu">
           <a
             slot="trigger"
-            class="navbar-item"
+            class="navbar-item login-btn"
             role="button"
           >
             <span>Login</span>
@@ -182,7 +219,9 @@
 </template>
 
 <script>
+import { filter } from 'lodash'
 import { mapState } from 'vuex'
+import getSlug from '~/plugins/get-slug'
 
 export default {
   data() {
@@ -194,7 +233,11 @@ export default {
       password: '',
       error: undefined,
       isAuthenticating: false,
-      remember: false
+      remember: false,
+      selectedResult: [],
+      results: [],
+      isLoading: false,
+      slug: getSlug
     }
   },
   computed: {
@@ -211,25 +254,78 @@ export default {
     this.attachHandlers()
   },
   methods: {
+    customLabel ({ title, desc }) {
+      return `${title} – ${desc}`
+    },
+    onSelect (value) {
+      this.results.splice(0, this.results.length)
+
+      const type = value.media_type === 'movie' ? 'movies' : value.media_type
+      const path = `/${type}/${this.slug(value.title)}-${value.id}`
+
+      this.toogleMenuClass()
+      this.$router.push({
+        path
+      })
+    },
+    onSearch (query) {
+      this.isLoading = true
+      this.$store.dispatch('search/search', query)
+        .then((response) => {
+          this.isLoading = false
+
+          if (!response) {
+            return
+          }
+
+          // Get only movies and tv
+          const results = filter(response.results, (result) => {
+            result.title = result.title || result.name
+            return result.media_type === 'movie' || result.media_type === 'tv'
+          })
+          this.results = results
+        })
+        .catch(() => {
+          this.isLoading = false
+        })
+    },
+    clearAll () {
+      this.selectedResult = []
+    },
     burgerMenuHandler() {
-      // Get all "navbar-burger" elements
-      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0)
+      this.$refs.navburger.addEventListener('click', () => {
+        this.toogleMenuClass()
+      })
 
-      // Check if there are any navbar burgers
-      if ($navbarBurgers.length > 0) {
-        // Add a click event on each of them
-        $navbarBurgers.forEach((el) => {
+      const $navbarItems = Array.prototype.slice.call(document.querySelectorAll('.navbar-item'), 0)
+      const $navbarLinks = Array.prototype.slice.call(document.querySelectorAll('.navbar-link'), 0)
+
+      if ($navbarItems.length > 0) {
+        $navbarItems.forEach((el) => {
+          if (el.classList.contains('search-bar') ||
+          el.classList.contains('login-btn') ||
+          el.classList.contains('has-dropdown')) {
+            return
+          }
+
           el.addEventListener('click', () => {
-            // Get the target from the "data-target" attribute
-            const target = el.dataset.target
-            const $target = document.getElementById(target)
-
-            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-            el.classList.toggle('is-active')
-            $target.classList.toggle('is-active')
+            this.toogleMenuClass()
           })
         })
       }
+
+      if ($navbarLinks.length > 0) {
+        $navbarLinks.forEach((el) => {
+          el.addEventListener('click', () => {
+            this.toogleMenuClass()
+          })
+        })
+      }
+    },
+    toogleMenuClass() {
+      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+      this.$refs.navburger.classList.toggle('is-active')
+      this.$refs.mainmenu.classList.toggle('is-active')
     },
     onScroll() {
       const top = window.pageYOffset

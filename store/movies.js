@@ -172,6 +172,8 @@ export const actions = {
           commit('setCrew', response.data.crew)
           return Promise.resolve(response.data)
         }
+
+        return Promise.reject(response)
       })
       .catch((error) => {
         throw new Error(error)
