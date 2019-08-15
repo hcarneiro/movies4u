@@ -93,10 +93,8 @@ export const actions = {
       })
       .then((response) => {
         const user = response.data.user
-        const session = response.data.session
-
         commit('setUser', user)
-        dispatch('onLogin', session && (session.auth_token || user.auth_token))
+        dispatch('onLogin', user.auth_token)
         return Promise.resolve()
       })
       .catch((err) => {
@@ -115,7 +113,7 @@ export const actions = {
     return state.authenticated
   },
   verify({ state, dispatch }) {
-    if (state.verified) {
+    if (state.verified && state.currentUser.hasOwnProperty('auth_token')) {
       return Promise.resolve()
     }
 

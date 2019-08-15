@@ -2,7 +2,7 @@
   <div>
     <div v-if="!signedUp" class="auth-holder signup">
       <h2 class="title">
-        Sign up
+        Create new account
       </h2>
       <p class="subtitle">
         Welcome to {PROJECT NAME}!
@@ -20,6 +20,13 @@
             <b-input
               v-model="lastName"
               type="text"
+              required
+            />
+          </b-field>
+          <b-field label="Email">
+            <b-input
+              v-model="userEmail"
+              type="email"
               required
             />
           </b-field>
@@ -44,20 +51,66 @@
           {{ error }}
         </div>
         <button
-          class="button is-primary"
+          class="button is-primary signup-btn"
           :class="{ 'is-disabled': isVerifying }"
         >
           <span v-if="isVerifying">Please wait...</span>
-          <span v-else>Sign up</span>
+          <span v-else>Create account</span>
         </button>
+        <div class="ss-social-login">
+          <div class="ss-divider">
+            <span>
+              OR
+            </span>
+          </div>
+          <div class="ss-social-buttons">
+            <a
+              href="/api/v1/auth/facebook"
+            >
+              <button
+                type="button"
+                class="button is-primary is-facebook"
+                :class="{ 'is-disabled': isVerifying }"
+              >
+                <span v-if="isVerifying">Please wait...</span>
+                <span v-else>
+                  <b-icon
+                    icon="facebook"
+                    size="is-small"
+                  /> Signup with Facebook
+                </span>
+              </button>
+            </a>
+            <a
+              href="/api/v1/auth/google"
+            >
+              <button
+                type="button"
+                class="button is-primary is-google"
+                :class="{ 'is-disabled': isVerifying }"
+              >
+                <span v-if="isVerifying">Please wait...</span>
+                <span v-else>
+                  <b-icon
+                    icon="google"
+                    size="is-small"
+                  /> Signup with Google
+                </span>
+              </button>
+            </a>
+          </div>
+        </div>
       </form>
     </div>
     <div v-else class="signedup-wrapper">
-      <div class="bd-callout bd-callout-info">
-        <h4>Just one more step...</h4>
+      <div class="ss-callout is-success">
+        <h4 class="title is-4">
+          Just one more step...
+        </h4>
         <p>We have sent a verification email to <strong>{{ userEmail }}</strong>.</p>
         <p>Click on the link in the email to confirm your email address.</p>
-        <p><strong class="text-warning">Didn't receive the verification email?</strong><br>Please check your spam or check with your IT team.</p>
+        <br>
+        <p><strong class="has-text-warning">Didn't receive the verification email?</strong><br>Please check your spam.</p>
       </div>
     </div>
   </div>
@@ -68,7 +121,11 @@ export default {
   layout: 'auth',
   head() {
     return {
-      title: 'Signup'
+      title: 'Create account',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Account creation' },
+        { hid: 'robots', name: 'robots', content: 'index, nofollow' }
+      ]
     }
   },
   data() {
@@ -78,7 +135,7 @@ export default {
       userEmail: '',
       userPassword: '',
       passwordConfirm: '',
-      error: '',
+      error: undefined,
       isVerifying: false,
       signedUp: false,
       passwordMinLength: 8
@@ -86,7 +143,7 @@ export default {
   },
   methods: {
     verifyUserData() {
-      this.error = false
+      this.error = undefined
       this.isVerifying = true
 
       if (this.userPassword.length < this.passwordMinLength) {

@@ -482,7 +482,7 @@ router.get('/reset/:token', (req, res) => {
       }
     }
   })
-    .then(function onGetUser(user) {
+    .then((user) => {
       if (!user) {
         return res.status(400).send({
           message: 'Invalid or expired token'
@@ -511,8 +511,7 @@ router.post('/reset/:token', (req, res) => {
       }
     }
   })
-    .then((results) => {
-      const user = results
+    .then((user) => {
       if (!user) {
         return res.status(400).send({
           message: 'Invalid or expired token'
@@ -527,7 +526,10 @@ router.post('/reset/:token', (req, res) => {
     })
     .then(() => {
       res.send()
-    }).catch(res.error(500))
+    })
+    .catch(() => {
+      return res.status(500).send()
+    })
 })
 
 module.exports = router
