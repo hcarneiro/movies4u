@@ -268,7 +268,6 @@ export default {
     })
   },
   mounted() {
-    this.$store.dispatch('auth/verify')
     this.attachHandlers()
   },
   methods: {
@@ -378,7 +377,7 @@ export default {
         session: true
       })
         .then(() => {
-          return this.$store.dispatch('auth/verifyUser', true)
+          return this.$store.dispatch('auth/verifyUser', true, this.remember)
         })
         .then(() => {
           this.isAuthenticating = false

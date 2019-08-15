@@ -44,10 +44,11 @@ export const actions = {
   logout({ commit }) {
     return this.$axios.post('/api/v1/auth/logout')
       .then(() => {
-        commit('setUser', undefined)
-        Cookies.remove('_auth_token')
+        commit('setUser', {})
+        Cookies.remove(COOKIE.userToken)
         commit('setAuthenticated', false)
         commit('setAuthToken', '')
+        commit('setVerified', false)
 
         return Promise.resolve()
       })
@@ -83,13 +84,14 @@ export const actions = {
         const params = { _: moment().unix() }
 
         if (setCookie) {
-          params.auth_token = state.auth_token
           params.setCookie = true
+          params.auth_token = state.auth_token
         }
 
-        return this.$axios.get('/api/v1/users', { params }).then((response) => {
-          return response
-        })
+        return this.$axios.get('/api/v1/users', { params })
+      })
+      .then((response) => {
+        return response
       })
       .then((response) => {
         const user = response.data.user
@@ -98,7 +100,7 @@ export const actions = {
         return Promise.resolve()
       })
       .catch((err) => {
-        if (!forceCheck) {
+        if (forceCheck) {
           dispatch('logout')
         }
         return Promise.reject(err)

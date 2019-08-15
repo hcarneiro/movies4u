@@ -166,9 +166,10 @@ router.post('/login', bruteforce.prevent, (req, res) => {
 
     tokenPromise
       .then(() => {
+        const cookieOptions = {}
+
         if (req.body.remember === false) {
-          // @TODO:
-          // What to do if Remember Me is not checked
+          cookieOptions.expires = 0;
         }
 
         const data = _.pick(user, ['id', 'email', 'auth_token', 'createdAt'])
@@ -177,7 +178,7 @@ router.post('/login', bruteforce.prevent, (req, res) => {
         if (req.body.redirect) {
           return res.redirect(req.body.redirect)
         }
-        cookie.set(res, user.auth_token)
+        cookie.set(res, user.auth_token, cookieOptions)
 
         return res.send(data)
       })
@@ -270,7 +271,9 @@ router.get('/google/callback', (req, res) => {
 
 router.post('/logout', (req, res) => {
   req.logout()
-  req.auth_token = undefined
+  req.session.destroy()
+  delete req.user
+  delete req.auth_token
   cookie.set(res, '')
 
   res.send({
