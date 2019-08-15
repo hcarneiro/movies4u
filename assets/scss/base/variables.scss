@@ -14,10 +14,15 @@ $brand-facebook-hover: #365899 !default;
 
 $primary: $brand-primary;
 $primary-invert: findColorInvert($primary);
+
+$warning: $brand-primary;
+$warning-invert: findColorInvert($warning);
+
 $link: $brand-primary;
 
 $colors: (
   "primary": ($primary, $primary-invert),
+  "warning": ($warning, $warning-invert)
 );
 
 $desktop-small-size: 1023px !default;

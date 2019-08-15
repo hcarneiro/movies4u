@@ -473,3 +473,24 @@
     }
   }
 }
+
+.ss-callout {
+  padding-left: 20px;
+  border-left: 4px solid $brand-primary;
+
+  &.is-info {
+    border-color: $brand-info;
+  }
+
+  &.is-success {
+    border-color: $brand-success;
+  }
+
+  &.is-warning {
+    border-color: $brand-warning;
+  }
+
+  &.is-danger {
+    border-color: $brand-danger;
+  }
+}
