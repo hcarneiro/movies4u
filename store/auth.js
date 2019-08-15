@@ -113,7 +113,7 @@ export const actions = {
     return state.authenticated
   },
   verify({ state, dispatch }) {
-    if (state.verified && state.currentUser.hasOwnProperty('auth_token')) {
+    if (state.verified && state.currentUser && state.currentUser.hasOwnProperty('auth_token')) {
       return Promise.resolve()
     }
 
