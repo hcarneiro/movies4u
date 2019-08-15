@@ -207,9 +207,26 @@
             </form>
           </b-dropdown-item>
         </b-dropdown>
-        <a v-else class="navbar-item" @click.prevent="logout">
-          Logout
-        </a>
+        <div v-else class="navbar-item has-dropdown is-hoverable">
+          <nuxt-link to="/account" class="navbar-link">
+            <div v-if="user && user.profilePicture" class="ss-user-pic" :style="`background-image: url(${user.profilePicture})`" />
+            <div v-else class="ss-user-pic">
+              {{ user | getInitials }}
+            </div>
+          </nuxt-link>
+
+          <div class="navbar-dropdown is-right">
+            <nuxt-link to="/account" class="navbar-item">
+              My Account
+            </nuxt-link>
+            <nuxt-link to="/lists" class="navbar-item">
+              My Lists
+            </nuxt-link>
+            <a class="navbar-item" @click.prevent="logout">
+              Logout
+            </a>
+          </div>
+        </div>
         <nuxt-link v-if="!userAuthenticated" to="/signup" class="navbar-item">
           Signup
         </nuxt-link>
@@ -251,6 +268,7 @@ export default {
     })
   },
   mounted() {
+    this.$store.dispatch('auth/verify')
     this.attachHandlers()
   },
   methods: {
@@ -324,8 +342,13 @@ export default {
     },
     toogleMenuClass() {
       // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-      this.$refs.navburger.classList.toggle('is-active')
-      this.$refs.mainmenu.classList.toggle('is-active')
+      if (this.$refs.navburger) {
+        this.$refs.navburger.classList.toggle('is-active')
+      }
+
+      if (this.$refs.mainmenu) {
+        this.$refs.mainmenu.classList.toggle('is-active')
+      }
     },
     onScroll() {
       const top = window.pageYOffset

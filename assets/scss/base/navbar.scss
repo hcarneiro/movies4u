@@ -15,6 +15,19 @@
     margin-right: 0;
   }
 
+  .ss-user-pic {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 40px;
+    background-color: rgba($brand-default, 0.2);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
   .navbar-item,
   .navbar-link {
     color: #ffffff;
@@ -160,7 +173,7 @@
   }
 }
 
-body.page-error {
+body.is-light {
   .ss-navbar {
     .navbar-item,
     .navbar-link,
@@ -171,6 +184,11 @@ body.page-error {
     .multiselect__select:before {
       color: rgba(#ffffff, 0.5);
       border-color: rgba(#ffffff, 0.5) transparent transparent;
+    }
+
+    .ss-user-pic {
+      background-color: rgba($brand-text, 0.1);
+      color: rgba($brand-text, 0.5);
     }
 
     .navbar-item,

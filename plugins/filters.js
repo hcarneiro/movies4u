@@ -49,3 +49,14 @@ Vue.filter('moneyConvert', (n) => {
 
   return `$${n.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
 })
+
+Vue.filter('getInitials', (user) => {
+  if (!user || !user.hasOwnProperty('auth_token')) {
+    return ''
+  }
+
+  const firstNameInitial = user.firstName.charAt(0).toUpperCase()
+  const lastNameInitial = user.lastName.charAt(0).toUpperCase()
+
+  return `${firstNameInitial}${lastNameInitial}`
+})
