@@ -343,10 +343,10 @@ export default {
     }
   },
   mounted() {
-    document.body.classList.add('page-error')
+    document.body.classList.add('is-light')
   },
   destroyed() {
-    document.body.classList.remove('page-error')
+    document.body.classList.remove('is-light')
   }
 }
 </script>
