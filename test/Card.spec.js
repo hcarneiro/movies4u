@@ -12,7 +12,16 @@ describe('Card', () => {
       propsData: {
         id: 1,
         title: 'foo',
-        tags: ['bar', 'foobar'],
+        tags: [
+          { 
+            id: 1,
+            name: 'bar'
+          },
+          {
+            id: 2,
+            name: 'foobar'
+          }
+        ],
         rating: 9,
         thumb: 'https://via.placeholder.com/150',
         baseUrl: 'movies'
