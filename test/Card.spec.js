@@ -2,10 +2,6 @@ import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils'
 import NuxtBuefy from 'nuxt-buefy'
 import Card from '@/components/Card.vue'
 
-shallowMount.filter('formatDate', (value) => {
-  return value
-})
-
 describe('Card', () => {
   let wrapper
   const localVue = createLocalVue()
@@ -42,6 +38,10 @@ describe('Card', () => {
 
   afterEach(() => {
     wrapper.destroy()
+  })
+
+  localVue.filter('formatDate', (value) => {
+    return value
   })
 
   test('is a Vue instance', () => {
