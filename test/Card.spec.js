@@ -32,16 +32,17 @@ describe('Card', () => {
         'vue-circle': true,
         'b-tag': true,
         'b-button': true
+      },
+      filters: {
+        formatDate(value) {
+          return value
+        }
       }
     })
   })
 
   afterEach(() => {
     wrapper.destroy()
-  })
-
-  localVue.filter('formatDate', (value) => {
-    return value
   })
 
   test('is a Vue instance', () => {
