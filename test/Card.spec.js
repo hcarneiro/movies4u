@@ -1,6 +1,5 @@
 import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils'
 import NuxtBuefy from 'nuxt-buefy'
-// import { generateStubs } from './fixture/stubs'
 import Card from '@/components/Card.vue'
 
 describe('Card', () => {
@@ -11,12 +10,13 @@ describe('Card', () => {
   beforeEach(() => {
     wrapper = shallowMount(Card, {
       propsData: {
+        id: 1,
         title: 'foo',
         tags: ['bar', 'foobar'],
-        rating: '9.0',
-        thumb: 'https://via.placeholder.com/150'
+        rating: 9,
+        thumb: 'https://via.placeholder.com/150',
+        baseUrl: 'movies'
       },
-      // stubs: generateStubs(Card)
       stubs: {
         'nuxt-link': RouterLinkStub,
         'no-ssr': true,

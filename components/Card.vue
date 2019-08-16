@@ -143,7 +143,7 @@ export default {
     },
     toLowerCase(tag) {
       if (!tag) {
-        return
+        return ''
       }
 
       return tag.toLowerCase()
