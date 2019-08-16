@@ -18,7 +18,7 @@
       <div class="content has-text-grey">
         <div class="ss-tag-holder">
           <template v-for="(tag, index) in tags">
-            <nuxt-link :key="index" :to="`/genres/${tag.name.toLowerCase()}-${tag.id}${baseUrl}`">
+            <nuxt-link :key="index" :to="`/genres/${toLowerCase(tag.name)}-${tag.id}${baseUrl}`">
               <b-tag rounded>
                 {{ tag.name }}
               </b-tag>
@@ -140,6 +140,13 @@ export default {
       }
 
       return 'rgba(0, 209, 178, 0.3)'
+    },
+    toLowerCase(tag) {
+      if (!tag) {
+        return
+      }
+
+      return tag.toLowerCase()
     }
   }
 }
