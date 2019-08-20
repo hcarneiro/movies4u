@@ -2,8 +2,7 @@ const _ = require('lodash')
 const express = require('express')
 const router = express.Router()
 const appPackage = require('../package')
-
-const userAttributes = ['id', 'email', 'auth_token', 'firstName', 'lastName', 'preferences', 'userBio', 'userCountry', 'userCity', 'profilePicture', 'createdAt', 'facebookId', 'googleId']
+const userAttributes = require('../config/user-attributes')
 
 router.get('/', (req, res) => {
   let user
