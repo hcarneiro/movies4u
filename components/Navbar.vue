@@ -104,6 +104,7 @@
                   <span class="option__small">in <span>{{ props.option.media_type }}</span></span>
                 </div>
               </template>
+              <span slot="noOptions">Type to search</span>
               <span slot="noResult">Nothing found!</span>
             </multiselect>
           </no-ssr>
@@ -208,7 +209,7 @@
           </b-dropdown-item>
         </b-dropdown>
         <div v-else class="navbar-item has-dropdown is-hoverable">
-          <nuxt-link to="/account" class="navbar-link">
+          <nuxt-link to="/account/profile" class="navbar-link">
             <div v-if="user && user.profilePicture" class="ss-user-pic" :style="`background-image: url(${user.profilePicture})`" />
             <div v-else class="ss-user-pic">
               {{ user | getInitials }}
@@ -216,10 +217,10 @@
           </nuxt-link>
 
           <div class="navbar-dropdown is-right">
-            <nuxt-link to="/account" class="navbar-item">
+            <nuxt-link to="/account/profile" class="navbar-item">
               My Account
             </nuxt-link>
-            <nuxt-link to="/lists" class="navbar-item">
+            <nuxt-link :to="`/user/${user.id}/lists`" class="navbar-item">
               My Lists
             </nuxt-link>
             <a class="navbar-item" @click.prevent="logout">
