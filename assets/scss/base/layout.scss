@@ -1,3 +1,15 @@
+#__layout {
+  > div {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    
+    .ss-content {
+      flex: 1;
+    }
+  }
+}
+
 .ss-top-hero {
   position: relative;
   text-transform: uppercase;

@@ -3,18 +3,16 @@
     <section class="hero">
       <div class="hero-body ss-account-hero">
         <div class="container">
-          <article class="media">
+          <article>
             <figure class="media-left">
               <p class="image is-128x128">
                 <img class="is-rounded" :src="user.profilePicture">
               </p>
             </figure>
-            <div class="media-content">
-              <div class="content">
-                <h1 class="title">
-                  {{ user.fullName }}
-                </h1>
-              </div>
+            <div class="content">
+              <h1 class="title">
+                {{ user.fullName }}
+              </h1>
             </div>
           </article>
         </div>
