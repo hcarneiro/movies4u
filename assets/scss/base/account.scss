@@ -60,4 +60,69 @@
   .modal-card {
     max-width: 600px;
   }
+
+  .vertical-tabs {
+    height: 100%;
+    min-height: 300px;
+
+    ul {
+      height: 100%;
+      border-right-color: #dbdbdb;
+      border-right-style: solid;
+      border-right-width: 1px;
+
+      li {
+        a {
+          display: block;
+          padding-right: 1rem;
+          padding-top: 0.8rem;
+          padding-bottom: 0.8rem;
+          border-right: 4px solid transparent;
+          color: $brand-text;
+
+          &.nuxt-link-active {
+            border-right-color: $brand-primary;
+            color: $brand-primary;
+          }
+        }
+
+        &:hover {
+          a {
+            border-right-color: $brand-text;
+
+            &.nuxt-link-active {
+              border-right-color: $brand-primary;
+              color: $brand-primary;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .tabs {
+    li {
+      a {
+        color: $brand-text;
+        border-bottom-width: 4px;
+        border-bottom-color: transparent;
+
+        &.nuxt-link-active {
+          border-bottom-color: $brand-primary;
+          color: $brand-primary;
+        }
+      }
+
+      &:hover {
+        a {
+          border-bottom-color: $brand-text;
+
+          &.nuxt-link-active {
+            border-bottom-color: $brand-primary;
+            color: $brand-primary;
+          }
+        }
+      }
+    }
+  }
 }

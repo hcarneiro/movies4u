@@ -1,6 +1,8 @@
 <template>
   <div>
-    Lists of: {{ user.fullName }}
+    <h3 class="title is-3">
+      My lists
+    </h3>
   </div>
 </template>
 

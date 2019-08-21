@@ -21,19 +21,36 @@
     <section class="section ss-profile-section">
       <div class="container">
         <div class="columns">
-          <div class="column is-one-third">
-            <ul>
-              <li>
-                <nuxt-link to="/account/profile">
-                  Edit profile
-                </nuxt-link>
-              </li>
-              <li>
-                <nuxt-link to="/account/lists">
-                  Edit lists
-                </nuxt-link>
-              </li>
-            </ul>
+          <div class="column is-one-fifth">
+            <div class="vertical-tabs is-hidden-mobile">
+              <ul>
+                <li>
+                  <nuxt-link to="/account/profile">
+                    Edit profile
+                  </nuxt-link>
+                </li>
+                <li>
+                  <nuxt-link to="/account/lists">
+                    My lists
+                  </nuxt-link>
+                </li>
+              </ul>
+            </div>
+
+            <div class="tabs is-hidden-tablet">
+              <ul>
+                <li>
+                  <nuxt-link to="/account/profile">
+                    Edit profile
+                  </nuxt-link>
+                </li>
+                <li>
+                  <nuxt-link to="/account/lists">
+                    My lists
+                  </nuxt-link>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="column">
             <NuxtChild :user="user" />

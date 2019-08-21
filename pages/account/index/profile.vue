@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h3 class="title is-3">
+      Edit profile
+    </h3>
     <form>
       <div class="field ss-avatar-field">
         <label class="label">Current avatar</label>
