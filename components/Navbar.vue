@@ -6,7 +6,7 @@
     aria-label="main navigation"
   >
     <div class="navbar-brand">
-      <nuxt-link to="/" class="navbar-item">
+      <nuxt-link to="/" class="navbar-item is-logo">
         <img
           src="~assets/logo.png"
           alt="Logo"
@@ -73,41 +73,30 @@
       </div>
       <div class="navbar-end">
         <div class="navbar-item search-bar">
-          <no-ssr>
-            <multiselect
-              id="ajax"
-              v-model="selectedResult"
-              label="title"
-              track-by="id"
-              placeholder="Search for a movie or tv show"
-              open-direction="bottom"
-              :custom-label="customLabel"
-              :show-labels="false"
-              :options="results"
-              :multiple="false"
-              :searchable="true"
-              :loading="isLoading"
-              :options-limit="20"
-              :show-no-results="true"
-              :reset-after="true"
-              @select="onSelect"
-              @search-change="onSearch"
-            >
-              <template slot="singleLabel" slot-scope="props">
-                <span class="option__desc">
-                  <span class="option__title">{{ props.option.title }}</span>
-                </span>
-              </template>
-              <template slot="option" slot-scope="props">
-                <div class="option__desc">
-                  <span class="option__title">{{ props.option.title }} ({{ props.option | movieDate | yearOnly }})</span>
-                  <span class="option__small">in <span>{{ props.option.media_type }}</span></span>
+          <b-autocomplete
+            :data="data"
+            placeholder="Search for a movie or tv show"
+            field="title"
+            :loading="isFetching"
+            :clear-on-select="true"
+            @typing="getAsyncData"
+            @select="onSelect"
+          >
+            <template slot-scope="props">
+              <div class="media">
+                <div v-if="props.option.poster_path" class="media-left">
+                  <img :src="`https://image.tmdb.org/t/p/w500/${props.option.poster_path}`" width="32" alt="Item poster">
                 </div>
-              </template>
-              <span slot="noOptions">Type to search</span>
-              <span slot="noResult">Nothing found!</span>
-            </multiselect>
-          </no-ssr>
+                <div class="media-content">
+                  {{ props.option | movieTitle }} <small>in {{ props.option.media_type }}</small>
+                  <br>
+                  <small>
+                    Released in {{ props.option | movieDate | yearOnly }}
+                  </small>
+                </div>
+              </div>
+            </template>
+          </b-autocomplete>
         </div>
         <b-dropdown v-if="!userAuthenticated" position="is-bottom-left" aria-role="menu">
           <a
@@ -237,7 +226,7 @@
 </template>
 
 <script>
-import { filter } from 'lodash'
+import { filter, debounce } from 'lodash'
 import { mapState } from 'vuex'
 import getSlug from '~/plugins/get-slug'
 
@@ -252,9 +241,9 @@ export default {
       error: undefined,
       isAuthenticating: false,
       remember: false,
-      selectedResult: [],
-      results: [],
-      isLoading: false,
+      data: [],
+      selected: null,
+      isFetching: false,
       slug: getSlug
     }
   },
@@ -272,11 +261,13 @@ export default {
     this.attachHandlers()
   },
   methods: {
-    customLabel ({ title, desc }) {
-      return `${title} – ${desc}`
-    },
     onSelect (value) {
-      this.results.splice(0, this.results.length)
+      if (!value) {
+        return
+      }
+
+      this.data.splice(0, this.data.length)
+      this.selected = null
 
       const type = value.media_type === 'movie' ? 'movies' : value.media_type
       const path = `/${type}/${this.slug(value.title)}-${value.id}`
@@ -286,30 +277,31 @@ export default {
         path
       })
     },
-    onSearch (query) {
-      this.isLoading = true
-      this.$store.dispatch('search/search', query)
-        .then((response) => {
-          this.isLoading = false
-
-          if (!response) {
-            return
-          }
+    getAsyncData: debounce(function (name) {
+      if (!name.length) {
+        this.data = []
+        return
+      }
+      this.isFetching = true
+      this.$store.dispatch('search/search', name)
+        .then(({ results }) => {
+          this.data = []
 
           // Get only movies and tv
-          const results = filter(response.results, (result) => {
-            result.title = result.title || result.name
+          const data = filter(results, (result) => {
             return result.media_type === 'movie' || result.media_type === 'tv'
           })
-          this.results = results
+
+          data.forEach(item => this.data.push(item))
         })
-        .catch(() => {
-          this.isLoading = false
+        .catch((error) => {
+          this.data = []
+          throw error
         })
-    },
-    clearAll () {
-      this.selectedResult = []
-    },
+        .finally(() => {
+          this.isFetching = false
+        })
+    }, 500),
     burgerMenuHandler() {
       this.$refs.navburger.addEventListener('click', () => {
         this.toogleMenuClass()
@@ -322,7 +314,8 @@ export default {
         $navbarItems.forEach((el) => {
           if (el.classList.contains('search-bar') ||
           el.classList.contains('login-btn') ||
-          el.classList.contains('has-dropdown')) {
+          el.classList.contains('has-dropdown') ||
+          el.classList.contains('is-logo')) {
             return
           }
 

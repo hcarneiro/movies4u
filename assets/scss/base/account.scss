@@ -42,3 +42,22 @@
     }
   }
 }
+
+.ss-profile-section {
+  padding: 2rem;
+
+  .ss-avatar-field {
+    article {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .is-change-email {
+    margin-top: 5px;
+  }
+
+  .modal-card {
+    max-width: 600px;
+  }
+}

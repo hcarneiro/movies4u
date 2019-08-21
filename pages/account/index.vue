@@ -18,6 +18,29 @@
         </div>
       </div>
     </section>
+    <section class="section ss-profile-section">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-one-third">
+            <ul>
+              <li>
+                <nuxt-link to="/account/profile">
+                  Edit profile
+                </nuxt-link>
+              </li>
+              <li>
+                <nuxt-link to="/account/lists">
+                  Edit lists
+                </nuxt-link>
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <NuxtChild :user="user" />
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -39,7 +62,6 @@ export default {
   computed: {
     ...mapState({
       user: (state) => {
-        console.log(state.auth.currentUser)
         return state.auth.currentUser
       }
     })

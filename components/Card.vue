@@ -3,7 +3,7 @@
     <div class="card-image">
       <figure class="image is-2by3">
         <nuxt-link :to="`${baseUrl}/${slug(title)}-${id}`">
-          <img v-if="thumb" :src="thumb" alt="title">
+          <img v-if="thumb" :src="thumb" :alt="title">
           <img v-else src="~assets/no-poster.png" alt="No poster available">
         </nuxt-link>
       </figure>
