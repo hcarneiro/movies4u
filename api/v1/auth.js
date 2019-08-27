@@ -3,11 +3,19 @@ const _ = require('lodash')
 const express = require('express')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
+const request = require('request')
+const gm = require('gm')
+const async = require('async')
+const sizeOf = require('image-size')
+const aws = require('aws-sdk')
 const casual = require('casual')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const md5 = require('md5')
-const { checkSchema, validationResult } = require('express-validator')
+const {
+  checkSchema,
+  validationResult
+} = require('express-validator')
 const userSignupSchema = require(path.resolve(__dirname, './validators/userSignup'))
 
 const passport = require('passport')
@@ -34,109 +42,226 @@ try {
 
 const isDev = process.env.NODE_ENV !== 'production'
 
+function uploadImage(url, id) {
+  const createMediaFileData = {}
+  let bucket
+
+  return new Promise((resolve, reject) => {
+    async.parallel([
+      function setupAWS(done) {
+        bucket = new aws.S3({
+          params: {
+            Bucket: isDev && privateConfig ? privateConfig.S3.BUCKET_NAME : process.env.S3_BUCKET_NAME,
+            Region: isDev && privateConfig ? privateConfig.S3.BUCKET_REGION : process.env.S3_BUCKET_REGION
+          }
+        })
+
+        bucket.name = isDev && privateConfig ? privateConfig.S3.BUCKET_NAME : process.env.S3_BUCKET_NAME
+
+        done()
+      },
+      function uploadOriginalFile(done) {
+        gm(request(url))
+          .setFormat('jpeg')
+          .stream((err, stdout, stderr) => {
+            if (err) {
+              return done()
+            }
+
+            const chunks = []
+            stdout.on('data', (chunk) => {
+              chunks.push(chunk)
+            })
+
+            stdout.on('end', () => {
+              const buffer = Buffer.concat(chunks)
+              const params = {
+                ACL: 'public-read',
+                ContentType: 'image/jpeg',
+                Key: `${id}.jpeg`,
+                Body: buffer
+              }
+
+              const dimensions = sizeOf(buffer)
+              createMediaFileData.originalDimensions = _.pick(dimensions, ['width', 'height'])
+
+              bucket.upload(params, (err, data) => {
+                if (err) {
+                  done()
+                }
+
+                createMediaFileData.url = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
+                createMediaFileData.link = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
+                done()
+              })
+            })
+
+            stderr.on('data', (data) => {
+              done()
+            })
+          })
+      },
+      function uploadThumbnail(done) {
+        gm(request(url))
+          .setFormat('jpeg')
+          .stream((err, stdout, stderr) => {
+            if (err) {
+              return done()
+            }
+
+            const chunks = []
+            stdout.on('data', (chunk) => {
+              chunks.push(chunk)
+            })
+
+            stdout.on('end', () => {
+              const buffer = Buffer.concat(chunks)
+              const params = {
+                ACL: 'public-read',
+                ContentType: 'image/jpeg',
+                Key: `thumb-${id}.jpeg`,
+                Body: buffer
+              }
+
+              const dimensions = sizeOf(buffer)
+              createMediaFileData.resizedDimensions = _.pick(dimensions, ['width', 'height'])
+
+              bucket.upload(params, (err, data) => {
+                if (err) {
+                  done()
+                }
+
+                createMediaFileData.thumbnail = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
+                done()
+              })
+            })
+
+            stderr.on('data', (data) => {
+              done()
+            })
+          })
+      }
+    ], function onEndUpload(err, results) {
+      if (err) {
+        return reject(err)
+      }
+
+      resolve(createMediaFileData)
+    })
+  })
+}
+
 // Strategies
-passport.use(new LocalStrategy(
-  {
-    usernameField: 'email',
-    passwordField: 'password'
-  }, (email, password, done) => {
-    return User.findOne({
-      attributes: ['id', 'password', 'email', 'auth_token', 'preferences', 'createdAt'],
-      where: {
-        email: email.toLowerCase()
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, (email, password, done) => {
+  return User.findOne({
+    attributes: ['id', 'password', 'email', 'auth_token', 'preferences', 'createdAt'],
+    where: {
+      email: email.toLowerCase()
+    }
+  })
+    .then((user) => {
+      if (!user) {
+        return done(null, false, {
+          message: 'Email/password combination does not match'
+        })
       }
+
+      if (!user.isValidPassword(password)) {
+        return done(null, false, {
+          message: 'Email/password combination does not match'
+        })
+      }
+
+      return done(null, user)
     })
-      .then((user) => {
-        if (!user) {
-          return done(null, false, { message: 'Email/password combination does not match' })
-        }
+    .catch((err) => {
+      return done(err)
+    })
+}))
 
-        if (!user.isValidPassword(password)) {
-          return done(null, false, { message: 'Email/password combination does not match' })
-        }
-
+passport.use(new FacebookStrategy({
+  clientID: !isDev ? process.env.FACEBOOK_CLIENT_ID : privateConfig.FACEBOOK.CLIENT_ID,
+  clientSecret: !isDev ? process.env.FACEBOOK_CLIENT_SECRET : privateConfig.FACEBOOK.CLIENT_SECRET,
+  callbackURL: 'http://localhost:3000/api/v1/auth/facebook/callback',
+  enableProof: true,
+  profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
+}, (accessToken, refreshToken, profile, done) => {
+  User.findOne({
+    where: {
+      facebookId: profile.id
+    }
+  })
+    .then((user) => {
+      if (user) {
         return done(null, user)
-      })
-      .catch((err) => {
-        return done(err)
-      })
-  }
-))
-
-passport.use(new FacebookStrategy(
-  {
-    clientID: !isDev ? process.env.FACEBOOK_CLIENT_ID : privateConfig.FACEBOOK.CLIENT_ID,
-    clientSecret: !isDev ? process.env.FACEBOOK_CLIENT_SECRET : privateConfig.FACEBOOK.CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/api/v1/auth/facebook/callback',
-    enableProof: true,
-    profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
-  }, (accessToken, refreshToken, profile, done) => {
-    User.findOne({
-      where: {
-        facebookId: profile.id
       }
-    })
-      .then((user) => {
-        if (user) {
-          return done(null, user)
-        }
 
-        const newUser = database.db.models.user.build({
-          firstName: profile.name.givenName,
-          lastName: profile.name.familyName,
-          email: profile.emails[0].value
-        })
-
-        newUser.facebookId = profile.id
-        newUser.auth_token = accessToken
-
-        return newUser.save()
-          .then(() => {
-            return done(null, newUser)
+      return uploadImage(profile.photos[0].value, profile.id)
+        .then((data) => {
+          const newUser = database.db.models.user.build({
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName,
+            email: profile.emails[0].value,
+            profilePicture: data.url,
+            profilePictureThumb: data.thumbnail
           })
-      })
-      .catch((err) => {
-        return done(err)
-      })
-  }
-))
 
-passport.use(new GoogleStrategy(
-  {
-    clientID: !isDev ? process.env.GOOGLE_CLIENT_ID : privateConfig.GOOGLE.CLIENT_ID,
-    clientSecret: !isDev ? process.env.GOOGLE_CLIENT_SECRET : privateConfig.GOOGLE.CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
-    profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
-  }, (accessToken, refreshToken, profile, done) => {
-    User.findOne({
-      where: {
-        googleId: profile.id
+          newUser.facebookId = profile.id
+          newUser.auth_token = accessToken
+
+          return newUser.save()
+        })
+        .then((user) => {
+          return done(null, user)
+        })
+        .catch((err) => {
+          done(null, false, err)
+        })
+    })
+    .catch((err) => {
+      return done(err)
+    })
+}))
+
+passport.use(new GoogleStrategy({
+  clientID: !isDev ? process.env.GOOGLE_CLIENT_ID : privateConfig.GOOGLE.CLIENT_ID,
+  clientSecret: !isDev ? process.env.GOOGLE_CLIENT_SECRET : privateConfig.GOOGLE.CLIENT_SECRET,
+  callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
+  profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
+}, (accessToken, refreshToken, profile, done) => {
+  console.log('GOOGLE PROFILE', profile)
+
+  User.findOne({
+    where: {
+      googleId: profile.id
+    }
+  })
+    .then((user) => {
+      if (user) {
+        return done(null, user)
       }
-    })
-      .then((user) => {
-        if (user) {
-          return done(null, user)
-        }
 
-        const newUser = database.db.models.user.build({
-          firstName: profile.given_name,
-          lastName: profile.family_name,
-          email: profile.email
+      const newUser = database.db.models.user.build({
+        firstName: profile.given_name,
+        lastName: profile.family_name,
+        email: profile.email
+      })
+
+      newUser.googleId = profile.id
+      newUser.auth_token = accessToken
+
+      return newUser.save()
+        .then(() => {
+          return done(null, newUser)
         })
-
-        newUser.googleId = profile.id
-        newUser.auth_token = accessToken
-
-        return newUser.save()
-          .then(() => {
-            return done(null, newUser)
-          })
-      })
-      .catch((err) => {
-        return done(err)
-      })
-  }
-))
+    })
+    .catch((err) => {
+      return done(err)
+    })
+}))
 
 const router = express.Router()
 
@@ -191,7 +316,9 @@ router.post('/login', bruteforce.prevent, (req, res) => {
   })(req, res)
 })
 
-router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }))
+router.get('/facebook', passport.authenticate('facebook', {
+  scope: ['email']
+}))
 
 router.get('/facebook/callback', (req, res) => {
   passport.authenticate('facebook', (err, user, info) => {
@@ -276,9 +403,7 @@ router.post('/logout', (req, res) => {
   delete req.auth_token
   cookie.set(res, '')
 
-  res.send({
-    message: 'User logged out!'
-  })
+  res.redirect('/')
 })
 
 router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
@@ -342,7 +467,9 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
 
   user.save().then(() => {
     res.status(201).send({
-      user: _.pick(user.get({ plain: true }), [
+      user: _.pick(user.get({
+        plain: true
+      }), [
         'id', 'firstName', 'lastName', 'fullName', 'email'
       ])
     })
@@ -350,12 +477,19 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
     sendEmail().catch(console.error)
 
     // clear cache on users and organisations admin lists
-    req.cache.clear({ key: 'users', global: true })
+    req.cache.clear({
+      key: 'users',
+      global: true
+    })
   }).catch((error) => {
     res.status(400)
 
     if (Array.isArray(error.errors) && error.errors.length && error.errors[0].path === 'email') {
-      database.db.models.user.findAll({ where: { email: req.body.email } })
+      database.db.models.user.findAll({
+        where: {
+          email: req.body.email
+        }
+      })
         .then((users) => {
           const existingUser = users[0]
 
@@ -376,7 +510,9 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
 
           // Save it
           res.status(201).send({
-            user: _.pick(user.get({ plain: true }), [
+            user: _.pick(user.get({
+              plain: true
+            }), [
               'id', 'firstName', 'lastName', 'fullName', 'email'
             ])
           })
@@ -425,12 +561,16 @@ router.post('/forgot', bruteforce.prevent, (req, res) => {
   let user
 
   if (!userEmail) {
-    return res.status(400).send({ message: 'Email is required' })
+    return res.status(400).send({
+      message: 'Email is required'
+    })
   }
 
   return database.db.models.user.findOne({
     attributes: ['id', 'firstName', 'lastName'],
-    where: { email: userEmail.toLowerCase() }
+    where: {
+      email: userEmail.toLowerCase()
+    }
   })
     .then((dbUser) => {
       if (!dbUser) {
@@ -497,10 +637,14 @@ router.get('/reset/:token', (req, res) => {
 })
 
 router.post('/reset/:token', (req, res) => {
-  const { password } = req.body
+  const {
+    password
+  } = req.body
 
   if (!password) {
-    return res.status(400).send({ message: 'Password is required' })
+    return res.status(400).send({
+      message: 'Password is required'
+    })
   }
 
   const salt = bcrypt.genSaltSync(saltRounds)
