@@ -27,7 +27,7 @@
         </div>
         <div class="ss-rating level">
           <div class="level-left">
-            <no-ssr>
+            <client-only>
               <vue-circle
                 :progress="percentage"
                 :size="40"
@@ -40,7 +40,7 @@
                 insert-mode="append"
                 :show-percent="true"
               />
-            </no-ssr>
+            </client-only>
           </div>
           <div class="level-right">
             <nuxt-link tag="a" :to="`${baseUrl}/${slug(title)}-${id}`" class="button is-small is-rounded">

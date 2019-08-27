@@ -11,7 +11,7 @@
             <img v-else src="~assets/no-poster.png" alt="No poster available">
           </p>
           <div v-if="percentage" class="is-hidden-tablet ss-circle-holder">
-            <no-ssr>
+            <client-only>
               <vue-circle
                 :progress="percentage"
                 :size="100"
@@ -25,7 +25,7 @@
                 :show-percent="true"
                 class="is-light"
               />
-            </no-ssr>
+            </client-only>
           </div>
         </div>
         <div class="column is-offset-one-third ss-detail-heading">
@@ -49,7 +49,7 @@
           <div class="columns is-multiline ss-detail-heading-tools">
             <div v-if="percentage" class="column is-full-mobile is-full-tablet is-one-fifth-desktop is-hidden-mobile ss-tool-holder">
               <div class="ss-circle-holder">
-                <no-ssr>
+                <client-only>
                   <vue-circle
                     :progress="percentage"
                     :size="60"
@@ -62,7 +62,7 @@
                     insert-mode="append"
                     :show-percent="true"
                   />
-                </no-ssr>
+                </client-only>
               </div>
             </div>
             <div v-for="(item, index) in crew" :key="index" class="column is-half-mobile is-one-fifth-desktop ss-tool-holder">
@@ -127,7 +127,7 @@
                         {{ recommendation | movieTitle }}
                       </div>
                       <div>
-                        <no-ssr>
+                        <client-only>
                           <vue-circle
                             :progress="calculatePercentage(recommendation.vote_average)"
                             :size="30"
@@ -141,7 +141,7 @@
                             :show-percent="true"
                             class="is-small"
                           />
-                        </no-ssr>
+                        </client-only>
                       </div>
                     </div>
                   </div>

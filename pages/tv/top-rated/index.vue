@@ -70,9 +70,9 @@
           />
         </div>
       </div>
-      <no-ssr>
+      <client-only>
         <infinite-loading v-if="tvShows && tvShows.length" @infinite="infiniteHandler" />
-      </no-ssr>
+      </client-only>
     </div>
   </div>
 </template>
