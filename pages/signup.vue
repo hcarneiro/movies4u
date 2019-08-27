@@ -5,7 +5,7 @@
         Create new account
       </h2>
       <p class="subtitle">
-        Welcome to {PROJECT NAME}!
+        Welcome to That Movie List!
       </p>
       <form @submit.prevent="verifyUserData">
         <section>
