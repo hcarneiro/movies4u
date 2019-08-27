@@ -12,7 +12,12 @@
             </figure>
             <div class="content">
               <h1 class="title">
-                {{ user.fullName }}
+                <template v-if="user.fullName">
+                  {{ user.fullName }}
+                </template>
+                <template v-else>
+                  {{ user.firstName }} {{ user.lastName }}
+                </template>
               </h1>
             </div>
           </article>

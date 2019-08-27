@@ -199,7 +199,7 @@
         </b-dropdown>
         <div v-else class="navbar-item has-dropdown is-hoverable">
           <nuxt-link to="/account/profile" class="navbar-link">
-            <div v-if="user" class="ss-user-pic" :style="`background-image: url(${user.profilePictureThumb || user.profilePicture})`" />
+            <div v-if="user && (user.profilePictureThumb || user.profilePicture)" class="ss-user-pic" :style="`background-image: url(${user.profilePictureThumb || user.profilePicture})`" />
             <div v-else class="ss-user-pic">
               {{ user | getInitials }}
             </div>
