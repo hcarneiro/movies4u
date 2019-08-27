@@ -199,7 +199,7 @@
         </b-dropdown>
         <div v-else class="navbar-item has-dropdown is-hoverable">
           <nuxt-link to="/account/profile" class="navbar-link">
-            <div v-if="user && user.profilePicture" class="ss-user-pic" :style="`background-image: url(${user.profilePicture})`" />
+            <div v-if="user" class="ss-user-pic" :style="`background-image: url(${user.profilePictureThumb || user.profilePicture})`" />
             <div v-else class="ss-user-pic">
               {{ user | getInitials }}
             </div>
@@ -209,7 +209,7 @@
             <nuxt-link to="/account/profile" class="navbar-item">
               My Account
             </nuxt-link>
-            <nuxt-link :to="`/user/${user.id}/lists`" class="navbar-item">
+            <nuxt-link to="/account/lists" class="navbar-item">
               My Lists
             </nuxt-link>
             <a class="navbar-item" @click.prevent="logout">
@@ -398,6 +398,9 @@ export default {
     },
     logout() {
       this.$store.dispatch('auth/logout')
+        .then(() => {
+          this.$router.go({ path: '/' })
+        })
     }
   }
 }
