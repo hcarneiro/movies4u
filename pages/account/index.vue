@@ -5,9 +5,10 @@
         <div class="container">
           <article>
             <figure class="media-left">
-              <p class="image is-128x128">
-                <img class="is-rounded" :src="user.profilePicture">
-              </p>
+              <div v-if="user && user.profilePicture" class="ss-user-pic" :style="`background-image: url(${user.profilePicture})`" />
+              <div v-else class="ss-user-pic">
+                {{ user | getInitials }}
+              </div>
             </figure>
             <div class="content">
               <h1 class="title">

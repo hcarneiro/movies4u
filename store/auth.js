@@ -17,9 +17,6 @@ export const mutations = {
   setUser(state, user) {
     state.currentUser = user
   },
-  setUserPhoto(state, photoUrl) {
-    state.currentUser.profilePicture = photoUrl
-  },
   setVerified(state, status) {
     state.verified = status
   },
