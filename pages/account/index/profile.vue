@@ -8,9 +8,10 @@
         <label class="label">Current avatar</label>
         <article>
           <figure class="media-left">
-            <p class="image is-48x48">
-              <img class="is-rounded" :src="avatar">
-            </p>
+            <div v-if="avatarThumb || avatar" class="ss-user-pic" :style="`background-image: url(${avatarThumb || avatar})`" />
+            <div v-else class="ss-user-pic">
+              {{ user | getInitials }}
+            </div>
           </figure>
           <div class="content">
             <a href="#" @click.prevent="onChangeAvatar">
@@ -95,7 +96,14 @@
         <section class="modal-card-body">
           <div class="file has-name">
             <label class="file-label">
-              <input class="file-input" type="file" name="resume">
+              <input
+                ref="avatar"
+                class="file-input"
+                type="file"
+                name="resume"
+                accept="image/*"
+                @change="processFile"
+              >
               <span class="file-cta">
                 <span class="file-icon">
                   <b-icon
@@ -188,6 +196,7 @@ export default {
       lastName: this.user.lastName,
       email: this.user.email,
       avatar: this.user.profilePicture,
+      avatarThumb: this.user.profilePictureThumb,
       file: undefined,
       city: this.user.userCity,
       country: this.user.userCountry,
@@ -206,10 +215,40 @@ export default {
     onChangeAvatar() {
       this.avatarModalIsActive = true
     },
+    uploadImage(formData) {
+      return this.$store.dispatch('media/uploadThumb', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    },
+    processFile() {
+      this.file = this.$refs.avatar.files[0]
+    },
     onUploadAvatar() {
-      this.avatarModalIsActive = false
+      if (!this.file) {
+        return
+      }
+
+      const formData = new FormData()
+      formData.append('file', this.file)
+
+      this.uploadImage(formData)
+        .then((response) => {
+          this.avatar = response.url
+          this.avatarThumb = response.thumbnail
+
+          this.file = undefined
+          this.avatarModalIsActive = false
+
+          this.onSaveProfile()
+        })
+        .catch((error) => {
+          this.error = error
+        })
     },
     onCancelAvatar() {
+      this.file = undefined
       this.avatarModalIsActive = false
     },
     onChangeEmail() {
@@ -233,6 +272,7 @@ export default {
         userCity: this.city,
         userCountry: this.country,
         profilePicture: this.avatar,
+        profilePictureThumb: this.avatarThumb,
         password: this.password,
         newPassword: this.newPassword
       }
@@ -253,6 +293,7 @@ export default {
       this.lastName = this.user.lastName
       this.email = this.user.email
       this.avatar = this.user.profilePicture
+      this.avatarThumb = this.user.profilePictureThumb
       this.city = this.user.userCity
       this.country = this.user.userCountry
     }
