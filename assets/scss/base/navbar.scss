@@ -1,3 +1,18 @@
+.ss-user-pic {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 40px;
+  background-color: rgba($brand-default, 0.2);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-weight: 700;
+  line-height: initial;
+}
+
 .ss-navbar {
   position: fixed;
   top: 0;
@@ -13,19 +28,6 @@
   .navbar-start {
     margin-left: auto;
     margin-right: 0;
-  }
-
-  .ss-user-pic {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 40px;
-    background-color: rgba($brand-default, 0.2);
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
   }
 
   .navbar-item,

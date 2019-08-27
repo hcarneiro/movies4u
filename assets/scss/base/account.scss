@@ -8,6 +8,14 @@
 
   figure {
     margin-right: 2rem;
+
+    .ss-user-pic {
+      width: 128px;
+      height: 128px;
+      color: $brand-primary;
+      font-size: 3rem;
+      border-radius: 128px;
+    }
   }
 
   article {
@@ -45,6 +53,14 @@
 
 .ss-profile-section {
   padding: 2rem;
+
+  .ss-user-pic {
+    width: 48px;
+    height: 48px;
+    border-radius: 48px;
+    background-color: rgba($brand-text, 0.1);
+    color: rgba($brand-text, 0.5);
+  }
 
   .ss-avatar-field {
     article {
