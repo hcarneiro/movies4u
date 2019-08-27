@@ -232,8 +232,6 @@ passport.use(new GoogleStrategy({
   callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
   profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
 }, (accessToken, refreshToken, profile, done) => {
-  console.log('GOOGLE PROFILE', profile)
-
   User.findOne({
     where: {
       googleId: profile.id
@@ -244,18 +242,26 @@ passport.use(new GoogleStrategy({
         return done(null, user)
       }
 
-      const newUser = database.db.models.user.build({
-        firstName: profile.given_name,
-        lastName: profile.family_name,
-        email: profile.email
-      })
+      return uploadImage(profile.picture, profile.id)
+        .then((data) => {
+          const newUser = database.db.models.user.build({
+            firstName: profile.given_name,
+            lastName: profile.family_name,
+            email: profile.email,
+            profilePicture: data.url,
+            profilePictureThumb: data.thumbnail
+          })
 
-      newUser.googleId = profile.id
-      newUser.auth_token = accessToken
+          newUser.facebookId = profile.id
+          newUser.auth_token = accessToken
 
-      return newUser.save()
-        .then(() => {
-          return done(null, newUser)
+          return newUser.save()
+        })
+        .then((user) => {
+          return done(null, user)
+        })
+        .catch((err) => {
+          done(null, false, err)
         })
     })
     .catch((err) => {
