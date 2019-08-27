@@ -31,6 +31,7 @@ router.put('/', (req, res) => {
         'userCity',
         'userCountry',
         'profilePicture',
+        'profilePictureThumb',
         'preferences'
       ].forEach((param) => {
         if (typeof req.body[param] !== 'undefined') {
