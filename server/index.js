@@ -110,6 +110,7 @@ async function start() {
 /* ROUTES */
 app.use('/api', require('../api/index'))
 app.use('/api/v1/users', require('../api/v1/users'))
+app.use('/api/v1/lists', require('../api/v1/lists'))
 app.use('/api/v1/auth', require('../api/v1/auth'))
 app.use('/api/v1/upload', require('../api/v1/upload'))
 

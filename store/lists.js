@@ -21,19 +21,22 @@ export const mutations = {
     state.currentList = list
   },
   addNewPublicList(state, item) {
-    state.public.push(item)
+    state.public.unshift(item)
   },
   addNewPrivateList(state, item) {
-    state.private.push(item)
+    state.private.unshift(item)
+  },
+  unsetData(state) {
+    state.currentList = undefined
   }
 }
 
 export const actions = {
   getLists({ commit }, data) {
-    return this.$axios.get('/api/v1/lists', data)
+    return this.$axios.get('/api/v1/lists/all', data)
       .then((response) => {
         if (response.status === 200) {
-          commit('setAllPublicLists', response.data.result)
+          commit('setAllPublicLists', response.data)
           return Promise.resolve(response.data)
         }
 
@@ -43,12 +46,12 @@ export const actions = {
         throw new Error(error)
       })
   },
-  getUserLists({ commit }, data) {
-    return this.$axios.get('/api/v1/lists/user', data)
+  getUserLists({ commit }) {
+    return this.$axios.get('/api/v1/lists')
       .then((response) => {
         if (response.status === 200) {
-          const publicLists = _.filter(response.data.result, { public: true })
-          const privateLists = _.filter(response.data.result, { public: false })
+          const publicLists = _.filter(response.data, { public: true })
+          const privateLists = _.filter(response.data, { public: false })
 
           commit('setPublicLists', publicLists)
           commit('setPrivateLists', privateLists)
@@ -62,13 +65,13 @@ export const actions = {
       })
   },
   addNewList({ commit }, data) {
-    return this.$axios.post('/api/v1/lists/user', data)
+    return this.$axios.post('/api/v1/lists', data)
       .then((response) => {
         if (response.status === 200) {
-          if (response.data.result.public) {
-            commit('addNewPublicList', response.data.result)
+          if (response.data.public) {
+            commit('addNewPublicList', response.data)
           } else {
-            commit('addNewPrivateList', response.data.result)
+            commit('addNewPrivateList', response.data)
           }
 
           return Promise.resolve(response.data)
@@ -80,11 +83,22 @@ export const actions = {
         throw new Error(error)
       })
   },
-  updateList({ commit }, data) {
-    return this.$axios.put('/api/v1/lists/user', data)
+  updateList({ commit }, options) {
+    debugger // eslint-disable-line
+    options = options || {}
+    const id = options.id
+    const item = options.item
+    const categories = options.categories
+    const type = options.type
+
+    return this.$axios.post(`/api/v1/lists/${id}`, {
+      item,
+      categories,
+      type
+    })
       .then((response) => {
         if (response.status === 200) {
-          commit('setCurrentList', response.data.result)
+          commit('setCurrentList', response.data)
           return Promise.resolve(response.data)
         }
 
@@ -93,5 +107,28 @@ export const actions = {
       .catch((error) => {
         throw new Error(error)
       })
+  },
+  getList({ commit }, id) {
+    return this.$axios.get(`/api/v1/lists/${id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          commit('setCurrentList', response.data)
+          return Promise.resolve(response.data)
+        }
+
+        return Promise.reject(response)
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+  },
+  clearData({ commit, state }, id) {
+    if (state.currentList && state.currentList.id) {
+      const savedId = state.currentList.id.toString()
+
+      if (savedId !== id) {
+        commit('unsetData')
+      }
+    }
   }
 }
