@@ -40,6 +40,8 @@ export default {
     }
   },
   created() {
+    this.$store.dispatch('lists/getUserLists')
+
     this.$router.push({
       path: '/account/lists/public'
     })
