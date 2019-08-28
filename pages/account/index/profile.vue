@@ -15,7 +15,7 @@
           </figure>
           <div class="content">
             <a href="#" @click.prevent="onChangeAvatar">
-              Change avantar
+              Change avatar
             </a>
           </div>
         </article>
