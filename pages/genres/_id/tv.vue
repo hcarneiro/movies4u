@@ -13,7 +13,7 @@
                 <nuxt-link
                   v-for="(tag, idx) in tags(tvShow.genre_ids, genres)"
                   :key="idx"
-                  :to="`/genres/${tag.name.toLowerCase()}-${tag.id}/tv`"
+                  :to="`/genres/${slug(title(tag))}-${tag.id}/tv`"
                 >
                   <b-tag rounded>
                     {{ tag.name }}
@@ -80,9 +80,9 @@
 <script>
 import { find } from 'lodash'
 import { mapState } from 'vuex'
-import getTags from '~/plugins/get-tags'
-import getSlug from '~/plugins/get-slug'
-import getTitle from '~/plugins/get-title'
+import tags from '~/plugins/get-tags'
+import slug from '~/plugins/get-slug'
+import title from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
@@ -106,9 +106,6 @@ export default {
           clickable: true
         }
       },
-      title: getTitle,
-      tags: getTags,
-      slug: getSlug,
       genreName: undefined
     }
   },
@@ -138,6 +135,9 @@ export default {
     this.getGenreName()
   },
   methods: {
+    title,
+    tags,
+    slug,
     getTvShows() {
       return this.$store.dispatch('tv/tvDiscover', this.id)
     },

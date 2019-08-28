@@ -13,7 +13,7 @@
                 <nuxt-link
                   v-for="(tag, idx) in tags(movie.genre_ids, genres)"
                   :key="idx"
-                  :to="`/genres/${tag.name.toLowerCase()}-${tag.id}/movies`"
+                  :to="`/genres/${slug(title(tag))}-${tag.id}/movies`"
                 >
                   <b-tag rounded>
                     {{ tag.name }}
@@ -79,9 +79,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import getTags from '~/plugins/get-tags'
-import getSlug from '~/plugins/get-slug'
-import getTitle from '~/plugins/get-title'
+import tags from '~/plugins/get-tags'
+import slug from '~/plugins/get-slug'
+import title from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
@@ -107,10 +107,7 @@ export default {
           el: '.swiper-pagination',
           clickable: true
         }
-      },
-      title: getTitle,
-      tags: getTags,
-      slug: getSlug
+      }
     }
   },
   computed: {
@@ -138,6 +135,9 @@ export default {
     this.getMovies()
   },
   methods: {
+    title,
+    tags,
+    slug,
     getMovies() {
       return this.$store.dispatch('movies/getPopular')
     },
