@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import getSlug from '~/plugins/get-slug'
+import slug from '~/plugins/get-slug'
 
 export default {
   name: 'CastCard',
@@ -43,10 +43,8 @@ export default {
       required: false
     }
   },
-  data() {
-    return {
-      slug: getSlug
-    }
+  methods: {
+    slug
   }
 }
 </script>

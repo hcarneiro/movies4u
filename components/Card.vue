@@ -18,7 +18,7 @@
       <div class="content has-text-grey">
         <div class="ss-tag-holder">
           <template v-for="(tag, index) in tags">
-            <nuxt-link :key="index" :to="`/genres/${tag.name.toLowerCase()}-${tag.id}${baseUrl}`">
+            <nuxt-link :key="index" :to="`/genres/${slug(getTitle(tag))}-${tag.id}${baseUrl}`">
               <b-tag rounded>
                 {{ tag.name }}
               </b-tag>
@@ -54,7 +54,8 @@
 </template>
 
 <script>
-import getSlug from '~/plugins/get-slug'
+import slug from '~/plugins/get-slug'
+import getTitle from '~/plugins/get-title'
 
 export default {
   name: 'Card',
@@ -95,8 +96,7 @@ export default {
       fill: {
         color: '#00d1b2'
       },
-      emptyFill: '#5c7784',
-      slug: getSlug
+      emptyFill: '#5c7784'
     }
   },
   computed: {
@@ -141,6 +141,10 @@ export default {
 
       return 'rgba(0, 209, 178, 0.3)'
     }
+  },
+  methods: {
+    slug,
+    getTitle
   }
 }
 </script>
