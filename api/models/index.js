@@ -11,7 +11,7 @@ const Models = {
 Models.List.belongsToMany(Models.User, { through: Models.ListUser })
 Models.User.belongsToMany(Models.List, { through: Models.ListUser })
 
-// { force: true } - TO REMOVE ROW
+// { force: true } - TO REMOVE TABLES
 database.db.sync()
 // .then(function () {
 //   console.log('Migration completed.');
