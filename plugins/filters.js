@@ -9,6 +9,21 @@ Vue.filter('yearOnly', (value) => {
   return moment(value).format('YYYY')
 })
 
+Vue.filter('fromNow', (value) => {
+  return moment(value).fromNow()
+})
+
+Vue.filter('calendar', (value) => {
+  return moment(value).calendar(null, {
+    sameDay: '[Today at] hh:mm',
+    nextDay: '[Tomorrow at] hh:mm',
+    nextWeek: '[Next] dddd',
+    lastDay: '[Yesterday at] hh:mm',
+    lastWeek: '[Last] dddd',
+    sameElse: 'DD/MM/YYYY'
+  })
+})
+
 Vue.filter('movieTitle', (movie) => {
   return movie.title || movie.name || movie.original_name || movie.original_title
 })
