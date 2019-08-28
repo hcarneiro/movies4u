@@ -190,6 +190,7 @@
 
 .ss-detail-heading-holder {
   position: relative;
+  min-height: 360px;
 }
 
 .ss-poster-holder {
@@ -219,6 +220,17 @@
 .ss-detail-heading {
   padding-right: 0;
   padding-left: 40px;
+
+  .ss-title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+
+    .title {
+      margin-bottom: 0;
+    }
+  }
 
   .tag {
     background-color: transparent;
@@ -255,11 +267,7 @@
 }
 
 .ss-detail-cast-holder {
-  padding-top: 40px;
-
-  @include above ($desktop-size) {
-    padding-top: 130px;
-  }
+  padding-top: 60px;
 
   .ss-cast-card-holder {
     display: flex;
