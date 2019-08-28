@@ -228,7 +228,7 @@
 <script>
 import { filter, debounce } from 'lodash'
 import { mapState } from 'vuex'
-import getSlug from '~/plugins/get-slug'
+import slug from '~/plugins/get-slug'
 
 export default {
   data() {
@@ -243,8 +243,7 @@ export default {
       remember: false,
       data: [],
       selected: null,
-      isFetching: false,
-      slug: getSlug
+      isFetching: false
     }
   },
   computed: {
@@ -261,6 +260,7 @@ export default {
     this.attachHandlers()
   },
   methods: {
+    slug,
     onSelect (value) {
       if (!value) {
         return
