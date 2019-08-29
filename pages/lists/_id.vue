@@ -27,7 +27,7 @@
             Created by {{ listCreatorName(list) }}, {{ list.createdAt | fromNow }}
           </p>
           <div class="ss-detail-heading-tools">
-            <b-button rounded @click="onEditList(list.id)">
+            <b-button rounded>
               Share <b-icon icon="share" size="is-small" />
             </b-button>
           </div>

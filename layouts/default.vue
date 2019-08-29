@@ -4,6 +4,7 @@
 
     <section class="main-content ss-content">
       <nuxt />
+      <list-form-modal />
     </section>
     <footer class="footer">
       <div class="content has-text-centered">
@@ -20,10 +21,12 @@
 
 <script>
 import Navbar from '~/components/Navbar'
+import ListFormModal from '~/components/ListFormModal'
 
 export default {
   components: {
-    Navbar
+    Navbar,
+    ListFormModal
   }
 }
 </script>

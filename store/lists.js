@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 export const state = () => ({
   allPublic: [],
+  allUserLists: [],
   public: [],
   private: [],
   currentList: undefined
@@ -10,6 +11,9 @@ export const state = () => ({
 export const mutations = {
   setAllPublicLists(state, lists) {
     state.allPublic = lists
+  },
+  setAllUserLists(state, lists) {
+    state.allUserLists = lists
   },
   setPublicLists(state, lists) {
     state.public = lists
@@ -50,6 +54,8 @@ export const actions = {
     return this.$axios.get('/api/v1/lists')
       .then((response) => {
         if (response.status === 200) {
+          commit('setAllUserLists', response.data)
+
           const publicLists = _.filter(response.data, { public: true })
           const privateLists = _.filter(response.data, { public: false })
 
