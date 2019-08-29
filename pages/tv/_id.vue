@@ -333,7 +333,7 @@ export default {
       const listId = this.listSelected
       this.listSelected = 'none'
 
-      this.$store.dispatch('lists/updateList', {
+      this.$store.dispatch('lists/addMovieToList', {
         id: listId,
         item: this.show,
         categories: this.show.genres,
@@ -341,7 +341,12 @@ export default {
       })
     },
     onCreateList() {
-      bus.$emit('open-list-modal', 'private', this.user, this.show)
+      bus.$emit('open-list-modal', {
+        type: 'create',
+        context: 'private',
+        userId: this.user.id,
+        movie: this.show
+      })
     },
     getBackground(path) {
       if (!path) {

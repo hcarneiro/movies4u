@@ -21,7 +21,7 @@
       </div>
       <div class="columns is-multiline">
         <div v-for="(list, index) in lists" :key="index" class="column is-half-tablet is-one-third-desktop">
-          <list-card :list="list" />
+          <list-card :list="list" :type="type" />
         </div>
       </div>
       <div class="level">
@@ -60,7 +60,11 @@ export default {
   },
   methods: {
     showCreateListForm() {
-      bus.$emit('open-list-modal', this.user, this.type)
+      bus.$emit('open-list-modal', {
+        type: 'create',
+        context: this.type,
+        userId: this.user.id
+      })
     }
   }
 }

@@ -29,7 +29,7 @@
         <div class="ss-list-controls level">
           <div class="level-left" />
           <div class="level-right">
-            <b-button rounded @click="onEditList(list.id)">
+            <b-button rounded @click="onEditList()">
               Edit
             </b-button>
             <b-button class="is-danger" rounded @click="onDeleteList(list.id)">
@@ -46,11 +46,16 @@
 import { find } from 'lodash'
 import noThumbPoster from '~/assets/no-poster.png'
 import slug from '~/plugins/get-slug'
+import bus from '~/plugins/bus'
 
 export default {
   props: {
     list: {
       type: Object,
+      required: true
+    },
+    type: {
+      type: String,
       required: true
     }
   },
@@ -70,8 +75,25 @@ export default {
   },
   methods: {
     slug,
-    onEditList(id) {},
-    onDeleteList(id) {}
+    onEditList() {
+      bus.$emit('open-list-modal', {
+        type: 'edit',
+        context: this.type,
+        list: this.list
+      })
+    },
+    onDeleteList(id) {
+      this.$buefy.dialog.confirm({
+        title: 'Delete list',
+        message: 'Are you sure you want to <b>delete</b> this list? This action cannot be undone.',
+        confirmText: 'Delete list',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          this.$store.dispatch('lists/deleteList', id)
+        }
+      })
+    }
   }
 }
 </script>

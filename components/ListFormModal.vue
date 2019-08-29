@@ -62,7 +62,12 @@
       <footer class="modal-card-foot">
         <b-button class="is-primary" :class="{ 'is-disabled': isSaving }" @click="onCreateList">
           <template v-if="!isSaving">
-            Create
+            <template v-if="!isEditMode">
+              Create
+            </template>
+            <template v-else>
+              Edit
+            </template>
           </template>
           <template v-else>
             Saving...
@@ -90,9 +95,12 @@ export default {
       file: undefined,
       listTypeSelected: '',
       movie: undefined,
-      user: undefined,
+      movies: [],
+      creatorId: undefined,
+      list: undefined,
       isSaving: false,
-      error: undefined
+      error: undefined,
+      isEditMode: false
     }
   },
   created() {
@@ -102,16 +110,28 @@ export default {
     bus.$on('open-list-modal', this.onCancel)
   },
   methods: {
-    showCreateListForm(type, user, movie) {
-      this.listTypeSelected = type !== 'public' ? 'No' : 'Yes'
-      this.movie = movie
-      this.user = user
+    showCreateListForm(options) {
+      this.listTypeSelected = options.context !== 'public' ? 'No' : 'Yes'
+
+      if (options.type === 'create') {
+        this.movie = options.movie
+        this.creatorId = options.userId
+      }
+
+      if (options.type === 'edit') {
+        this.isEditMode = true
+        this.list = options.list
+        this.title = options.list.title
+        this.description = options.list.description
+        this.thumbnail = options.list.thumbnail
+        this.movies = options.list.movies
+        this.creatorId = options.list.creatorId
+      }
+
       this.createListModal = true
     },
     onCancel() {
-      this.listTypeSelected = ''
-      this.movie = undefined
-      this.user = undefined
+      this.resetValues()
       this.createListModal = false
     },
     uploadImage(formData) {
@@ -146,24 +166,45 @@ export default {
       this.isSaving = true
       this.error = undefined
 
+      let promise
       const listData = {
         title: this.title,
         description: this.description,
         thumbnail: this.thumbnail,
         public: this.listTypeSelected === 'Yes',
-        movies: this.movie ? [this.movie] : [],
-        creatorId: this.user.id
+        movies: this.movie ? [this.movie] : this.movies,
+        creatorId: this.creatorId
       }
 
-      this.$store.dispatch('lists/addNewList', listData)
+      if (this.isEditMode) {
+        promise = this.$store.dispatch('lists/updateList', {
+          listId: this.list.id,
+          data: listData
+        })
+      } else {
+        promise = this.$store.dispatch('lists/addNewList', listData)
+      }
+
+      promise
         .then(() => {
           this.isSaving = false
+          this.resetValues()
           this.createListModal = false
         })
         .catch((error) => {
           this.isSaving = false
           this.error = error
         })
+    },
+    resetValues() {
+      this.listTypeSelected = ''
+      this.movie = undefined
+      this.creatorId = undefined
+      this.file = undefined
+      this.title = ''
+      this.description = ''
+      this.thumbnail = ''
+      this.isEditMode = false
     }
   }
 }
