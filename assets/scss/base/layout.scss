@@ -222,10 +222,7 @@
   padding-left: 40px;
 
   .ss-title-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 
     .title {
       margin-bottom: 0;
@@ -383,8 +380,7 @@
   margin-bottom: 30px;
 
   #silentbox-group {
-    overflow-x: scroll;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
     overflow-y: hidden;
     display: flex;
     flex-wrap: nowrap;
@@ -472,8 +468,7 @@
 }
 
 .ss-recommendations-holder {
-  overflow-x: scroll;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
   overflow-y: hidden;
   display: flex;
   flex-wrap: nowrap;
