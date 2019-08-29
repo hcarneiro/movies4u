@@ -77,7 +77,46 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.post('/:id', authenticate, (req, res) => {
+router.put('/:id', authenticate, (req, res) => {
+  database.db.models.list.findOne({
+    where: {
+      id: req.params.id
+    },
+    include: [{
+      model: database.db.models.user,
+      attributes: ['id', 'firstName', 'lastName', 'email']
+    }]
+  })
+    .then((list) => {
+      const foundUser = _.find(list.users, { id: req.user.id })
+      if (!foundUser) {
+        return Promise.reject(new Error("You don't have permission to see this list"))
+      }
+
+      [
+        'title',
+        'description',
+        'thumbnail',
+        'public',
+        'movies',
+        'creatorId'
+      ].forEach(function (param) {
+        if (typeof req.body[param] !== 'undefined') {
+          list[param] = req.body[param]
+        }
+      })
+
+      return list.save()
+    })
+    .then((list) => {
+      return res.send(list)
+    })
+    .catch((error) => {
+      res.status(400).send(error)
+    })
+})
+
+router.put('/:id/add-movie', authenticate, (req, res) => {
   database.db.models.list.findOne({
     attributes,
     where: {
@@ -90,23 +129,23 @@ router.post('/:id', authenticate, (req, res) => {
   })
     .then((list) => {
       const foundUser = _.find(list.users, { id: req.user.id })
-      if (foundUser) {
-        req.body.categories.forEach((category) => {
-          list.categories.push(category)
-        })
-        const categories = _.uniqBy(list.categories, 'id')
-        const movies = list.movies
-        const movie = req.body.item
-        movie.type = req.body.type
-        movies.push(movie)
-
-        return list.update({
-          categories,
-          movies
-        })
+      if (!foundUser) {
+        return Promise.reject(new Error("You don't have permission to see this list"))
       }
 
-      return Promise.reject(new Error("You don't have permission to see this list"))
+      req.body.categories.forEach((category) => {
+        list.categories.push(category)
+      })
+      const categories = _.uniqBy(list.categories, 'id')
+      const movies = list.movies
+      const movie = req.body.item
+      movie.type = req.body.type
+      movies.push(movie)
+
+      return list.update({
+        categories,
+        movies
+      })
     })
     .then((list) => {
       return res.send(list)
@@ -143,6 +182,23 @@ router.post('/', authenticate, (req, res) => {
     })
     .then((list) => {
       res.send(list)
+    })
+    .catch((error) => {
+      res.status(400).send(error)
+    })
+})
+
+router.delete('/:id', authenticate, (req, res) => {
+  database.db.models.list.findOne({
+    where: {
+      id: req.params.id
+    }
+  })
+    .then((list) => {
+      return list.destroy()
+    })
+    .then(() => {
+      res.send()
     })
     .catch((error) => {
       res.status(400).send(error)
