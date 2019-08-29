@@ -29,11 +29,13 @@
           </div>
         </div>
         <div class="column is-offset-one-third ss-detail-heading">
-          <div class="ss-title-wrapper">
-            <h1 class="title">
-              {{ show | movieTitle }}
-            </h1>
-            <div v-if="userAuthenticated">
+          <div class="columns ss-title-wrapper">
+            <div class="column">
+              <h1 class="title">
+                {{ show | movieTitle }}
+              </h1>
+            </div>
+            <div v-if="userAuthenticated" class="column is-hidden-mobile is-one-quarter-desktop">
               <div v-if="myLists.length" class="control">
                 <div class="select">
                   <select v-model="listSelected" @change="onSelectList">
@@ -67,6 +69,28 @@
               </b-tag>
             </nuxt-link>
           </p>
+          <div v-if="userAuthenticated" class="ss-add-list is-hidden-tablet">
+            <div v-if="myLists.length" class="control">
+              <div class="select">
+                <select v-model="listSelected" @change="onSelectList">
+                  <option disabled="disabled" hidden="hidden" value="none">
+                    Add to list
+                  </option>
+                  <option
+                    v-for="option in myLists"
+                    :key="option.id"
+                    :value="option.id"
+                    :disabled="option.disabled"
+                  >
+                    {{ option.title }} <small v-if="!option.public">(Private)</small>
+                  </option>
+                </select>
+              </div>
+            </div>
+            <b-button v-else @click="onCreateList()">
+              Create list <b-icon icon="plus" size="is-small" type="is-primary" />
+            </b-button>
+          </div>
           <p>
             {{ show.overview }}
           </p>
@@ -230,6 +254,7 @@ import { mapState } from 'vuex'
 import slug from '~/plugins/get-slug'
 import title from '~/plugins/get-title'
 import CastCard from '~/components/CastCard'
+import bus from '~/plugins/bus'
 
 export default {
   head() {
@@ -254,8 +279,7 @@ export default {
       },
       emptyFillColor: 'rgba(0, 209, 178, 0.3)',
       isReady: false,
-      listSelected: 'none',
-      myLists: []
+      listSelected: 'none'
     }
   },
   computed: {
@@ -274,8 +298,14 @@ export default {
       languages: (state) => {
         return state.languages
       },
+      myLists: (state) => {
+        return state.lists.allUserLists
+      },
       userAuthenticated: (state) => {
         return state.auth.authenticated
+      },
+      user: (state) => {
+        return state.auth.currentUser
       }
     })
   },
@@ -295,9 +325,6 @@ export default {
     this.$store.dispatch('tv/getCrew', this.id)
     this.$store.dispatch('tv/getRecommendations', this.id)
     this.$store.dispatch('lists/getUserLists')
-      .then((lists) => {
-        this.myLists = lists
-      })
   },
   methods: {
     title,
@@ -313,7 +340,9 @@ export default {
         type: 'tv'
       })
     },
-    onCreateList() {},
+    onCreateList() {
+      bus.$emit('open-list-modal', 'private', this.user, this.show)
+    },
     getBackground(path) {
       if (!path) {
         return ''
