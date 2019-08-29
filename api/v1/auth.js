@@ -23,9 +23,6 @@ const LocalStrategy = require('passport-local').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const GoogleStrategy = require('passport-google-oauth2').Strategy
 
-// Models
-const User = require('../models/user')
-
 // Configs
 const cookie = require('../../config/cookie')
 const database = require('../../config/database')
@@ -156,7 +153,7 @@ passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password'
 }, (email, password, done) => {
-  return User.findOne({
+  return database.db.models.user.findOne({
     attributes: ['id', 'password', 'email', 'auth_token', 'preferences', 'createdAt'],
     where: {
       email: email.toLowerCase()
@@ -189,7 +186,7 @@ passport.use(new FacebookStrategy({
   enableProof: true,
   profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
 }, (accessToken, refreshToken, profile, done) => {
-  User.findOne({
+  database.db.models.user.findOne({
     where: {
       facebookId: profile.id
     }
@@ -199,7 +196,7 @@ passport.use(new FacebookStrategy({
         return done(null, user)
       }
 
-      return uploadImage(profile.photos[0].value, profile.id)
+      uploadImage(profile.photos[0].value, profile.id)
         .then((data) => {
           const newUser = database.db.models.user.build({
             firstName: profile.name.givenName,
@@ -232,17 +229,19 @@ passport.use(new GoogleStrategy({
   callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
   profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
 }, (accessToken, refreshToken, profile, done) => {
-  User.findOne({
+  console.log()
+  database.db.models.user.findOne({
     where: {
       googleId: profile.id
     }
   })
     .then((user) => {
+      console.log()
       if (user) {
         return done(null, user)
       }
 
-      return uploadImage(profile.picture, profile.id)
+      uploadImage(profile.picture, profile.id)
         .then((data) => {
           const newUser = database.db.models.user.build({
             firstName: profile.given_name,
@@ -252,7 +251,7 @@ passport.use(new GoogleStrategy({
             profilePictureThumb: data.thumbnail
           })
 
-          newUser.facebookId = profile.id
+          newUser.googleId = profile.id
           newUser.auth_token = accessToken
 
           return newUser.save()
