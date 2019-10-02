@@ -38,6 +38,7 @@ try {
 }
 
 const isDev = process.env.NODE_ENV !== 'production'
+const isHerokuServer = !!process.env.HEROKU
 
 function uploadImage(url, id) {
   const createMediaFileData = {}
@@ -58,82 +59,141 @@ function uploadImage(url, id) {
         done()
       },
       function uploadOriginalFile(done) {
+        if (!isHerokuServer) {
+          return gm(request(url))
+            .setFormat('jpeg')
+            .stream((err, stdout, stderr) => {
+              if (err) {
+                return done()
+              }
+
+              const chunks = []
+              stdout.on('data', (chunk) => {
+                chunks.push(chunk)
+              })
+
+              stdout.on('end', () => {
+                const buffer = Buffer.concat(chunks)
+                const params = {
+                  ACL: 'public-read',
+                  ContentType: 'image/jpeg',
+                  Key: `${id}.jpeg`,
+                  Body: buffer
+                }
+
+                const dimensions = sizeOf(buffer)
+                createMediaFileData.originalDimensions = _.pick(dimensions, ['width', 'height'])
+
+                bucket.upload(params, (err, data) => {
+                  if (err) {
+                    done()
+                  }
+
+                  createMediaFileData.url = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
+                  createMediaFileData.link = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
+                  done()
+                })
+              })
+
+              stderr.on('data', (data) => {
+                done()
+              })
+            })
+        }
+
         gm(request(url))
           .setFormat('jpeg')
-          .stream((err, stdout, stderr) => {
+          .toBuffer((err, resizedImageBuffer) => {
             if (err) {
               return done()
             }
 
-            const chunks = []
-            stdout.on('data', (chunk) => {
-              chunks.push(chunk)
-            })
+            const params = {
+              ACL: 'public-read',
+              ContentType: 'image/jpeg',
+              Key: `${id}.jpeg`,
+              Body: resizedImageBuffer
+            }
 
-            stdout.on('end', () => {
-              const buffer = Buffer.concat(chunks)
-              const params = {
-                ACL: 'public-read',
-                ContentType: 'image/jpeg',
-                Key: `${id}.jpeg`,
-                Body: buffer
+            const dimensions = sizeOf(resizedImageBuffer)
+            createMediaFileData.originalDimensions = _.pick(dimensions, ['width', 'height'])
+
+            bucket.upload(params, function (err, data) {
+              if (err) {
+                done()
               }
 
-              const dimensions = sizeOf(buffer)
-              createMediaFileData.originalDimensions = _.pick(dimensions, ['width', 'height'])
-
-              bucket.upload(params, (err, data) => {
-                if (err) {
-                  done()
-                }
-
-                createMediaFileData.url = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
-                createMediaFileData.link = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
-                done()
-              })
-            })
-
-            stderr.on('data', (data) => {
+              createMediaFileData.url = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
+              createMediaFileData.link = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
               done()
             })
           })
       },
       function uploadThumbnail(done) {
+        if (!isHerokuServer) {
+          return gm(request(url))
+            .setFormat('jpeg')
+            .stream((err, stdout, stderr) => {
+              if (err) {
+                return done()
+              }
+
+              const chunks = []
+              stdout.on('data', (chunk) => {
+                chunks.push(chunk)
+              })
+
+              stdout.on('end', () => {
+                const buffer = Buffer.concat(chunks)
+                const params = {
+                  ACL: 'public-read',
+                  ContentType: 'image/jpeg',
+                  Key: `thumb-${id}.jpeg`,
+                  Body: buffer
+                }
+
+                const dimensions = sizeOf(buffer)
+                createMediaFileData.resizedDimensions = _.pick(dimensions, ['width', 'height'])
+
+                bucket.upload(params, (err, data) => {
+                  if (err) {
+                    done()
+                  }
+
+                  createMediaFileData.thumbnail = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
+                  done()
+                })
+              })
+
+              stderr.on('data', (data) => {
+                done()
+              })
+            })
+        }
+
         gm(request(url))
           .setFormat('jpeg')
-          .stream((err, stdout, stderr) => {
+          .toBuffer((err, resizedImageBuffer) => {
             if (err) {
               return done()
             }
 
-            const chunks = []
-            stdout.on('data', (chunk) => {
-              chunks.push(chunk)
-            })
+            const params = {
+              ACL: 'public-read',
+              ContentType: 'image/jpeg',
+              Key: `thumb-${id}.jpeg`,
+              Body: resizedImageBuffer
+            }
 
-            stdout.on('end', () => {
-              const buffer = Buffer.concat(chunks)
-              const params = {
-                ACL: 'public-read',
-                ContentType: 'image/jpeg',
-                Key: `thumb-${id}.jpeg`,
-                Body: buffer
+            const dimensions = sizeOf(resizedImageBuffer)
+            createMediaFileData.resizedDimensions = _.pick(dimensions, ['width', 'height'])
+
+            bucket.upload(params, function (err, data) {
+              if (err) {
+                done()
               }
 
-              const dimensions = sizeOf(buffer)
-              createMediaFileData.resizedDimensions = _.pick(dimensions, ['width', 'height'])
-
-              bucket.upload(params, (err, data) => {
-                if (err) {
-                  done()
-                }
-
-                createMediaFileData.thumbnail = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
-                done()
-              })
-            })
-
-            stderr.on('data', (data) => {
+              createMediaFileData.thumbnail = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${params.Key}`
               done()
             })
           })

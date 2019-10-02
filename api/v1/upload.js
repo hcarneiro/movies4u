@@ -10,6 +10,7 @@ const fileExtension = require('file-extension')
 const config = require('../../config/local-config.json')
 const authenticate = require('../../config/authenticate')
 const isDev = !(process.env.NODE_ENV === 'production')
+const isHerokuServer = !!process.env.HEROKU
 let privateConfig
 try {
   privateConfig = require('../../config/private-config.json')
@@ -71,47 +72,81 @@ router.post('/thumb', (req, res) => {
       function uploadThumbnail(done) {
         const extension = fileExtension(createMediaFileData.name)
 
+        if (!isHerokuServer) {
+          return gm(params.Body, createMediaFileData.name)
+            .setFormat(extension)
+            .quality('90')
+            .gravity('Center')
+            .crop('640', '640')
+            .stream((err, stdout, stderr) => {
+              if (err) {
+                return done()
+              }
+
+              const chunks = []
+              stdout.on('data', (chunk) => {
+                chunks.push(chunk)
+              })
+
+              stdout.on('end', () => {
+                const buffer = Buffer.concat(chunks)
+
+                const resizedImageParams = {
+                  ACL: params.ACL,
+                  ContentType: params.ContentType,
+                  Key: `thumb-${params.Key}`,
+                  Body: buffer
+                }
+
+                if (imageTest.test(file.mimetype)) {
+                  const dimensions = sizeOf(buffer)
+                  createMediaFileData.resizedDimensions = _.pick(dimensions, ['width', 'height'])
+                }
+
+                bucket.upload(resizedImageParams, (err, data) => {
+                  if (err) {
+                    done()
+                  }
+
+                  createMediaFileData.thumbnail = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${resizedImageParams.Key}`
+                  done()
+                })
+              })
+
+              stderr.on('data', (data) => {
+                done()
+              })
+            })
+        }
+
         gm(params.Body, createMediaFileData.name)
           .setFormat(extension)
           .quality('90')
           .gravity('Center')
           .crop('640', '640')
-          .stream((err, stdout, stderr) => {
+          .toBuffer((err, resizedImageBuffer) => {
             if (err) {
               return done()
             }
 
-            const chunks = []
-            stdout.on('data', (chunk) => {
-              chunks.push(chunk)
-            })
+            const resizedImageParams = {
+              ACL: params.ACL,
+              ContentType: params.ContentType,
+              Key: `thumb-${params.Key}`,
+              Body: resizedImageBuffer
+            }
 
-            stdout.on('end', () => {
-              const buffer = Buffer.concat(chunks)
+            if (imageTest.test(file.mimetype)) {
+              const dimensions = sizeOf(resizedImageBuffer)
+              createMediaFileData.resizedDimensions = _.pick(dimensions, ['width', 'height'])
+            }
 
-              const resizedImageParams = {
-                ACL: params.ACL,
-                ContentType: params.ContentType,
-                Key: `thumb-${params.Key}`,
-                Body: buffer
-              }
-
-              if (imageTest.test(file.mimetype)) {
-                const dimensions = sizeOf(buffer)
-                createMediaFileData.resizedDimensions = _.pick(dimensions, ['width', 'height'])
-              }
-
-              bucket.upload(resizedImageParams, (err, data) => {
-                if (err) {
-                  done()
-                }
-
-                createMediaFileData.thumbnail = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${resizedImageParams.Key}`
+            bucket.upload(resizedImageParams, function (err, data) {
+              if (err) {
                 done()
-              })
-            })
+              }
 
-            stderr.on('data', (data) => {
+              createMediaFileData.thumbnail = `${isDev ? config.cdn_host : process.env.CDN_HOST}/${resizedImageParams.Key}`
               done()
             })
           })
