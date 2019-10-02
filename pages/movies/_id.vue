@@ -72,7 +72,6 @@
                       :value="option.id"
                       :disabled="option.disabled"
                     >
-
                       {{ option.title }} <small v-if="!option.public">(Private)</small>
                     </option>
                   </select>

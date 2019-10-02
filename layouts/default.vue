@@ -5,6 +5,7 @@
     <section class="main-content ss-content">
       <nuxt />
       <list-form-modal />
+      <share-modal />
     </section>
     <footer class="footer">
       <div class="content has-text-centered">
@@ -22,11 +23,13 @@
 <script>
 import Navbar from '~/components/Navbar'
 import ListFormModal from '~/components/ListFormModal'
+import ShareModal from '~/components/ShareModal'
 
 export default {
   components: {
     Navbar,
-    ListFormModal
+    ListFormModal,
+    ShareModal
   }
 }
 </script>

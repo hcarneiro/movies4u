@@ -509,3 +509,16 @@
     border-color: $brand-danger;
   }
 }
+
+.ss-share-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+
+  span {
+    padding: 10px;
+    cursor: pointer;
+  }
+}

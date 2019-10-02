@@ -27,7 +27,7 @@
             Created by {{ listCreatorName(list) }}, {{ list.createdAt | fromNow }}
           </p>
           <div class="ss-detail-heading-tools">
-            <b-button rounded>
+            <b-button rounded @click="shareModal">
               Share <b-icon icon="share" size="is-small" />
             </b-button>
           </div>
@@ -92,6 +92,7 @@ import { find, filter } from 'lodash'
 import { mapState } from 'vuex'
 import noThumbPoster from '~/assets/no-poster.png'
 import Card from '~/components/Card'
+import bus from '~/plugins/bus'
 
 export default {
   head() {
@@ -147,6 +148,12 @@ export default {
     },
     deleteCard(id) {
       this.$store.dispatch('lists/removeFromCurrentList', id)
+    },
+    shareModal() {
+      bus.$emit('list-share-modal', {
+        title: this.list.title,
+        url: window.location.href
+      })
     }
   }
 }
