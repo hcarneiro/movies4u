@@ -2,6 +2,11 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-2by3">
+        <div v-if="showDelete" class="ss-remove-card">
+          <a href="#" @click.prevent="removeCard">
+            Remove
+          </a>
+        </div>
         <nuxt-link :to="`${baseUrl}/${slug(title)}-${id}`">
           <img v-if="thumb" :src="thumb" :alt="title">
           <img v-else src="~assets/no-poster.png" alt="No poster available">
@@ -89,6 +94,10 @@ export default {
     baseUrl: {
       type: String,
       required: true
+    },
+    showDelete: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -144,7 +153,19 @@ export default {
   },
   methods: {
     slug,
-    getTitle
+    getTitle,
+    removeCard() {
+      this.$buefy.dialog.confirm({
+        title: 'Delete',
+        message: `Are you sure you want to delete <strong>${this.title}</strong> from the list?`,
+        confirmText: 'Delete',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          this.$emit('deleteCard', this.id)
+        }
+      })
+    }
   }
 }
 </script>

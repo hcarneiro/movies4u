@@ -109,6 +109,29 @@ router.put('/:id', authenticate, (req, res) => {
       return list.save()
     })
     .then((list) => {
+      const categories = []
+
+      if (!list.movies.length) {
+        list.categories = []
+
+        return list.update({
+          categories: list.categories
+        })
+      }
+
+      list.movies.forEach((movie) => {
+        movie.genres.forEach((genre) => {
+          categories.push(genre)
+        })
+      })
+
+      const uniqCategories = _.uniqBy(categories, 'id')
+
+      return list.update({
+        categories: uniqCategories
+      })
+    })
+    .then((list) => {
       return res.send(list)
     })
     .catch((error) => {

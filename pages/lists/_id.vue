@@ -33,13 +33,13 @@
           </div>
         </div>
       </div>
-      <div class="ss-list-movies-holder columns is-multiline">
+      <div v-if="movies && movies.length" class="ss-list-movies-holder columns is-multiline">
         <div class="column is-12">
           <h4 class="title is-4">
             Movies
           </h4>
         </div>
-        <div v-for="(movie, index) in list.movies" :key="index" class="column is-half-tablet is-one-quarter-desktop">
+        <div v-for="(movie, index) in movies" :key="index" class="column is-half-tablet is-one-quarter-desktop">
           <card
             :id="movie.id"
             :title="movie | movieTitle"
@@ -48,7 +48,39 @@
             :rating="movie.vote_average"
             :thumb="movie.poster_path | getBackdrop"
             :base-url="`/${movie.type}`"
+            :show-delete="true"
+            @deleteCard="deleteCard"
           />
+        </div>
+      </div>
+      <div v-if="tvshows && tvshows.length" class="ss-list-movies-holder columns is-multiline">
+        <div class="column is-12">
+          <h4 class="title is-4">
+            TV Shows
+          </h4>
+        </div>
+        <div v-for="(tv, index) in tvshows" :key="index" class="column is-half-tablet is-one-quarter-desktop">
+          <card
+            :id="tv.id"
+            :title="tv | movieTitle"
+            :release-date="tv | movieDate"
+            :tags="tv.genres"
+            :rating="tv.vote_average"
+            :thumb="tv.poster_path | getBackdrop"
+            :base-url="`/${tv.type}`"
+            :show-delete="true"
+            @deleteCard="deleteCard"
+          />
+        </div>
+      </div>
+      <div v-if="(!movies && !tvshows) || (!movies.length && !tvshows.length)" class="ss-list-movies-holder columns is-multiline">
+        <div class="column is-12">
+          <h4 class="title is-4">
+            The list is still empty!
+          </h4>
+          <p class="subtitle">
+            Add some movies or tv shows.
+          </p>
         </div>
       </div>
     </div>
@@ -56,7 +88,7 @@
 </template>
 
 <script>
-import { find } from 'lodash'
+import { find, filter } from 'lodash'
 import { mapState } from 'vuex'
 import noThumbPoster from '~/assets/no-poster.png'
 import Card from '~/components/Card'
@@ -92,7 +124,13 @@ export default {
       genres: (state) => {
         return state.genres
       }
-    })
+    }),
+    movies() {
+      return filter(this.list.movies, { type: 'movies' }) || []
+    },
+    tvshows() {
+      return filter(this.list.movies, { type: 'tv' }) || []
+    }
   },
   created() {
     const id = this.$route.params.id.split('-').pop()
@@ -106,6 +144,9 @@ export default {
         return ''
       }
       return `${creator.firstName} ${creator.lastName}`
+    },
+    deleteCard(id) {
+      this.$store.dispatch('lists/removeFromCurrentList', id)
     }
   }
 }

@@ -183,4 +183,27 @@
 .ss-add-list {
   margin-top: -5px;
   margin-bottom: 20px;
+
+  .ss-added-lists {
+    margin-right: 10px;
+  }
+}
+
+.ss-add-list-desktop {
+  justify-content: flex-end;
+
+  .ss-added-lists {
+    margin-right: 10px;
+  }
+}
+
+.ss-list-dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+
+  a {
+    color: $brand-danger;
+    padding: 0px 4px;
+  }
 }

@@ -8,6 +8,31 @@
       border-top-right-radius: 4px;
       border-top-left-radius: 4px;
     }
+
+    .ss-remove-card {
+      display: none;
+      position: absolute;
+      top: 0;
+      right:0;
+      z-index: 1;
+      background-color: rgba($brand-danger, 0.5);
+
+      a {
+        color: #ffffff;
+        padding: 4px 12px;
+        display: inline-block;
+
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+    }
+
+    &:hover {
+      .ss-remove-card {
+        display: block;
+      }
+    }
   }
 
   .title {

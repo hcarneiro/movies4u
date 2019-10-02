@@ -15,11 +15,11 @@ export const mutations = {
   setAllUserLists(state, lists) {
     state.allUserLists = lists
   },
-  setPublicLists(state, lists) {
-    state.public = lists
+  setPublicLists(state) {
+    state.public = _.filter(state.allUserLists, { public: true })
   },
-  setPrivateLists(state, lists) {
-    state.private = lists
+  setPrivateLists(state) {
+    state.private = _.filter(state.allUserLists, { public: false })
   },
   setCurrentList(state, list) {
     state.currentList = list
@@ -79,6 +79,40 @@ export const mutations = {
         return true
       }
     })
+  },
+  removeFromCurrentList(state, id) {
+    let removeIndex
+    state.currentList.movies.forEach((item, index) => {
+      if (item.id !== parseInt(id, 10)) {
+        return
+      }
+
+      removeIndex = index
+    })
+
+    state.currentList.movies.splice(removeIndex, 1)
+  },
+  removeFromList(state, options) {
+    const list = _.find(state.allUserLists, { id: options.listId })
+    let removeIndex
+
+    if (!list) {
+      return
+    }
+
+    list.movies.forEach((item, index) => {
+      if (item.id !== parseInt(options.itemId, 10)) {
+        return
+      }
+
+      removeIndex = index
+    })
+
+    list.movies.splice(removeIndex, 1)
+
+    // Update public and private lists
+    state.public = _.filter(state.allUserLists, { public: true })
+    state.private = _.filter(state.allUserLists, { public: false })
   }
 }
 
@@ -102,12 +136,8 @@ export const actions = {
       .then((response) => {
         if (response.status === 200) {
           commit('setAllUserLists', response.data)
-
-          const publicLists = _.filter(response.data, { public: true })
-          const privateLists = _.filter(response.data, { public: false })
-
-          commit('setPublicLists', publicLists)
-          commit('setPrivateLists', privateLists)
+          commit('setPublicLists')
+          commit('setPrivateLists')
           return response.data
         }
 
@@ -194,7 +224,7 @@ export const actions = {
         throw new Error(error)
       })
   },
-  deleteList({ commit, state }, id) {
+  deleteList({ commit }, id) {
     return this.$axios.delete(`/api/v1/lists/${id}`)
       .then((response) => {
         if (response.status === 200) {
@@ -217,5 +247,26 @@ export const actions = {
         commit('unsetData')
       }
     }
+  },
+  removeFromCurrentList({ commit, dispatch, state }, id) {
+    commit('removeFromCurrentList', id)
+    dispatch('updateList', {
+      listId: state.currentList.id,
+      data: state.currentList
+    })
+  },
+  removeFromList({ commit, dispatch, state }, options) {
+    const list = _.find(state.allUserLists, { id: options.listId })
+
+    if (!list) {
+      return
+    }
+
+    commit('removeFromList', options)
+    dispatch('updateList', {
+      listId: options.listId,
+      data: list
+    })
+    return state.allUserLists
   }
 }

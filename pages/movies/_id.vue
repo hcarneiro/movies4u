@@ -35,19 +35,44 @@
                 {{ movie | movieTitle }}
               </h1>
             </div>
-            <div v-if="userAuthenticated" class="column is-hidden-mobile is-one-quarter-desktop">
-              <div v-if="myLists.length" class="control">
+            <div v-if="userAuthenticated" class="column is-flex is-hidden-mobile ss-add-list-desktop">
+              <div v-if="movieAddedToList" class="ss-added-lists">
+                <b-dropdown v-if="listMovieIsIn.length" hoverable aria-role="list">
+                  <button slot="trigger" class="button">
+                    <span>Movie added to:</span>
+                    <b-icon icon="menu-down" />
+                  </button>
+
+                  <b-dropdown-item
+                    v-for="option in listMovieIsIn"
+                    :key="option.id"
+                    aria-role="listitem"
+                    :custom="true"
+                  >
+                    <div class="ss-list-dropdown-item">
+                      <span>
+                        {{ option.title }} <small v-if="!option.public">(Private)</small>
+                      </span>
+                      <a href="#" @click.prevent="onDeleteItem(option.id)">
+                        <b-icon icon="delete" size="is-small" />
+                      </a>
+                    </div>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </div>
+              <div v-if="allUserLists.length" class="control">
                 <div class="select">
                   <select v-model="listSelected" @change="onSelectList">
                     <option disabled="disabled" hidden="hidden" value="none">
                       Add to list
                     </option>
                     <option
-                      v-for="option in myLists"
+                      v-for="option in allUserLists"
                       :key="option.id"
                       :value="option.id"
                       :disabled="option.disabled"
                     >
+
                       {{ option.title }} <small v-if="!option.public">(Private)</small>
                     </option>
                   </select>
@@ -69,15 +94,39 @@
               </b-tag>
             </nuxt-link>
           </p>
-          <div v-if="userAuthenticated" class="ss-add-list is-hidden-tablet">
-            <div v-if="myLists.length" class="control">
+          <div v-if="userAuthenticated" class="ss-add-list is-flex is-hidden-tablet">
+            <div v-if="movieAddedToList" class="ss-added-lists">
+              <b-dropdown v-if="listMovieIsIn.length" hoverable aria-role="list">
+                <button slot="trigger" class="button">
+                  <span>Movie added to:</span>
+                  <b-icon icon="menu-down" />
+                </button>
+
+                <b-dropdown-item
+                  v-for="option in listMovieIsIn"
+                  :key="option.id"
+                  aria-role="listitem"
+                  :custom="true"
+                >
+                  <div class="ss-list-dropdown-item">
+                    <span>
+                      {{ option.title }} <small v-if="!option.public">(Private)</small>
+                    </span>
+                    <a href="#" @click.prevent="onDeleteItem(option.id)">
+                      <b-icon icon="delete" size="is-small" />
+                    </a>
+                  </div>
+                </b-dropdown-item>
+              </b-dropdown>
+            </div>
+            <div v-if="allUserLists.length" class="control">
               <div class="select">
                 <select v-model="listSelected" @change="onSelectList">
                   <option disabled="disabled" hidden="hidden" value="none">
                     Add to list
                   </option>
                   <option
-                    v-for="option in myLists"
+                    v-for="option in allUserLists"
                     :key="option.id"
                     :value="option.id"
                     :disabled="option.disabled"
@@ -247,7 +296,7 @@
 </template>
 
 <script>
-import { map, filter, uniqBy, find } from 'lodash'
+import { map, filter, uniqBy, find, cloneDeep } from 'lodash'
 import { mapState } from 'vuex'
 import slug from '~/plugins/get-slug'
 import title from '~/plugins/get-title'
@@ -277,7 +326,11 @@ export default {
       },
       emptyFillColor: 'rgba(0, 209, 178, 0.3)',
       isReady: false,
-      listSelected: 'none'
+      listSelected: 'none',
+      filteredLists: [],
+      movieAddedToList: false,
+      listMovieIsIn: [],
+      allUserLists: []
     }
   },
   computed: {
@@ -321,6 +374,11 @@ export default {
       }
 
       this.getRatingSettings()
+    },
+    myLists(value) {
+      if (value && value.length) {
+        this.cloneLists()
+      }
     }
   },
   created() {
@@ -334,6 +392,38 @@ export default {
   methods: {
     title,
     slug,
+    cloneLists() {
+      this.allUserLists = cloneDeep(this.myLists)
+      this.filterLists()
+    },
+    filterLists(reset) {
+      const listIndexes = []
+
+      if (reset) {
+        this.movieAddedToList = false
+        this.listMovieIsIn = []
+      }
+
+      this.allUserLists.forEach((list, index) => {
+        const foundMovie = find(list.movies, { id: parseInt(this.id, 10) })
+
+        if (!foundMovie) {
+          return
+        }
+
+        this.movieAddedToList = true
+        this.listMovieIsIn.push(list)
+        listIndexes.push(index)
+      })
+
+      if (!listIndexes.length) {
+        return
+      }
+
+      listIndexes.forEach((index) => {
+        this.allUserLists.splice(index, 1)
+      })
+    },
     onSelectList() {
       const listId = this.listSelected
       this.listSelected = 'none'
@@ -344,6 +434,9 @@ export default {
         categories: this.movie.genres,
         type: 'movies'
       })
+        .then(() => {
+          this.filterLists()
+        })
     },
     onCreateList() {
       bus.$emit('open-list-modal', {
@@ -437,6 +530,28 @@ export default {
       }
 
       return language.english_name
+    },
+    onDeleteItem(listId) {
+      this.$buefy.dialog.confirm({
+        title: 'Delete',
+        message: `Are you sure you want to delete <strong>${this.$options.filters.movieTitle(this.movie)}</strong> from the list?`,
+        confirmText: 'Delete',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          this.deleteFromList(listId)
+        }
+      })
+    },
+    deleteFromList(listId) {
+      this.$store.dispatch('lists/removeFromList', {
+        listId,
+        itemId: this.id
+      })
+        .then((lists) => {
+          this.allUserLists = lists
+          this.filterLists(true)
+        })
     }
   }
 }
