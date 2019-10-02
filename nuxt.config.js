@@ -75,7 +75,7 @@ module.exports = {
   ** Meta configuration
   */
   meta: {
-    ogHost: dev ? 'http://localhost:3333' : 'https://geekdev-movies4u.herokuapp.com', 
+    ogHost: dev ? 'http://localhost:3333' : 'https://www.thatmovielist.com', 
     twitterCard: 'summary'
   },
   /*

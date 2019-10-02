@@ -182,7 +182,7 @@ passport.use(new LocalStrategy({
 passport.use(new FacebookStrategy({
   clientID: !isDev ? process.env.FACEBOOK_CLIENT_ID : privateConfig.FACEBOOK.CLIENT_ID,
   clientSecret: !isDev ? process.env.FACEBOOK_CLIENT_SECRET : privateConfig.FACEBOOK.CLIENT_SECRET,
-  callbackURL: 'http://localhost:3000/api/v1/auth/facebook/callback',
+  callbackURL: 'https://www.thatmovielist.com/api/v1/auth/facebook/callback',
   enableProof: true,
   profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
 }, (accessToken, refreshToken, profile, done) => {
@@ -226,7 +226,7 @@ passport.use(new FacebookStrategy({
 passport.use(new GoogleStrategy({
   clientID: !isDev ? process.env.GOOGLE_CLIENT_ID : privateConfig.GOOGLE.CLIENT_ID,
   clientSecret: !isDev ? process.env.GOOGLE_CLIENT_SECRET : privateConfig.GOOGLE.CLIENT_SECRET,
-  callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
+  callbackURL: 'https://www.thatmovielist.com/api/v1/auth/google/callback',
   profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
 }, (accessToken, refreshToken, profile, done) => {
   database.db.models.user.findOne({
@@ -301,7 +301,7 @@ router.post('/login', bruteforce.prevent, (req, res) => {
         }
 
         const data = _.pick(user, ['id', 'email', 'auth_token', 'createdAt'])
-        data.host = !isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host
+        data.host = !isDev ? 'https://www.thatmovielist.com' : config.host
 
         if (req.body.redirect) {
           return res.redirect(req.body.redirect)
@@ -439,7 +439,7 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
 
   // Verification email for the user
   function sendEmail() {
-    const verificationUrl = `${isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host}verify/${token}`
+    const verificationUrl = `${isDev ? 'https://www.thatmovielist.com/' : config.host}verify/${token}`
     const emailData = {
       template_id: 'd-7ad0ef3677244f97a4fa8004ae7cd45f',
       message: {
@@ -541,7 +541,7 @@ router.post('/verify/:token', (req, res) => {
     }
   }).then((user) => {
     if (!user) {
-      return Promise.reject('Invalid or expired token')
+      return Promise.reject(new Error('Invalid or expired token'))
     }
 
     user.verificationToken = null
@@ -586,7 +586,7 @@ router.post('/forgot', bruteforce.prevent, (req, res) => {
 
       const hash = md5(casual.unix_time + user.id)
       const token = `${hash}-${casual.unix_time}`
-      const resetUrl = `${isDev ? 'https://geekdev-movies4u.herokuapp.com/' : config.host}reset-password/${token}`
+      const resetUrl = `${isDev ? 'https://www.thatmovielist.com/' : config.host}reset-password/${token}`
 
       const emailData = {
         template_id: 'd-6a025f0c48984467a97a69c5f3201cac',
