@@ -229,14 +229,12 @@ passport.use(new GoogleStrategy({
   callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
   profileFields: ['id', 'displayName', 'first_name', 'last_name', 'email', 'picture']
 }, (accessToken, refreshToken, profile, done) => {
-  console.log()
   database.db.models.user.findOne({
     where: {
       googleId: profile.id
     }
   })
     .then((user) => {
-      console.log()
       if (user) {
         return done(null, user)
       }
