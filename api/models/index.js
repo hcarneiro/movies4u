@@ -12,7 +12,7 @@ Models.List.belongsToMany(Models.User, { through: Models.ListUser })
 Models.User.belongsToMany(Models.List, { through: Models.ListUser })
 
 // { force: true } - TO REMOVE TABLES
-database.db.sync({ force: true })
+database.db.sync()
 // .then(function () {
 //   console.log('Migration completed.');
 //   return Promise.resolve();
