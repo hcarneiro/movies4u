@@ -11,6 +11,10 @@ router.get('/all', (req, res) => {
     where: {
       public: true
     },
+    include: [{
+      model: database.db.models.user,
+      attributes: userAttributes
+    }],
     order: [
       ['createdAt', 'DESC']
     ]

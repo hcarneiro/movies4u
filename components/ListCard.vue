@@ -26,7 +26,7 @@
             </b-tag>
           </template>
         </div>
-        <div class="ss-list-controls level">
+        <div v-if="type" class="ss-list-controls level">
           <div class="level-left" />
           <div class="level-right">
             <b-button rounded @click="onEditList()">
@@ -56,7 +56,7 @@ export default {
     },
     type: {
       type: String,
-      required: true
+      default: ''
     }
   },
   data() {

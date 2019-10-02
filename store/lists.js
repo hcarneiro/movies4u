@@ -1,7 +1,20 @@
 import _ from 'lodash'
 
+function chunk(array, size) {
+  const chunkedArr = []
+  for (let i = 0; i < array.length; i++) {
+    const last = chunkedArr[chunkedArr.length - 1]
+    if (!last || last.length === size) {
+      chunkedArr.push([array[i]])
+    } else {
+      last.push(array[i])
+    }
+  }
+  return chunkedArr
+}
+
 export const state = () => ({
-  allPublic: [],
+  allPublic: {},
   allUserLists: [],
   public: [],
   private: [],
@@ -10,7 +23,36 @@ export const state = () => ({
 
 export const mutations = {
   setAllPublicLists(state, lists) {
-    state.allPublic = lists
+    const chunkedLists = chunk(lists, 20)
+    const data = {
+      page: 1,
+      pages: chunkedLists.length,
+      chunked: chunkedLists,
+      lists: chunkedLists[0],
+      complete: chunkedLists.length === 1
+    }
+
+    state.allPublic = data
+  },
+  updateAllPublicLists(state, page) {
+    const data = {
+      page,
+      pages: state.allPublic.chunked.length,
+      chunked: state.allPublic.chunked,
+      lists: state.allPublic.lists
+    }
+
+    if (!state.allPublic.chunked[page - 1]) {
+      data.complete = true
+      state.allPublic = data
+      return
+    }
+
+    state.allPublic.chunked[page - 1].forEach((list) => {
+      data.lists.push(list)
+    })
+
+    state.allPublic = data
   },
   setAllUserLists(state, lists) {
     state.allUserLists = lists
@@ -130,6 +172,10 @@ export const actions = {
       .catch((error) => {
         throw new Error(error)
       })
+  },
+  updateAllPublicLists({ commit, state }, page) {
+    commit('updateAllPublicLists', page)
+    return state.allPublic
   },
   getUserLists({ commit }) {
     return this.$axios.get('/api/v1/lists')

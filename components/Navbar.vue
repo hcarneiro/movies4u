@@ -70,6 +70,9 @@
             </nuxt-link>
           </div>
         </div>
+        <nuxt-link to="/lists" class="navbar-item">
+          Lists
+        </nuxt-link>
       </div>
       <div class="navbar-end">
         <div class="navbar-item search-bar">
