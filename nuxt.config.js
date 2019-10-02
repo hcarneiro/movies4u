@@ -42,6 +42,7 @@ module.exports = {
     { src: '~/plugins/swiper.js', ssr: false },
     { src: '~/plugins/silentbox.js', ssr: false },
     { src: '~/plugins/vue-select.js', ssr: false },
+    { src: '~/plugins/vue-sharing.js', ssr: false },
     { src: '~/plugins/filters.js' }
   ],
   /*
