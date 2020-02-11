@@ -69,7 +69,6 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: `${dev ? 'http' : 'https'}://${dev ? 'localhost' : 'www.thatmovielist.com'}:${dev ? '3000' : process.env.PORT}`,
     https: !dev
   },
   /*
