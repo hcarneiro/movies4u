@@ -70,6 +70,7 @@ module.exports = {
   */
   axios: {
     host: dev ? 'localhost' : 'www.thatmovielist.com',
+    port: '',
     prefix: '',
     https: !dev
   },
