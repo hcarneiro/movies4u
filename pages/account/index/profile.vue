@@ -174,16 +174,6 @@
 
 <script>
 export default {
-  head() {
-    return {
-      title: 'My Account - Edit Profile',
-      meta: [{
-        hid: 'robots',
-        name: 'robots',
-        content: 'noindex, nofollow'
-      }]
-    }
-  },
   props: {
     user: {
       type: Object,
@@ -296,6 +286,16 @@ export default {
       this.avatarThumb = this.user.profilePictureThumb
       this.city = this.user.userCity
       this.country = this.user.userCountry
+    }
+  },
+  head() {
+    return {
+      title: 'My Account - Edit Profile',
+      meta: [{
+        hid: 'robots',
+        name: 'robots',
+        content: 'noindex, nofollow'
+      }]
     }
   }
 }

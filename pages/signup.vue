@@ -119,15 +119,6 @@
 <script>
 export default {
   layout: 'auth',
-  head() {
-    return {
-      title: 'Create account',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Account creation' },
-        { hid: 'robots', name: 'robots', content: 'index, nofollow' }
-      ]
-    }
-  },
   data() {
     return {
       firstName: '',
@@ -173,6 +164,15 @@ export default {
         this.isVerifying = false
         this.error = err.response.data.message
       })
+    }
+  },
+  head() {
+    return {
+      title: 'Create account',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Account creation' },
+        { hid: 'robots', name: 'robots', content: 'index, nofollow' }
+      ]
     }
   }
 }

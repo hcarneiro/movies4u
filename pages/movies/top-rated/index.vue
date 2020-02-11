@@ -85,15 +85,6 @@ import title from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
-  head() {
-    return {
-      title: 'Top rated movies',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Top rated movies' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Top Rated Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
-      ]
-    }
-  },
   components: {
     Card
   },
@@ -187,6 +178,15 @@ export default {
         .then(() => {
           this.isReady = true
         })
+    }
+  },
+  head() {
+    return {
+      title: 'Top rated movies',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Top rated movies' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Top Rated Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      ]
     }
   }
 }

@@ -24,15 +24,6 @@
 <script>
 export default {
   layout: 'auth',
-  head() {
-    return {
-      title: 'Create account',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Verify account' },
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
-      ]
-    }
-  },
   data() {
     return {
       token: this.$route.params.token,
@@ -55,6 +46,15 @@ export default {
         this.isVerifying = false
         this.userVerified = false
       })
+  },
+  head() {
+    return {
+      title: 'Create account',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Verify account' },
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+      ]
+    }
   }
 }
 </script>

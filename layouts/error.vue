@@ -323,6 +323,20 @@ export default {
       default: null
     }
   },
+  computed: {
+    statusCode() {
+      return (this.error && this.error.statusCode) || 500
+    },
+    message() {
+      return this.error.message || 'Error'
+    }
+  },
+  mounted() {
+    document.body.classList.add('is-light')
+  },
+  destroyed() {
+    document.body.classList.remove('is-light')
+  },
   head() {
     return {
       title: this.message,
@@ -333,20 +347,6 @@ export default {
         }
       ]
     }
-  },
-  computed: {
-    statusCode() {
-      return (this.error && this.error.statusCode) || 500
-    },
-    message() {
-      return this.error.message || `Error`
-    }
-  },
-  mounted() {
-    document.body.classList.add('is-light')
-  },
-  destroyed() {
-    document.body.classList.remove('is-light')
   }
 }
 </script>

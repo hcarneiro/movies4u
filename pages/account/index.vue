@@ -71,14 +71,6 @@
 import { mapState } from 'vuex'
 
 export default {
-  head() {
-    return {
-      title: 'My Account',
-      meta: [
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
-      ]
-    }
-  },
   data() {
     return {}
   },
@@ -89,6 +81,13 @@ export default {
       }
     })
   },
-  methods: {}
+  head() {
+    return {
+      title: 'My Account',
+      meta: [
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+      ]
+    }
+  }
 }
 </script>

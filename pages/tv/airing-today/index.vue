@@ -85,15 +85,6 @@ import title from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
-  head() {
-    return {
-      title: 'Airing Today Shows',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Airing Today Shows' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Airing Today Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
-      ]
-    }
-  },
   components: {
     Card
   },
@@ -187,6 +178,15 @@ export default {
         .then(() => {
           this.isReady = true
         })
+    }
+  },
+  head() {
+    return {
+      title: 'Airing Today Shows',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Airing Today Shows' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Airing Today Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+      ]
     }
   }
 }

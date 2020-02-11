@@ -25,14 +25,6 @@
 
 <script>
 export default {
-  head() {
-    return {
-      title: 'My Account - Edit Lists',
-      meta: [
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
-      ]
-    }
-  },
   props: {
     user: {
       type: Object,
@@ -45,6 +37,14 @@ export default {
     this.$router.push({
       path: '/account/lists/public'
     })
+  },
+  head() {
+    return {
+      title: 'My Account - Edit Lists',
+      meta: [
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+      ]
+    }
   }
 }
 </script>

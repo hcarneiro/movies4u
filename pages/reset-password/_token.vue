@@ -53,15 +53,6 @@
 <script>
 export default {
   layout: 'auth',
-  head() {
-    return {
-      title: 'Reset password',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Reset password' },
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
-      ]
-    }
-  },
   data() {
     return {
       token: this.$route.params.token,
@@ -126,6 +117,15 @@ export default {
           this.error = 'There was an error resetting your password. Please try again later.'
         }
       })
+    }
+  },
+  head() {
+    return {
+      title: 'Reset password',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Reset password' },
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+      ]
     }
   }
 }
