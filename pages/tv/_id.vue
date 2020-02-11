@@ -11,7 +11,7 @@
             <img v-else src="~assets/no-poster.png" alt="No poster available">
           </p>
           <div v-if="percentage" class="is-hidden-tablet ss-circle-holder">
-            <no-ssr>
+            <client-only>
               <vue-circle
                 :progress="percentage"
                 :size="100"
@@ -25,31 +25,127 @@
                 :show-percent="true"
                 class="is-light"
               />
-            </no-ssr>
+            </client-only>
           </div>
         </div>
         <div class="column is-offset-one-third ss-detail-heading">
-          <h1 class="title">
-            {{ show | movieTitle }}
-          </h1>
+          <div class="columns ss-title-wrapper">
+            <div class="column">
+              <h1 class="title">
+                {{ show | movieTitle }}
+              </h1>
+            </div>
+            <div v-if="userAuthenticated" class="column is-flex is-hidden-mobile ss-add-list-desktop">
+              <div v-if="tvAddedToList" class="ss-added-lists">
+                <b-dropdown v-if="listTvIsIn.length" hoverable aria-role="list">
+                  <button slot="trigger" class="button">
+                    <span>Movie added to:</span>
+                    <b-icon icon="menu-down" />
+                  </button>
+
+                  <b-dropdown-item
+                    v-for="option in listTvIsIn"
+                    :key="option.id"
+                    aria-role="listitem"
+                    :custom="true"
+                  >
+                    <div class="ss-list-dropdown-item">
+                      <span>
+                        {{ option.title }} <small v-if="!option.public">(Private)</small>
+                      </span>
+                      <a href="#" @click.prevent="onDeleteItem(option.id)">
+                        <b-icon icon="delete" size="is-small" />
+                      </a>
+                    </div>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </div>
+              <div v-if="allUserLists.length" class="control">
+                <div class="select">
+                  <select v-model="listSelected" @change="onSelectList">
+                    <option disabled="disabled" hidden="hidden" value="none">
+                      Add to list
+                    </option>
+                    <option
+                      v-for="option in allUserLists"
+                      :key="option.id"
+                      :value="option.id"
+                      :disabled="option.disabled"
+                    >
+                      {{ option.title }} <small v-if="!option.public">(Private)</small>
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <b-button v-else @click="onCreateList()">
+                Create list <b-icon icon="plus" size="is-small" type="is-primary" />
+              </b-button>
+            </div>
+          </div>
           <p class="subtitle">
             <nuxt-link
               v-for="(tag, idx) in show.genres"
               :key="idx"
-              :to="`/genres/${tag.id}/tv`"
+              :to="`/genres/${slug(title(tag))}-${tag.id}/tv`"
             >
               <b-tag rounded>
                 {{ tag.name }}
               </b-tag>
             </nuxt-link>
           </p>
+          <div v-if="userAuthenticated" class="ss-add-list is-flex is-hidden-tablet">
+            <div v-if="tvAddedToList" class="ss-added-lists">
+              <b-dropdown v-if="listTvIsIn.length" hoverable aria-role="list">
+                <button slot="trigger" class="button">
+                  <span>Movie added to:</span>
+                  <b-icon icon="menu-down" />
+                </button>
+
+                <b-dropdown-item
+                  v-for="option in listTvIsIn"
+                  :key="option.id"
+                  aria-role="listitem"
+                  :custom="true"
+                >
+                  <div class="ss-list-dropdown-item">
+                    <span>
+                      {{ option.title }} <small v-if="!option.public">(Private)</small>
+                    </span>
+                    <a href="#" @click.prevent="onDeleteItem(option.id)">
+                      <b-icon icon="delete" size="is-small" />
+                    </a>
+                  </div>
+                </b-dropdown-item>
+              </b-dropdown>
+            </div>
+            <div v-if="allUserLists.length" class="control">
+              <div class="select">
+                <select v-model="listSelected" @change="onSelectList">
+                  <option disabled="disabled" hidden="hidden" value="none">
+                    Add to list
+                  </option>
+                  <option
+                    v-for="option in allUserLists"
+                    :key="option.id"
+                    :value="option.id"
+                    :disabled="option.disabled"
+                  >
+                    {{ option.title }} <small v-if="!option.public">(Private)</small>
+                  </option>
+                </select>
+              </div>
+            </div>
+            <b-button v-else @click="onCreateList()">
+              Create list <b-icon icon="plus" size="is-small" type="is-primary" />
+            </b-button>
+          </div>
           <p>
             {{ show.overview }}
           </p>
           <div class="columns is-multiline ss-detail-heading-tools">
             <div v-if="percentage" class="column is-full-mobile is-full-tablet is-one-fifth-desktop is-hidden-mobile ss-tool-holder">
               <div class="ss-circle-holder">
-                <no-ssr>
+                <client-only>
                   <vue-circle
                     :progress="percentage"
                     :size="60"
@@ -62,7 +158,7 @@
                     insert-mode="append"
                     :show-percent="true"
                   />
-                </no-ssr>
+                </client-only>
               </div>
             </div>
             <div v-for="(item, index) in show.created_by" :key="index" class="column is-half-mobile is-one-fifth-desktop ss-tool-holder">
@@ -99,6 +195,56 @@
               />
             </div>
           </div>
+          <template v-if="show.videos && show.videos.results && show.videos.results.length">
+            <h4 class="title is-4">
+              Media
+            </h4>
+            <div class="ss-media-holder">
+              <silentbox-group>
+                <template v-for="(video, index) in show.videos.results">
+                  <silentbox-item :key="index" :src="'https://www.youtube.com/watch?v=' + video.key" :description="video.name" />
+                </template>
+              </silentbox-group>
+            </div>
+          </template>
+          <template v-if="recommendations && recommendations.length">
+            <h4 class="title is-4">
+              Recommendations
+            </h4>
+            <div class="columns is-variable is-2-tablet is-4-desktop ss-recommendations-holder">
+              <div v-for="(recommendation, index) in recommendations" :key="index" class="column is-three-fifths-mobile is-one-fifth-tablet">
+                <nuxt-link :to="`${slug(title(recommendation))}-${recommendation.id}`">
+                  <div class="ss-recommendation-card">
+                    <figure class="image is-16by9">
+                      <img :src="getBackground(recommendation.backdrop_path)" :alt="recommendation | movieTitle">
+                    </figure>
+                    <div class="ss-recommendation-card-footer">
+                      <div>
+                        {{ recommendation | movieTitle }}
+                      </div>
+                      <div>
+                        <client-only>
+                          <vue-circle
+                            :progress="calculatePercentage(recommendation.vote_average)"
+                            :size="30"
+                            line-cap="round"
+                            :fill="getFillColor(calculatePercentage(recommendation.vote_average))"
+                            :empty-fill="getEmptyFillColor(calculatePercentage(recommendation.vote_average))"
+                            :thickness="3"
+                            :start-angle="4.7"
+                            :animation="false"
+                            insert-mode="append"
+                            :show-percent="true"
+                            class="is-small"
+                          />
+                        </client-only>
+                      </div>
+                    </div>
+                  </div>
+                </nuxt-link>
+              </div>
+            </div>
+          </template>
         </div>
         <div class="column is-one-quarter ss-facts-holder">
           <h4 class="title is-4">
@@ -111,7 +257,7 @@
             {{ show.status }}
           </p>
           <h6 class="title is-6">
-           First aired
+            First aired
           </h6>
           <p class="subtitle is-size-6 is-spaced">
             {{ show | movieDate | formatDate }}
@@ -151,9 +297,12 @@
 </template>
 
 <script>
-import { map, find } from 'lodash'
+import { map, find, cloneDeep } from 'lodash'
 import { mapState } from 'vuex'
+import slug from '~/plugins/get-slug'
+import title from '~/plugins/get-title'
 import CastCard from '~/components/CastCard'
+import bus from '~/plugins/bus'
 
 export default {
   head() {
@@ -177,7 +326,12 @@ export default {
         color: '#00d1b2'
       },
       emptyFillColor: 'rgba(0, 209, 178, 0.3)',
-      isReady: false
+      isReady: false,
+      listSelected: 'none',
+      filteredLists: [],
+      tvAddedToList: false,
+      listTvIsIn: [],
+      allUserLists: []
     }
   },
   computed: {
@@ -190,8 +344,20 @@ export default {
           return state.tv.cast.slice(0, 5)
         }
       },
+      recommendations: (state) => {
+        return state.tv.showRecommendations
+      },
       languages: (state) => {
         return state.languages
+      },
+      myLists: (state) => {
+        return state.lists.allUserLists
+      },
+      userAuthenticated: (state) => {
+        return state.auth.authenticated
+      },
+      user: (state) => {
+        return state.auth.currentUser
       }
     })
   },
@@ -202,6 +368,11 @@ export default {
       }
 
       this.getRatingSettings()
+    },
+    myLists(value) {
+      if (value && value.length) {
+        this.filterLists()
+      }
     }
   },
   created() {
@@ -209,8 +380,58 @@ export default {
     this.$store.dispatch('tv/clearData', this.id)
     this.$store.dispatch('tv/getShow', this.id)
     this.$store.dispatch('tv/getCrew', this.id)
+    this.$store.dispatch('tv/getRecommendations', this.id)
+    this.$store.dispatch('lists/getUserLists')
   },
   methods: {
+    title,
+    slug,
+    filterLists() {
+      const listIndexes = []
+      this.allUserLists = cloneDeep(this.myLists)
+
+      this.allUserLists.forEach((list, index) => {
+        const foundMovie = find(list.movies, { id: parseInt(this.id, 10) })
+
+        if (!foundMovie) {
+          return
+        }
+
+        this.tvAddedToList = true
+        this.listTvIsIn.push(list)
+        listIndexes.push(index)
+      })
+
+      if (!listIndexes.length) {
+        return
+      }
+
+      listIndexes.forEach((index) => {
+        this.allUserLists.splice(index, 1)
+      })
+    },
+    onSelectList() {
+      const listId = this.listSelected
+      this.listSelected = 'none'
+
+      this.$store.dispatch('lists/addMovieToList', {
+        id: listId,
+        item: this.show,
+        categories: this.show.genres,
+        type: 'tv'
+      })
+        .then(() => {
+          this.filterLists()
+        })
+    },
+    onCreateList() {
+      bus.$emit('open-list-modal', {
+        type: 'create',
+        context: 'private',
+        userId: this.user.id,
+        movie: this.show
+      })
+    },
     getBackground(path) {
       if (!path) {
         return ''
@@ -228,44 +449,62 @@ export default {
       this.getFillColor()
       this.getEmptyFillColor()
     },
-    calculatePercentage() {
-      this.percentage = (this.show.vote_average / 10) * 100
+    calculatePercentage(average) {
+      const percentage = ((average || this.show.vote_average) / 10) * 100
+
+      if (!average) {
+        this.percentage = percentage
+      }
+
+      return percentage
     },
-    getFillColor() {
-      if (this.percentage >= 0 && this.percentage <= 40) {
-        this.fillColor.color = '#ff3860'
-        return
+    getFillColor(percentage) {
+      const variable = !!percentage
+      percentage = percentage || this.percentage
+      const fillColor = {
+        color: ''
       }
 
-      if (this.percentage >= 41 && this.percentage <= 60) {
-        this.fillColor.color = '#ffdd57'
-        return
+      if (percentage >= 0 && percentage <= 40) {
+        fillColor.color = '#ff3860'
       }
 
-      if (this.percentage >= 61 && this.percentage <= 100) {
-        this.fillColor.color = '#00d1b2'
-        return
+      if (percentage >= 41 && percentage <= 60) {
+        fillColor.color = '#ffdd57'
       }
 
-      this.fillColor.color = '#00d1b2'
+      if (percentage >= 61 && percentage <= 100) {
+        fillColor.color = '#00d1b2'
+      }
+
+      if (variable) {
+        return fillColor
+      }
+
+      this.fillColor.color = fillColor.color
     },
-    getEmptyFillColor() {
-      if (this.percentage >= 0 && this.percentage <= 40) {
-        this.emptyFillColor = 'rgba(255, 56, 96, 0.3)'
-        return
+    getEmptyFillColor(percentage) {
+      const variable = !!percentage
+      percentage = percentage || this.percentage
+      let emptyFillColor
+
+      if (percentage >= 0 && percentage <= 40) {
+        emptyFillColor = 'rgba(255, 56, 96, 0.3)'
       }
 
-      if (this.percentage >= 41 && this.percentage <= 60) {
-        this.emptyFillColor = 'rgba(255, 221, 87, 0.3)'
-        return
+      if (percentage >= 41 && percentage <= 60) {
+        emptyFillColor = 'rgba(255, 221, 87, 0.3)'
       }
 
-      if (this.percentage >= 61 && this.percentage <= 100) {
-        this.emptyFillColor = 'rgba(0, 209, 178, 0.3)'
-        return
+      if (percentage >= 61 && percentage <= 100) {
+        emptyFillColor = 'rgba(0, 209, 178, 0.3)'
       }
 
-      this.emptyFillColor = 'rgba(0, 209, 178, 0.3)'
+      if (variable) {
+        return emptyFillColor
+      }
+
+      this.emptyFillColor = emptyFillColor
     },
     getLanguage(iso) {
       const language = find(this.languages, (lang) => {
@@ -284,6 +523,28 @@ export default {
       }
 
       return show.networks[0].name
+    },
+    onDeleteItem(listId) {
+      this.$buefy.dialog.confirm({
+        title: 'Delete',
+        message: `Are you sure you want to delete <strong>${this.$options.filters.movieTitle(this.movie)}</strong> from the list?`,
+        confirmText: 'Delete',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          this.deleteFromList(listId)
+        }
+      })
+    },
+    deleteFromList(listId) {
+      this.$store.dispatch('lists/removeFromList', {
+        listId,
+        itemId: this.id
+      })
+        .then((lists) => {
+          this.allUserLists = lists
+          this.filterLists(true)
+        })
     }
   }
 }

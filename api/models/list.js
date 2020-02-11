@@ -13,8 +13,7 @@ const List = database.db.define('list', {
     defaultValue: []
   },
   thumbnail: {
-    type: Sequelize.JSONB,
-    defaultValue: {}
+    type: Sequelize.STRING
   },
   movies: {
     type: Sequelize.JSONB,
@@ -23,6 +22,10 @@ const List = database.db.define('list', {
   public: {
     type: Sequelize.BOOLEAN,
     defaultValue: false
+  },
+  creatorId: {
+    type: Sequelize.INTEGER,
+    allowNull: false
   }
 }, {
   paranoid: true

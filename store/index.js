@@ -35,6 +35,7 @@ export const actions = {
 
     if (req.session && req.user) {
       await dispatch('auth/onLogin', req.user.auth_token)
+      await commit('auth/setUser', req.user)
     }
 
     const response = await dispatch('movies/getMovieGenres')

@@ -6,6 +6,7 @@ export const state = () => ({
   popularList: [],
   topRatedList: [],
   nowPlayingList: [],
+  discoverList: [],
   movie: {},
   totalPages: 0,
   page: 1,
@@ -22,8 +23,12 @@ export const state = () => ({
   totalNowPlayingPages: 0,
   nowPlayingPage: 1,
   totalNowPlayingResults: 0,
+  totalDiscoverPages: 0,
+  discoverPage: 1,
+  totalDiscoverResults: 0,
   crew: undefined,
-  cast: undefined
+  cast: undefined,
+  movieRecommendations: undefined
 })
 
 export const mutations = {
@@ -31,6 +36,7 @@ export const mutations = {
     state.crew = undefined
     state.cast = undefined
     state.movie = {}
+    state.movieRecommendations = undefined
   },
   setCrew(state, crew) {
     state.crew = crew
@@ -52,6 +58,9 @@ export const mutations = {
   },
   setNowPlayingMovies(state, movies) {
     state.nowPlayingList = movies
+  },
+  setDiscoverMovies(state, movies) {
+    state.discoverList = movies
   },
   updateMovies(state, movies) {
     _.forEach(movies, (movie) => {
@@ -76,6 +85,11 @@ export const mutations = {
   updateNowPlaying(state, movies) {
     _.forEach(movies, (movie) => {
       state.nowPlayingList.push(movie)
+    })
+  },
+  updateDiscover(state, movies) {
+    _.forEach(movies, (movie) => {
+      state.discoverList.push(movie)
     })
   },
   setMovie(state, movie) {
@@ -125,6 +139,18 @@ export const mutations = {
   },
   setNowPlayingPage(state, pageNumber) {
     state.nowPlayingPage = pageNumber
+  },
+  setDiscoverTotalPages(state, total) {
+    state.totalDiscoverPages = total
+  },
+  setDiscoverTotalResults(state, total) {
+    state.totalDiscoverResults = total
+  },
+  setDiscoverPage(state, pageNumber) {
+    state.discoverPage = pageNumber
+  },
+  setMovieRecommendations(state, recommendations) {
+    state.movieRecommendations = recommendations
   }
 }
 
@@ -146,6 +172,8 @@ export const actions = {
           commit('setCrew', response.data.crew)
           return Promise.resolve(response.data)
         }
+
+        return Promise.reject(response)
       })
       .catch((error) => {
         throw new Error(error)
@@ -275,7 +303,7 @@ export const actions = {
   updateTrending({ commit, rootState }, page) {
     const currentPage = page || rootState.movies.trendingPage
 
-    return this.$axios.get(`https://api.themoviedb.org/3/trending/all/day?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
+    return this.$axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
       .then((response) => {
         if (response.status === 200) {
           commit('updateTrending', response.data.results)
@@ -358,8 +386,69 @@ export const actions = {
 
           const videos = response.data.results
           const video = _.find(videos, { type: 'Trailer' })
+
+          if (!video) {
+            return
+          }
+
           const videoURL = `https://www.youtube.com/embed/${video.key}?rel=0&modestbranding=1`
           return Promise.resolve(videoURL)
+        }
+
+        return Promise.reject(response)
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+  },
+  getRecommendations({ commit, rootState }, movieId) {
+    return this.$axios.get(`https://api.themoviedb.org/3/movie/${movieId}/recommendations?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=1`)
+      .then((response) => {
+        if (response.status === 200) {
+          if (!response.data.results.length) {
+            return Promise.resolve('')
+          }
+
+          const recommendations = response.data.results.slice(0, 5)
+          commit('setMovieRecommendations', recommendations)
+          return Promise.resolve(recommendations)
+        }
+
+        return Promise.reject(response)
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+  },
+  movieDiscover({ commit, rootState }, genreId) {
+    return this.$axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_genres=${genreId}`)
+      .then((response) => {
+        if (response.status === 200) {
+          commit('setDiscoverMovies', response.data.results)
+          commit('setDiscoverTotalPages', response.data.total_pages)
+          commit('setDiscoverTotalResults', response.data.total_results)
+          commit('setDiscoverPage', response.data.page)
+          return Promise.resolve(response.data.results)
+        }
+
+        return Promise.reject(response)
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+  },
+  updateDiscover({ commit, rootState }, options) {
+    options = options || {}
+    const currentPage = options.page || rootState.movies.page
+
+    return this.$axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${currentPage}&with_genres=${options.genreId}`)
+      .then((response) => {
+        if (response.status === 200) {
+          commit('updateDiscover', response.data.results)
+          commit('setDiscoverTotalPages', response.data.total_pages)
+          commit('setDiscoverTotalResults', response.data.total_results)
+          commit('setDiscoverPage', response.data.page)
+          return Promise.resolve(response.data)
         }
 
         return Promise.reject(response)

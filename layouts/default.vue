@@ -4,14 +4,16 @@
 
     <section class="main-content ss-content">
       <nuxt />
+      <list-form-modal />
+      <share-modal />
     </section>
     <footer class="footer">
       <div class="content has-text-centered">
-        <p class="is-size-7">
-          Created by <a href="https://www.thegeekdeveloper.com" target="_blank">The Geek Developer</a>
+        <p class="is-size-7 ss-tmdb-holder">
+          <a href="https://www.themoviedb.org" target="_blank"><img src="~assets/tmdb-logo.svg" width="100" alt="The Movie DB"></a>
         </p>
         <p class="is-size-7">
-          This product uses the <a href="https://www.themoviedb.org/documentation/api" target="_blank">TMDb API</a> but is not endorsed or certified by <a href="https://www.themoviedb.org" target="_blank">TMDb</a>.
+          Created by <a href="https://www.thegeekdeveloper.com" target="_blank">The Geek Developer</a>
         </p>
       </div>
     </footer>
@@ -20,10 +22,14 @@
 
 <script>
 import Navbar from '~/components/Navbar'
+import ListFormModal from '~/components/ListFormModal'
+import ShareModal from '~/components/ShareModal'
 
 export default {
   components: {
-    Navbar
+    Navbar,
+    ListFormModal,
+    ShareModal
   }
 }
 </script>

@@ -2,10 +2,10 @@
   <div class="card cast-card">
     <div class="card-image">
       <figure class="image is-2by3">
-        <nuxt-link :to="`cast/${slug(name)}-${id}`">
-          <img v-if="profileImage" :src="profileImage" alt="title">
-          <img v-else src="~assets/no-cast.png" alt="No poster available">
-        </nuxt-link>
+        <!-- <nuxt-link :to="`cast/${slug(name)}-${id}`"> -->
+        <img v-if="profileImage" :src="profileImage" alt="title">
+        <img v-else src="~assets/no-cast.png" alt="No poster available">
+        <!-- </nuxt-link> -->
       </figure>
     </div>
     <div class="card-content">
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import getSlug from '~/plugins/get-slug'
+import slug from '~/plugins/get-slug'
 
 export default {
   name: 'CastCard',
@@ -43,10 +43,8 @@ export default {
       required: false
     }
   },
-  data() {
-    return {
-      slug: getSlug
-    }
+  methods: {
+    slug
   }
 }
 </script>

@@ -1,0 +1,205 @@
+<template>
+  <div>
+    <section class="ss-top-hero">
+      <div v-if="isReady" v-swiper:mySwiper="swiperOption">
+        <div class="swiper-wrapper">
+          <div v-for="(tvShow, index) in bannerTvShows" :key="index" class="swiper-slide" :style="`background-image: url(${getBackground(tvShow.backdrop_path)})`">
+            <div class="ss-hero-screen" />
+            <div class="container hero-body">
+              <h1 class="title">
+                {{ tvShow | movieTitle }}
+              </h1>
+              <h2 class="subtitle">
+                <nuxt-link
+                  v-for="(tag, idx) in tags(tvShow.genre_ids, genres)"
+                  :key="idx"
+                  :to="`/genres/${slug(title(tag))}-${tag.id}/tv`"
+                >
+                  <b-tag rounded>
+                    {{ tag.name }}
+                  </b-tag>
+                </nuxt-link>
+              </h2>
+
+              <div class="hero-tools" :class="{ 'is-one-button': !tvShow.hasTrailer }">
+                <b-button v-if="tvShow.hasTrailer" rounded @click="openVideoModal(tvShow.id)">
+                  <span>
+                    Watch trailer
+                  </span>
+                  <b-icon icon="play-circle-outline" size="is-small" />
+                </b-button>
+                <nuxt-link :to="`/tv/${slug(title(tvShow))}-${tvShow.id}`" class="more-info">
+                  More info
+                </nuxt-link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination swiper-pagination-bullets" />
+      </div>
+      <b-modal :active.sync="isModalActive">
+        <div class="video-container">
+          <iframe
+            width="560"
+            height="315"
+            :src="modalVideoUrl"
+            frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+        </div>
+      </b-modal>
+    </section>
+    <div class="container ss-container">
+      <p class="subtitle">
+        TV Shows
+      </p>
+      <h2 class="title">
+        {{ genreName }}
+      </h2>
+      <div class="columns is-multiline">
+        <div v-for="(tvShow, index) in tvShows" :key="index" class="column is-4">
+          <card
+            :id="tvShow.id"
+            :title="tvShow | movieTitle"
+            :release-date="tvShow | movieDate"
+            :tags="tags(tvShow.genre_ids, genres)"
+            :rating="tvShow.vote_average"
+            :thumb="tvShow.poster_path | getBackdrop"
+            base-url="/tv"
+          />
+        </div>
+      </div>
+      <client-only>
+        <infinite-loading v-if="tvShows && tvShows.length" @infinite="infiniteHandler" />
+      </client-only>
+    </div>
+  </div>
+</template>
+
+<script>
+import { find } from 'lodash'
+import { mapState } from 'vuex'
+import tags from '~/plugins/get-tags'
+import slug from '~/plugins/get-slug'
+import title from '~/plugins/get-title'
+import Card from '~/components/Card'
+
+export default {
+  head() {
+    return {
+      title: `${this.genreName} - TV Shows`
+    }
+  },
+  components: {
+    Card
+  },
+  data() {
+    return {
+      id: parseInt(this.$route.params.id.split('-').pop(), 10),
+      isReady: false,
+      isModalActive: false,
+      modalVideoUrl: undefined,
+      swiperOption: {
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true
+        }
+      },
+      genreName: undefined
+    }
+  },
+  computed: {
+    ...mapState({
+      tvShows: (state) => {
+        return state.tv.discoverList
+      },
+      bannerTvShows: (state) => {
+        return state.tv.discoverList.slice(0, 5)
+      },
+      page: (state) => {
+        return state.tv.discoverPage
+      },
+      genres: (state) => {
+        return state.genres
+      }
+    })
+  },
+  watch: {
+    bannerTvShows() {
+      this.checkIfHasVideo()
+    }
+  },
+  created() {
+    this.getTvShows()
+    this.getGenreName()
+  },
+  methods: {
+    title,
+    tags,
+    slug,
+    getTvShows() {
+      return this.$store.dispatch('tv/tvDiscover', this.id)
+    },
+    infiniteHandler($state) {
+      this.$store.dispatch('tv/updateDiscover', {
+        page: this.page + 1,
+        genreId: this.id
+      })
+        .then((response) => {
+          if (response.results.length) {
+            $state.loaded()
+          } else {
+            $state.complete()
+          }
+        })
+    },
+    getBackground(path) {
+      if (!path) {
+        return ''
+      }
+
+      return `https://image.tmdb.org/t/p/original${path}`
+    },
+    openVideoModal(id) {
+      this.isModalActive = !this.isModalActive
+      this.getTvVideo(id)
+    },
+    getTvVideo(id) {
+      if (!id) {
+        return false
+      }
+
+      return this.$store.dispatch('tv/getVideos', id)
+        .then((result) => {
+          this.modalVideoUrl = result
+          return Promise.resolve(result)
+        })
+    },
+    checkIfHasVideo() {
+      const promises = []
+      this.bannerTvShows.forEach((show, index) => {
+        promises.push(this.getTvVideo(show.id)
+          .then((result) => {
+            show.hasTrailer = result
+            this.$set(this.bannerTvShows, index, show)
+          }))
+      })
+
+      Promise.all(promises)
+        .then(() => {
+          this.isReady = true
+        })
+    },
+    getGenreName() {
+      const genre = find(this.genres, { id: this.id })
+
+      if (!genre) {
+        return
+      }
+
+      this.genreName = genre.name.toUpperCase()
+    }
+  }
+}
+</script>

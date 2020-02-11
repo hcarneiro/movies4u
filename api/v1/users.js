@@ -1,7 +1,9 @@
 const express = require('express')
 const router = express.Router()
+const _ = require('lodash')
 const authenticate = require('../../config/authenticate')
 const database = require('../../config/database')
+const userAttributes = require('../../config/user-attributes')
 
 router.use(authenticate)
 
@@ -29,31 +31,32 @@ router.put('/', (req, res) => {
         'userCity',
         'userCountry',
         'profilePicture',
+        'profilePictureThumb',
         'preferences'
       ].forEach((param) => {
         if (typeof req.body[param] !== 'undefined') {
-          req.user[param] = req.body[param]
+          user[param] = req.body[param]
         }
       })
 
       if (req.body.newPassword) {
         if (!req.body.password) {
-          return Promise.reject('The current password is required in order to update your password.')
+          return Promise.reject(new Error('The current password is required in order to update your password.'))
         }
 
         if (!user.isValidPassword(req.body.password)) {
-          return Promise.reject('The current password is not valid. Please try again.')
+          return Promise.reject(new Error('The current password is not valid. Please try again.'))
         }
 
-        req.user.password = user.password
-        req.user.setPassword(req.body.newPassword)
+        user.setPassword(req.body.newPassword)
       }
 
-      return req.user.save()
+      user.save()
+      return user
     })
-    .then(() => {
+    .then((user) => {
       res.send({
-        user: req.user.get({ plain: true })
+        user: _.pick(user, userAttributes)
       })
     })
     .catch((err) => {

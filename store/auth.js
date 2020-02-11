@@ -17,9 +17,6 @@ export const mutations = {
   setUser(state, user) {
     state.currentUser = user
   },
-  setUserPhoto(state, photoUrl) {
-    state.currentUser.profilePicture = photoUrl
-  },
   setVerified(state, status) {
     state.verified = status
   },
@@ -44,10 +41,11 @@ export const actions = {
   logout({ commit }) {
     return this.$axios.post('/api/v1/auth/logout')
       .then(() => {
-        commit('setUser', undefined)
-        Cookies.remove('_auth_token')
+        commit('setUser', {})
+        Cookies.remove(COOKIE.userToken)
         commit('setAuthenticated', false)
         commit('setAuthToken', '')
+        commit('setVerified', false)
 
         return Promise.resolve()
       })
@@ -83,24 +81,23 @@ export const actions = {
         const params = { _: moment().unix() }
 
         if (setCookie) {
-          params.auth_token = state.auth_token
           params.setCookie = true
+          params.auth_token = state.auth_token
         }
 
-        return this.$axios.get('/api/v1/users', { params }).then((response) => {
-          return response
-        })
+        return this.$axios.get('/api/v1/users', { params })
+      })
+      .then((response) => {
+        return response
       })
       .then((response) => {
         const user = response.data.user
-        const session = response.data.session
-
         commit('setUser', user)
-        dispatch('onLogin', session && (session.auth_token || user.auth_token))
+        dispatch('onLogin', user.auth_token)
         return Promise.resolve()
       })
       .catch((err) => {
-        if (!forceCheck) {
+        if (forceCheck) {
           dispatch('logout')
         }
         return Promise.reject(err)
@@ -115,7 +112,7 @@ export const actions = {
     return state.authenticated
   },
   verify({ state, dispatch }) {
-    if (state.verified) {
+    if (state.verified && state.currentUser && state.currentUser.hasOwnProperty('auth_token')) {
       return Promise.resolve()
     }
 

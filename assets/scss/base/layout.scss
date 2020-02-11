@@ -1,3 +1,15 @@
+#__layout {
+  > div {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    
+    .ss-content {
+      flex: 1;
+    }
+  }
+}
+
 .ss-top-hero {
   position: relative;
   text-transform: uppercase;
@@ -178,6 +190,7 @@
 
 .ss-detail-heading-holder {
   position: relative;
+  min-height: 360px;
 }
 
 .ss-poster-holder {
@@ -207,6 +220,14 @@
 .ss-detail-heading {
   padding-right: 0;
   padding-left: 40px;
+
+  .ss-title-wrapper {
+    margin-bottom: 0px;
+
+    .title {
+      margin-bottom: 0;
+    }
+  }
 
   .tag {
     background-color: transparent;
@@ -243,14 +264,11 @@
 }
 
 .ss-detail-cast-holder {
-  padding-top: 40px;
-
-  @include above ($desktop-size) {
-    padding-top: 130px;
-  }
+  padding-top: 60px;
 
   .ss-cast-card-holder {
     display: flex;
+    margin-bottom: 30px;
   }
 }
 
@@ -349,5 +367,158 @@
   @include above($tablet-size) {
     width: auto;
     min-width: 250px;
+  }
+}
+
+.ss-tmdb-holder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ss-media-holder {
+  margin-bottom: 30px;
+
+  #silentbox-group {
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    flex-wrap: nowrap;
+
+    span {
+      min-width: 200px;
+      margin-left: var(--columnGap);
+      border-radius: 4px;
+      box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+      line-height: 0;
+      overflow: hidden;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+
+  #silentbox-overlay {
+    pointer-events: all;
+
+    #silentbox-overlay__content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      #silentbox-overlay__embed {
+        max-width: 960px;
+        position: relative;
+        top: auto;
+        left: auto;
+        height: auto;
+
+        #silentbox-overlay__container {
+          position: relative;
+          padding-bottom: 56.25%;
+          padding-top: 30px;
+          height: 0;
+          overflow: hidden;
+
+          iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+
+    #silentbox-overlay__arrow-buttons {
+      .arrow {
+        &:hover,
+        &:focus {
+          border-color: $brand-primary;
+        }
+      }
+    }
+
+    #silentbox-overlay__close-button {
+      .icon {
+        &:hover:before,
+        &:hover:after,
+        &:focus:before,
+        &:focus:after {
+          background: $brand-primary;
+        }
+      }
+    }
+  }
+}
+
+.silentbox-is-opened {
+  .ss-navbar {
+    z-index: 5;
+  }
+
+  .ss-media-holder {
+    #silentbox-group {
+      overflow: visible;
+    }
+  }
+}
+
+.ss-recommendations-holder {
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+
+  .ss-recommendation-card {
+    height: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    color: $brand-text;
+    box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1);
+
+    .ss-recommendation-card-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.ss-callout {
+  padding-left: 20px;
+  border-left: 4px solid $brand-primary;
+
+  &.is-info {
+    border-color: $brand-info;
+  }
+
+  &.is-success {
+    border-color: $brand-success;
+  }
+
+  &.is-warning {
+    border-color: $brand-warning;
+  }
+
+  &.is-danger {
+    border-color: $brand-danger;
+  }
+}
+
+.ss-share-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+
+  span {
+    padding: 10px;
+    cursor: pointer;
   }
 }

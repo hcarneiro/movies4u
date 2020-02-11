@@ -64,6 +64,9 @@ const User = database.db.define('user', {
   profilePicture: {
     type: Sequelize.STRING
   },
+  profilePictureThumb: {
+    type: Sequelize.STRING
+  },
   preferences: {
     type: Sequelize.JSONB,
     allowNull: true,

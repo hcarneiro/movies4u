@@ -6,7 +6,7 @@
     aria-label="main navigation"
   >
     <div class="navbar-brand">
-      <nuxt-link to="/" class="navbar-item">
+      <nuxt-link to="/" class="navbar-item is-logo">
         <img
           src="~assets/logo.png"
           alt="Logo"
@@ -14,6 +14,7 @@
       </nuxt-link>
 
       <a
+        ref="navburger"
         role="button"
         class="navbar-burger burger"
         aria-label="menu"
@@ -27,7 +28,7 @@
       </a>
     </div>
 
-    <div id="ss-main-menu" class="navbar-menu" :class="{ 'is-active': burgerIsActive }">
+    <div id="ss-main-menu" ref="mainmenu" class="navbar-menu" :class="{ 'is-active': burgerIsActive }">
       <div class="navbar-start">
         <div class="navbar-item has-dropdown is-hoverable">
           <nuxt-link to="/movies" class="navbar-link">
@@ -69,12 +70,41 @@
             </nuxt-link>
           </div>
         </div>
+        <nuxt-link to="/lists" class="navbar-item">
+          Lists
+        </nuxt-link>
       </div>
       <div class="navbar-end">
+        <div class="navbar-item search-bar">
+          <b-autocomplete
+            :data="data"
+            placeholder="Search for a movie or tv show"
+            field="title"
+            :loading="isFetching"
+            :clear-on-select="true"
+            @typing="getAsyncData"
+            @select="onSelect"
+          >
+            <template slot-scope="props">
+              <div class="media">
+                <div v-if="props.option.poster_path" class="media-left">
+                  <img :src="`https://image.tmdb.org/t/p/w500/${props.option.poster_path}`" width="32" alt="Item poster">
+                </div>
+                <div class="media-content">
+                  {{ props.option | movieTitle }} <small>in {{ props.option.media_type }}</small>
+                  <br>
+                  <small>
+                    Released in {{ props.option | movieDate | yearOnly }}
+                  </small>
+                </div>
+              </div>
+            </template>
+          </b-autocomplete>
+        </div>
         <b-dropdown v-if="!userAuthenticated" position="is-bottom-left" aria-role="menu">
           <a
             slot="trigger"
-            class="navbar-item"
+            class="navbar-item login-btn"
             role="button"
           >
             <span>Login</span>
@@ -170,9 +200,26 @@
             </form>
           </b-dropdown-item>
         </b-dropdown>
-        <a v-else class="navbar-item" @click.prevent="logout">
-          Logout
-        </a>
+        <div v-else class="navbar-item has-dropdown is-hoverable">
+          <nuxt-link to="/account/profile" class="navbar-link">
+            <div v-if="user && (user.profilePictureThumb || user.profilePicture)" class="ss-user-pic" :style="`background-image: url(${user.profilePictureThumb || user.profilePicture})`" />
+            <div v-else class="ss-user-pic">
+              {{ user | getInitials }}
+            </div>
+          </nuxt-link>
+
+          <div class="navbar-dropdown is-right">
+            <nuxt-link to="/account/profile" class="navbar-item">
+              My Account
+            </nuxt-link>
+            <nuxt-link to="/account/lists" class="navbar-item">
+              My Lists
+            </nuxt-link>
+            <a class="navbar-item" @click.prevent="logout">
+              Logout
+            </a>
+          </div>
+        </div>
         <nuxt-link v-if="!userAuthenticated" to="/signup" class="navbar-item">
           Signup
         </nuxt-link>
@@ -182,7 +229,9 @@
 </template>
 
 <script>
+import { filter, debounce } from 'lodash'
 import { mapState } from 'vuex'
+import slug from '~/plugins/get-slug'
 
 export default {
   data() {
@@ -194,7 +243,10 @@ export default {
       password: '',
       error: undefined,
       isAuthenticating: false,
-      remember: false
+      remember: false,
+      data: [],
+      selected: null,
+      isFetching: false
     }
   },
   computed: {
@@ -211,24 +263,87 @@ export default {
     this.attachHandlers()
   },
   methods: {
+    slug,
+    onSelect (value) {
+      if (!value) {
+        return
+      }
+
+      this.data.splice(0, this.data.length)
+      this.selected = null
+
+      const type = value.media_type === 'movie' ? 'movies' : value.media_type
+      const path = `/${type}/${this.slug(value.title)}-${value.id}`
+
+      this.toogleMenuClass()
+      this.$router.push({
+        path
+      })
+    },
+    getAsyncData: debounce(function (name) {
+      if (!name.length) {
+        this.data = []
+        return
+      }
+      this.isFetching = true
+      this.$store.dispatch('search/search', name)
+        .then(({ results }) => {
+          this.data = []
+
+          // Get only movies and tv
+          const data = filter(results, (result) => {
+            return result.media_type === 'movie' || result.media_type === 'tv'
+          })
+
+          data.forEach(item => this.data.push(item))
+        })
+        .catch((error) => {
+          this.data = []
+          throw error
+        })
+        .finally(() => {
+          this.isFetching = false
+        })
+    }, 500),
     burgerMenuHandler() {
-      // Get all "navbar-burger" elements
-      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0)
+      this.$refs.navburger.addEventListener('click', () => {
+        this.toogleMenuClass()
+      })
 
-      // Check if there are any navbar burgers
-      if ($navbarBurgers.length > 0) {
-        // Add a click event on each of them
-        $navbarBurgers.forEach((el) => {
+      const $navbarItems = Array.prototype.slice.call(document.querySelectorAll('.navbar-item'), 0)
+      const $navbarLinks = Array.prototype.slice.call(document.querySelectorAll('.navbar-link'), 0)
+
+      if ($navbarItems.length > 0) {
+        $navbarItems.forEach((el) => {
+          if (el.classList.contains('search-bar') ||
+          el.classList.contains('login-btn') ||
+          el.classList.contains('has-dropdown') ||
+          el.classList.contains('is-logo')) {
+            return
+          }
+
           el.addEventListener('click', () => {
-            // Get the target from the "data-target" attribute
-            const target = el.dataset.target
-            const $target = document.getElementById(target)
-
-            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-            el.classList.toggle('is-active')
-            $target.classList.toggle('is-active')
+            this.toogleMenuClass()
           })
         })
+      }
+
+      if ($navbarLinks.length > 0) {
+        $navbarLinks.forEach((el) => {
+          el.addEventListener('click', () => {
+            this.toogleMenuClass()
+          })
+        })
+      }
+    },
+    toogleMenuClass() {
+      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+      if (this.$refs.navburger) {
+        this.$refs.navburger.classList.toggle('is-active')
+      }
+
+      if (this.$refs.mainmenu) {
+        this.$refs.mainmenu.classList.toggle('is-active')
       }
     },
     onScroll() {
@@ -259,7 +374,7 @@ export default {
         session: true
       })
         .then(() => {
-          return this.$store.dispatch('auth/verifyUser', true)
+          return this.$store.dispatch('auth/verifyUser', true, this.remember)
         })
         .then(() => {
           this.isAuthenticating = false
@@ -286,6 +401,9 @@ export default {
     },
     logout() {
       this.$store.dispatch('auth/logout')
+        .then(() => {
+          this.$router.go({ path: '/' })
+        })
     }
   }
 }

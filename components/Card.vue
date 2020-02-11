@@ -2,8 +2,13 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-2by3">
+        <div v-if="showDelete" class="ss-remove-card">
+          <a href="#" @click.prevent="removeCard">
+            Remove
+          </a>
+        </div>
         <nuxt-link :to="`${baseUrl}/${slug(title)}-${id}`">
-          <img v-if="thumb" :src="thumb" alt="title">
+          <img v-if="thumb" :src="thumb" :alt="title">
           <img v-else src="~assets/no-poster.png" alt="No poster available">
         </nuxt-link>
       </figure>
@@ -18,7 +23,7 @@
       <div class="content has-text-grey">
         <div class="ss-tag-holder">
           <template v-for="(tag, index) in tags">
-            <nuxt-link :key="index" :to="`/genres/${tag.id}${baseUrl}`">
+            <nuxt-link :key="index" :to="`/genres/${slug(getTitle(tag))}-${tag.id}${baseUrl}`">
               <b-tag rounded>
                 {{ tag.name }}
               </b-tag>
@@ -27,7 +32,7 @@
         </div>
         <div class="ss-rating level">
           <div class="level-left">
-            <no-ssr>
+            <client-only>
               <vue-circle
                 :progress="percentage"
                 :size="40"
@@ -40,7 +45,7 @@
                 insert-mode="append"
                 :show-percent="true"
               />
-            </no-ssr>
+            </client-only>
           </div>
           <div class="level-right">
             <nuxt-link tag="a" :to="`${baseUrl}/${slug(title)}-${id}`" class="button is-small is-rounded">
@@ -54,7 +59,8 @@
 </template>
 
 <script>
-import getSlug from '~/plugins/get-slug'
+import slug from '~/plugins/get-slug'
+import getTitle from '~/plugins/get-title'
 
 export default {
   name: 'Card',
@@ -88,6 +94,10 @@ export default {
     baseUrl: {
       type: String,
       required: true
+    },
+    showDelete: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -95,8 +105,7 @@ export default {
       fill: {
         color: '#00d1b2'
       },
-      emptyFill: '#5c7784',
-      slug: getSlug
+      emptyFill: '#5c7784'
     }
   },
   computed: {
@@ -140,6 +149,22 @@ export default {
       }
 
       return 'rgba(0, 209, 178, 0.3)'
+    }
+  },
+  methods: {
+    slug,
+    getTitle,
+    removeCard() {
+      this.$buefy.dialog.confirm({
+        title: 'Delete',
+        message: `Are you sure you want to delete <strong>${this.title}</strong> from the list?`,
+        confirmText: 'Delete',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          this.$emit('deleteCard', this.id)
+        }
+      })
     }
   }
 }

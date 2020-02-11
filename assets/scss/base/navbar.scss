@@ -1,3 +1,18 @@
+.ss-user-pic {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 40px;
+  background-color: rgba($brand-default, 0.2);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-weight: 700;
+  line-height: initial;
+}
+
 .ss-navbar {
   position: fixed;
   top: 0;
@@ -19,6 +34,19 @@
   .navbar-link {
     color: #ffffff;
 
+    &.is-hoverable {
+      &:focus-within {
+        .navbar-dropdown {
+          display: none;
+        }
+      }
+      &:hover:focus-within {
+        .navbar-dropdown {
+          display: block;
+        }
+      }
+    }
+
     &:hover,
     &:focus
     &.has-dropdown:focus,
@@ -34,6 +62,33 @@
 
     :after {
       display: none;
+    }
+
+    .autocomplete {
+      input {
+        min-width: 250px;
+        margin: 0;
+        background-color: rgba($brand-default, 0.2);
+        border: none;
+        box-shadow: none;
+        font-size: 14px;
+        color: #ffffff;
+
+        &::placeholder {
+          color: rgba(#ffffff, 0.5);
+          opacity: 1;
+        }
+        &:-ms-input-placeholder {
+          color: rgba(#ffffff, 0.5);
+        }
+        &::-ms-input-placeholder {
+          color: rgba(#ffffff, 0.5);
+        }
+      }
+
+      .dropdown-item {
+        white-space: normal;
+      }
     }
   }
 
@@ -79,6 +134,64 @@
           background-color: transparent;
           color: $brand-primary;
         }
+      }
+    }
+  }
+}
+
+body.is-light {
+  .ss-navbar {
+    .navbar-item,
+    .navbar-link,
+    .navbar-burger {
+      color: $brand-text;
+    }
+
+    .multiselect__select:before {
+      color: rgba(#ffffff, 0.5);
+      border-color: rgba(#ffffff, 0.5) transparent transparent;
+    }
+
+    .ss-user-pic {
+      background-color: rgba($brand-text, 0.1);
+      color: rgba($brand-text, 0.5);
+    }
+
+    .navbar-item,
+    .navbar-link {
+      .multiselect__tags {
+        background-color: rgba($brand-text, 0.1);
+
+        .multiselect__placeholder {
+          color: rgba($brand-text, 0.5);
+        }
+
+        input {
+          color: $brand-text;
+
+          &::placeholder {
+            color: rgba($brand-text, 0.5);
+            opacity: 1;
+          }
+          &:-ms-input-placeholder {
+            color: rgba($brand-text, 0.5);
+          }
+          &::-ms-input-placeholder {
+            color: rgba($brand-text, 0.5);
+          }
+        }      
+      }
+    }
+
+    @include below ($desktop-small-size) {
+      .navbar-menu {
+        background-color: #ffffff;
+      }
+    }
+
+    @include above ($desktop-small-size) {
+      .navbar-dropdown {
+        background-color: #ffffff;
       }
     }
   }

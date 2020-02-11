@@ -5,7 +5,7 @@
         <div class="swiper-wrapper">
           <div v-for="(movie, index) in bannerMovies" :key="index" class="swiper-slide" :style="`background-image: url(${getBackground(movie.backdrop_path)})`">
             <div class="ss-hero-screen" />
-            <div class="hero-body">
+            <div class="container hero-body">
               <h1 class="title">
                 {{ movie | movieTitle }}
               </h1>
@@ -13,7 +13,7 @@
                 <nuxt-link
                   v-for="(tag, idx) in tags(movie.genre_ids, genres)"
                   :key="idx"
-                  :to="`/genres/${tag.id}/movies`"
+                  :to="`/genres/${slug(title(tag))}-${tag.id}/movies`"
                 >
                   <b-tag rounded>
                     {{ tag.name }}
@@ -71,25 +71,29 @@
           />
         </div>
       </div>
-      <no-ssr>
+      <client-only>
         <infinite-loading v-if="movies && movies.length" @infinite="infiniteHandler" />
-      </no-ssr>
+      </client-only>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import getTags from '~/plugins/get-tags'
-import getSlug from '~/plugins/get-slug'
-import getTitle from '~/plugins/get-title'
+import tags from '~/plugins/get-tags'
+import slug from '~/plugins/get-slug'
+import title from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
   head() {
     return {
       title: 'Movie list to watch',
-      titleTemplate: null
+      titleTemplate: null,
+      meta: [
+        { hid: 'description', name: 'description', content: 'Trending movies' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Trending Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {
@@ -105,10 +109,7 @@ export default {
           el: '.swiper-pagination',
           clickable: true
         }
-      },
-      title: getTitle,
-      tags: getTags,
-      slug: getSlug
+      }
     }
   },
   computed: {
@@ -136,6 +137,9 @@ export default {
     this.getMovies()
   },
   methods: {
+    title,
+    tags,
+    slug,
     getMovies() {
       return this.$store.dispatch('movies/getTrending')
     },

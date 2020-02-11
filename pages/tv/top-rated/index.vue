@@ -5,7 +5,7 @@
         <div class="swiper-wrapper">
           <div v-for="(tvShow, index) in bannerTvShows" :key="index" class="swiper-slide" :style="`background-image: url(${getBackground(tvShow.backdrop_path)})`">
             <div class="ss-hero-screen" />
-            <div class="hero-body">
+            <div class="container hero-body">
               <h1 class="title">
                 {{ tvShow | movieTitle }}
               </h1>
@@ -13,7 +13,7 @@
                 <nuxt-link
                   v-for="(tag, idx) in tags(tvShow.genre_ids, genres)"
                   :key="idx"
-                  :to="`/genres/${tag.id}/tv`"
+                  :to="`/genres/${slug(title(tag))}-${tag.id}/tv`"
                 >
                   <b-tag rounded>
                     {{ tag.name }}
@@ -70,24 +70,28 @@
           />
         </div>
       </div>
-      <no-ssr>
+      <client-only>
         <infinite-loading v-if="tvShows && tvShows.length" @infinite="infiniteHandler" />
-      </no-ssr>
+      </client-only>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import getTags from '~/plugins/get-tags'
-import getSlug from '~/plugins/get-slug'
-import getTitle from '~/plugins/get-title'
+import tags from '~/plugins/get-tags'
+import slug from '~/plugins/get-slug'
+import title from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
   head() {
     return {
-      title: 'Top Rated TV Shows'
+      title: 'Top Rated TV Shows',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Top Rated TV Shows' },
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Top Rated Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+      ]
     }
   },
   components: {
@@ -103,10 +107,7 @@ export default {
           el: '.swiper-pagination',
           clickable: true
         }
-      },
-      title: getTitle,
-      tags: getTags,
-      slug: getSlug
+      }
     }
   },
   computed: {
@@ -134,6 +135,9 @@ export default {
     this.getTvShows()
   },
   methods: {
+    title,
+    tags,
+    slug,
     getTvShows() {
       return this.$store.dispatch('tv/getTopRated')
     },

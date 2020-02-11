@@ -1,5 +1,6 @@
-html {
-  overflow: initial;
+html,
+body {
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
