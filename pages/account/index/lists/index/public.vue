@@ -7,14 +7,6 @@ import { mapState } from 'vuex'
 import UserLists from '~/components/UserLists'
 
 export default {
-  head() {
-    return {
-      title: 'My Account - Public Lists',
-      meta: [
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
-      ]
-    }
-  },
   components: {
     UserLists
   },
@@ -30,6 +22,14 @@ export default {
         return state.lists.public
       }
     })
+  },
+  head() {
+    return {
+      title: 'My Account - Public Lists',
+      meta: [
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+      ]
+    }
   }
 }
 </script>

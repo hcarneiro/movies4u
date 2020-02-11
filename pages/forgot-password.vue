@@ -46,15 +46,6 @@
 <script>
 export default {
   layout: 'auth',
-  head() {
-    return {
-      title: 'Reset password',
-      meta: [
-        { hid: 'description', name: 'description', content: 'Forgot password' },
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
-      ]
-    }
-  },
   data() {
     return {
       userEmail: '',
@@ -85,6 +76,15 @@ export default {
           this.error = 'Invalid email address.'
         }
       })
+    }
+  },
+  head() {
+    return {
+      title: 'Reset password',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Forgot password' },
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+      ]
     }
   }
 }

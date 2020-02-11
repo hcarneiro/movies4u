@@ -303,16 +303,6 @@ import CastCard from '~/components/CastCard'
 import bus from '~/plugins/bus'
 
 export default {
-  head() {
-    return {
-      title: this.$options.filters.movieTitle(this.movie),
-      meta: [
-        { hid: 'description', name: 'description', content: this.movie.overview },
-        { hid: 'og-image', property: 'og:image', content: this.getBackground(this.movie.backdrop_path) },
-        { hid: 'keywords', name: 'keywords', keywords: this.compileTags(this.movie.genres) }
-      ]
-    }
-  },
   components: {
     CastCard
   },
@@ -551,6 +541,16 @@ export default {
           this.allUserLists = lists
           this.filterLists(true)
         })
+    }
+  },
+  head() {
+    return {
+      title: this.$options.filters.movieTitle(this.movie),
+      meta: [
+        { hid: 'description', name: 'description', content: this.movie.overview },
+        { hid: 'og-image', property: 'og:image', content: this.getBackground(this.movie.backdrop_path) },
+        { hid: 'keywords', name: 'keywords', keywords: this.compileTags(this.movie.genres) }
+      ]
     }
   }
 }

@@ -1,6 +1,6 @@
 const path = require('path')
-const _ = require('lodash')
 const database = require('../../config/database')
+const _ = require('lodash')
 
 const Models = {
   User: require(path.resolve(__dirname, './user.js')),

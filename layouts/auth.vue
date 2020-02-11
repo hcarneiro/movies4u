@@ -26,7 +26,7 @@
 import Navbar from '~/components/Navbar'
 
 const imageMapping = {
-  'signup': 'background-image: url("/images/sign-up.jpg")',
+  signup: 'background-image: url("/images/sign-up.jpg")',
   'forgot-password': 'background-image: url("/images/forgot-password.jpg")',
   'verify-token': 'background-image: url("/images/verify-token.jpg")',
   'reset-password-token': 'background-image: url("/images/reset.jpg")'

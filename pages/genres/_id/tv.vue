@@ -86,11 +86,6 @@ import title from '~/plugins/get-title'
 import Card from '~/components/Card'
 
 export default {
-  head() {
-    return {
-      title: `${this.genreName} - TV Shows`
-    }
-  },
   components: {
     Card
   },
@@ -199,6 +194,11 @@ export default {
       }
 
       this.genreName = genre.name.toUpperCase()
+    }
+  },
+  head() {
+    return {
+      title: `${this.genreName} - TV Shows`
     }
   }
 }

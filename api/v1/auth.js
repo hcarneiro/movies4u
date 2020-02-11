@@ -33,7 +33,7 @@ const bruteforce = require('../../config/bruteforce')
 let privateConfig
 try {
   privateConfig = require('../../config/private-config.json')
-} catch {
+} catch (err) {
   privateConfig = undefined
 }
 
@@ -357,7 +357,7 @@ router.post('/login', bruteforce.prevent, (req, res) => {
         const cookieOptions = {}
 
         if (req.body.remember === false) {
-          cookieOptions.expires = 0;
+          cookieOptions.expires = 0
         }
 
         const data = _.pick(user, ['id', 'email', 'auth_token', 'createdAt'])
@@ -474,7 +474,7 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
 
   if (!req.db) {
     return res.status(400).send({
-      message: `There seems to be a connection problem, please try again later.`
+      message: 'There seems to be a connection problem, please try again later.'
     })
   }
 
@@ -499,7 +499,7 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
 
   // Verification email for the user
   function sendEmail() {
-    const verificationUrl = `${isDev ? 'https://www.thatmovielist.com/' : config.host}verify/${token}`
+    const verificationUrl = `${!isDev ? 'https://www.thatmovielist.com/' : config.host}verify/${token}`
     const emailData = {
       template_id: 'd-7ad0ef3677244f97a4fa8004ae7cd45f',
       message: {
@@ -646,7 +646,7 @@ router.post('/forgot', bruteforce.prevent, (req, res) => {
 
       const hash = md5(casual.unix_time + user.id)
       const token = `${hash}-${casual.unix_time}`
-      const resetUrl = `${isDev ? 'https://www.thatmovielist.com/' : config.host}reset-password/${token}`
+      const resetUrl = `${!isDev ? 'https://www.thatmovielist.com/' : config.host}reset-password/${token}`
 
       const emailData = {
         template_id: 'd-6a025f0c48984467a97a69c5f3201cac',

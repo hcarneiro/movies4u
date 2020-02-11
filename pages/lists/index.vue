@@ -69,6 +69,14 @@ export default {
           }
         })
     }
+  },
+  head() {
+    return {
+      title: 'Lists',
+      meta: [
+        { hid: 'keywords', name: 'keywords', keywords: 'Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      ]
+    }
   }
 }
 </script>

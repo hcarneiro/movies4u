@@ -95,17 +95,6 @@ import Card from '~/components/Card'
 import bus from '~/plugins/bus'
 
 export default {
-  head() {
-    return {
-      title: this.list.title,
-      meta: [
-        { hid: 'description', name: 'description', content: this.list.description },
-        { hid: 'og-image', property: 'og:image', content: this.list.thumbnail ? this.list.thumbnail : this.env.NODE_ENV !== 'development' ? `https://www.thatmovielist.com${noThumbPoster}` : `http://localhost:3000${noThumbPoster}` },
-        { hid: 'keywords', name: 'keywords', keywords: this.list.categories },
-        { hid: 'robots', name: 'robots', content: this.list.public ? 'index, follow' : 'noindex, nofollow' }
-      ]
-    }
-  },
   components: {
     Card
   },
@@ -154,6 +143,17 @@ export default {
         title: this.list.title,
         url: window.location.href
       })
+    }
+  },
+  head() {
+    return {
+      title: this.list.title,
+      meta: [
+        { hid: 'description', name: 'description', content: this.list.description },
+        { hid: 'og-image', property: 'og:image', content: this.list.thumbnail ? this.list.thumbnail : this.env.NODE_ENV !== 'development' ? `https://www.thatmovielist.com${noThumbPoster}` : `http://localhost:3000${noThumbPoster}` },
+        { hid: 'keywords', name: 'keywords', keywords: this.list.categories },
+        { hid: 'robots', name: 'robots', content: this.list.public ? 'index, follow' : 'noindex, nofollow' }
+      ]
     }
   }
 }
