@@ -69,6 +69,8 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    host: dev ? 'localhost' : 'www.thatmovielist.com',
+    prefix: '',
     https: !dev
   },
   /*
