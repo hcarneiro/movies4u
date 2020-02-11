@@ -69,16 +69,12 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    host: dev ? 'localhost' : 'www.thatmovielist.com',
-    port: '',
-    prefix: '',
     https: !dev
   },
   /*
   ** Meta configuration
   */
   meta: {
-    ogHost: dev ? 'http://localhost:3000' : 'https://www.thatmovielist.com',
     twitterCard: 'summary'
   },
   /*
