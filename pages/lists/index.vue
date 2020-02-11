@@ -42,6 +42,14 @@ export default {
   data() {
     return {}
   },
+  head() {
+    return {
+      title: 'Lists',
+      meta: [
+        { hid: 'keywords', name: 'keywords', keywords: 'Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+      ]
+    }
+  },
   computed: {
     ...mapState({
       lists: (state) => {

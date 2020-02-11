@@ -1,3 +1,7 @@
+const userAttributes = require('../config/user-attributes')
+const authenticate = require('../config/authenticate')
+const User = require('../api/models/user')
+const config = require('../nuxt.config.js')
 const express = require('express')
 const session = require('express-session')
 const cors = require('cors')
@@ -12,9 +16,6 @@ const uuid = require('uuid/v4')
 const passport = require('passport')
 const { Nuxt, Builder } = require('nuxt')
 const _ = require('lodash')
-const userAttributes = require('../config/user-attributes')
-const authenticate = require('../config/authenticate')
-const User = require('../api/models/user')
 const app = express()
 
 let privateConfig
@@ -25,7 +26,6 @@ try {
 }
 
 // Import and Set Nuxt.js options
-const config = require('../nuxt.config.js')
 config.dev = !(process.env.NODE_ENV === 'production')
 
 require('../api/models/index')

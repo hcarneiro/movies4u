@@ -3,7 +3,7 @@ const sendgrid = require('@sendgrid/mail')
 let config
 try {
   config = require(path.resolve(__dirname, './private-config.json'))
-} catch {
+} catch (err) {
   config = undefined
 }
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY || config.SENDGRID_API_KEY)
