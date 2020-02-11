@@ -87,6 +87,13 @@ module.exports = {
     }
   },
   /*
+  ** Server configuration
+  */
+  server: {
+    port: dev ? 3000 : 8000,
+    host: dev? 'localhost' : process.env.HOST
+  },
+  /*
   ** Router configurations
   */
   router: {
