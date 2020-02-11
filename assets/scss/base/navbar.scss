@@ -30,6 +30,16 @@
     margin-right: 0;
   }
 
+  .navbar-item {
+    img {
+      max-height: 2.5rem;
+    }
+
+    &.is-logo {
+      padding: 0 0.75rem;
+    }
+  }
+
   .navbar-item,
   .navbar-link {
     color: #ffffff;

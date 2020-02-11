@@ -69,14 +69,13 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: `${dev ? 'http' : 'https'}://${dev ? 'localhost' : process.env.HOST}:${dev ? '3000' : process.env.PORT}`,
+    baseURL: dev ? 'http://localhost:3000' : 'https://www.thatmovielist.com',
     https: !dev
   },
   /*
   ** Meta configuration
   */
   meta: {
-    ogHost: dev ? 'http://localhost:3000' : 'https://www.thatmovielist.com',
     twitterCard: 'summary'
   },
   /*
@@ -86,13 +85,6 @@ module.exports = {
     google: {
       families: ['Rubik:300,400,500,700'] // Loads Lato font with weights 400 and 700
     }
-  },
-  /*
-  ** Server configuration
-  */
-  server: {
-    port: dev ? 3000 : process.env.PORT,
-    host: dev ? 'localhost' : process.env.HOST
   },
   /*
   ** Router configurations
