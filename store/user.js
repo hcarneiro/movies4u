@@ -16,5 +16,11 @@ export const actions = {
       .catch((error) => {
         throw new Error(error)
       })
+  },
+  deleteProfile({ dispatch }, data) {
+    return this.$axios.delete(`/api/v1/users/${data.id}`)
+      .then(() => {
+        return dispatch('auth/logout')
+      })
   }
 }

@@ -74,15 +74,22 @@
         </div>
       </div>
 
-      <div class="field is-grouped">
-        <div class="control">
-          <b-button class="is-primary" @click="onSaveProfile">
-            Save
-          </b-button>
+      <div class="field is-grouped ss-profile-controls">
+        <div class="ss-save-wrapper">
+          <div class="control">
+            <b-button class="is-primary" @click="onSaveProfile">
+              Save
+            </b-button>
+          </div>
+          <div class="control">
+            <b-button class="is-text" @click="onCancelProfile">
+              Cancel
+            </b-button>
+          </div>
         </div>
-        <div class="control">
-          <b-button class="is-text" @click="onCancelProfile">
-            Cancel
+        <div class="control delete-account-wrapper">
+          <b-button class="is-danger" @click="onDeleteAccount">
+            Delete account
           </b-button>
         </div>
       </div>
@@ -169,6 +176,27 @@
       </div>
       <button class="modal-close is-large" aria-label="close" @click="onCancelEmail" />
     </div>
+
+    <div class="modal" :class="{ 'is-active': deleteProfileModalIsActive }">
+      <div class="modal-background" />
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p>Delete account</p>
+        </header>
+        <section class="modal-card-body">
+          <p>Are you sure you want to delete your account?</p>
+        </section>
+        <footer class="modal-card-foot">
+          <b-button class="is-danger" @click="onDeleteProfile">
+            Delete
+          </b-button>
+          <b-button @click="onCancelDelete">
+            Cancel
+          </b-button>
+        </footer>
+      </div>
+      <button class="modal-close is-large" aria-label="close" @click="onCancelEmail" />
+    </div>
   </div>
 </template>
 
@@ -197,6 +225,7 @@ export default {
       confirmNewEmail: '',
       avatarModalIsActive: false,
       emailModalIsActive: false,
+      deleteProfileModalIsActive: false,
       isSaving: false,
       error: undefined
     }
@@ -286,6 +315,24 @@ export default {
       this.avatarThumb = this.user.profilePictureThumb
       this.city = this.user.userCity
       this.country = this.user.userCountry
+    },
+    onDeleteAccount() {
+      this.deleteProfileModalIsActive = true
+    },
+    onDeleteProfile() {
+      this.deleteProfileModalIsActive = false
+
+      this.$store.dispatch('user/deleteProfile', { id: this.user.id })
+        .then(() => {
+          debugger // eslint-disable-line
+          this.$router.go({ path: '/' })
+        })
+        .catch((error) => {
+          this.error = error
+        })
+    },
+    onCancelDelete() {
+      this.deleteProfileModalIsActive = false
     }
   },
   head() {
