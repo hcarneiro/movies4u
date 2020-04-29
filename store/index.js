@@ -33,7 +33,7 @@ export const actions = {
     env.TMDB_API_KEY = process.env.TMDB_API_KEY || privateConfig.TMDB_API_KEY
     commit('setEnv', env)
 
-    if (req.session && req.user) {
+    if (req.session && req.user && req.user.auth_token) {
       await dispatch('auth/onLogin', req.user.auth_token)
       await commit('auth/setUser', req.user)
     }

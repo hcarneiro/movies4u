@@ -162,7 +162,7 @@ export default {
         this.signedUp = true
       }).catch((err) => {
         this.isVerifying = false
-        this.error = err.response.data.message
+        this.error = err.message
       })
     }
   },

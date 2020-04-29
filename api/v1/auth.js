@@ -551,13 +551,14 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
       database.db.models.user.findAll({
         where: {
           email: req.body.email
-        }
+        },
+        paranoid: false
       })
         .then((users) => {
           const existingUser = users[0]
 
           // User already verified
-          if (!existingUser.verificationToken) {
+          if (!existingUser.verificationToken && existingUser.deletedAt === null) {
             return res.send({
               message: 'Email address already in use'
             })
@@ -571,16 +572,23 @@ router.post('/signup', checkSchema(userSignupSchema), (req, res) => {
           // Extend verification token expiring date
           existingUser.verificationTokenExpires = Date.now() + 60 * 60 * 24 * 1000
 
-          // Save it
-          res.status(201).send({
-            user: _.pick(user.get({
-              plain: true
-            }), [
-              'id', 'firstName', 'lastName', 'fullName', 'email'
-            ])
-          })
-          existingUser.save()
-          sendEmail()
+          // Reset password
+          existingUser.setPassword(req.body.password)
+
+          // Restores user
+          existingUser.restore()
+            .then(() => {
+              // Save it
+              res.status(201).send({
+                user: _.pick(user.get({
+                  plain: true
+                }), [
+                  'id', 'firstName', 'lastName', 'fullName', 'email'
+                ])
+              })
+              existingUser.save()
+              sendEmail()
+            })
         })
     } else {
       res.send({

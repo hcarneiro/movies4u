@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const _ = require('lodash')
 const authenticate = require('../../config/authenticate')
 const database = require('../../config/database')
 const userAttributes = require('../../config/user-attributes')
+const _ = require('lodash')
 
 router.use(authenticate)
 
@@ -72,6 +72,29 @@ router.put('/', (req, res) => {
       res.send({
         message: err.message || err.description || err
       })
+    })
+})
+
+router.delete('/:id', (req, res) => {
+  if (typeof req.params.id === 'undefined') {
+    res.status(400).send({
+      message: 'Could not delete this account. Please try again.'
+    })
+  }
+
+  database.db.models.user.findOne({
+    where: {
+      id: req.params.id
+    }
+  })
+    .then((user) => {
+      return user.destroy()
+    })
+    .then(() => {
+      res.send()
+    })
+    .catch((err) => {
+      res.status(400).send(err)
     })
 })
 
