@@ -85,7 +85,8 @@ export default {
     return {
       title: 'My Account',
       meta: [
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' },
+        { hid: 'og-title', name: 'og:title', content: 'My Account' }
       ]
     }
   }

@@ -185,7 +185,8 @@ export default {
       title: 'Popular movies',
       meta: [
         { hid: 'description', name: 'description', content: 'Popular movies' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Popular Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Popular Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'Popular movies' }
       ]
     }
   }

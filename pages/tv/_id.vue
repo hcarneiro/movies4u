@@ -543,7 +543,8 @@ export default {
       meta: [
         { hid: 'description', name: 'description', content: this.show.overview },
         { hid: 'og-image', property: 'og:image', content: this.getBackground(this.show.backdrop_path) },
-        { hid: 'keywords', name: 'keywords', keywords: this.compileTags(this.show.genres) }
+        { hid: 'keywords', name: 'keywords', keywords: this.compileTags(this.show.genres) },
+        { hid: 'og-title', name: 'og:title', content: this.$options.filters.movieTitle(this.show) }
       ]
     }
   }

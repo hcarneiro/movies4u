@@ -198,7 +198,10 @@ export default {
   },
   head() {
     return {
-      title: `${this.genreName} - Movies`
+      title: `${this.genreName} - Movies`,
+      meta: [
+        { hid: 'og-title', name: 'og:title', content: `${this.genreName} - Movies` }
+      ]
     }
   }
 }

@@ -194,3 +194,16 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  head() {
+    return {
+      title: 'Terms and Conditions',
+      meta: [
+        { hid: 'og-title', name: 'og:title', content: 'Terms and Conditions' }
+      ]
+    }
+  }
+}
+</script>

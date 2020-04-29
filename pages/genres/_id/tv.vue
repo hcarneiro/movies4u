@@ -198,7 +198,10 @@ export default {
   },
   head() {
     return {
-      title: `${this.genreName} - TV Shows`
+      title: `${this.genreName} - TV Shows`,
+      meta: [
+        { hid: 'og-title', name: 'og:title', content: `${this.genreName} - TV Shows` }
+      ]
     }
   }
 }

@@ -185,7 +185,8 @@ export default {
       title: 'Popular TV Shows',
       meta: [
         { hid: 'description', name: 'description', content: 'Popular TV Shows' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Popular TV Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Popular TV Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'Popular TV Shows' }
       ]
     }
   }

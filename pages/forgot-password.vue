@@ -83,7 +83,8 @@ export default {
       title: 'Reset password',
       meta: [
         { hid: 'description', name: 'description', content: 'Forgot password' },
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' },
+        { hid: 'og-title', name: 'og:title', content: 'Reset password' }
       ]
     }
   }

@@ -185,7 +185,8 @@ export default {
       title: 'Top Rated TV Shows',
       meta: [
         { hid: 'description', name: 'description', content: 'Top Rated TV Shows' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Top Rated Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Top Rated Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'Top Rated TV Shows' }
       ]
     }
   }

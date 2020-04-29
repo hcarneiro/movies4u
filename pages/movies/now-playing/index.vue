@@ -185,7 +185,8 @@ export default {
       title: 'Now playing movies',
       meta: [
         { hid: 'description', name: 'description', content: 'Now playing movies' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Now Playing Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Now Playing Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'Now playing movies' }
       ]
     }
   }

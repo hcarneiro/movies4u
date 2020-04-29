@@ -185,7 +185,8 @@ export default {
       title: 'Airing Today Shows',
       meta: [
         { hid: 'description', name: 'description', content: 'Airing Today Shows' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Airing Today Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Shows, TV Shows, Airing Today Shows, TV Lists, TV Shows Lists, TV Shows Inspiration, TV Shows Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'Airing Today Shows' }
       ]
     }
   }

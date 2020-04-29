@@ -74,7 +74,8 @@ export default {
     return {
       title: 'Lists',
       meta: [
-        { hid: 'keywords', name: 'keywords', keywords: 'Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'Lists' }
       ]
     }
   }

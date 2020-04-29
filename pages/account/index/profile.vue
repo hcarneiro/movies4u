@@ -338,11 +338,10 @@ export default {
   head() {
     return {
       title: 'My Account - Edit Profile',
-      meta: [{
-        hid: 'robots',
-        name: 'robots',
-        content: 'noindex, nofollow'
-      }]
+      meta: [
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' },
+        { hid: 'og-title', name: 'og:title', content: 'My Account - Edit Profile' }
+      ]
     }
   }
 }
