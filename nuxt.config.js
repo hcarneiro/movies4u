@@ -45,7 +45,8 @@ module.exports = {
     { src: '~/plugins/silentbox.js', ssr: false },
     { src: '~/plugins/vue-select.js', ssr: false },
     { src: '~/plugins/vue-sharing.js', ssr: false },
-    { src: '~/plugins/filters.js' }
+    { src: '~/plugins/filters.js' },
+    { src: '~/plugins/ga.js', ssr: false }
   ],
   /*
   ** Nuxt.js modules
@@ -119,10 +120,10 @@ module.exports = {
         cookies: ['_ga', '_gat_gtag_UA-164975966-1', '_gid'],
         accepted: () => {
           window.dataLayer = window.dataLayer || []
-          function gtag() { dataLayer.push(arguments) }
-          gtag('js', new Date())
+          window.gtag = function () { window.dataLayer.push(arguments) }
 
-          gtag('config', 'UA-164975966-1')
+          window.gtag('js', new Date())
+          window.gtag('config', 'UA-164975966-1')
         }
       }
     ]
