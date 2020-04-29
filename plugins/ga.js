@@ -7,6 +7,10 @@ export default ({ app }) => {
     /*
     ** We tell Google Analytics to add a `pageview`
     */
+    if (!window.gtag) {
+      return
+    }
+
     window.gtag('config', 'UA-164975966-1', {
       'page_title': to.name,
       'page_path': to.fullPath
