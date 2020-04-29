@@ -119,6 +119,10 @@ module.exports = {
         async: true,
         cookies: ['_ga', '_gat', '_gid'],
         accepted: () => {
+          if (dev) {
+            return
+          }
+
           window.dataLayer = window.dataLayer || []
           window.gtag = function () { window.dataLayer.push(arguments) }
 
