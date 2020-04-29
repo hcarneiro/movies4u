@@ -19,11 +19,11 @@ const email = {
     const templateOptions = {
       from: {
         email: 'hello@thegeekdeveloper.com',
-        name: 'Movies4U Support'
+        name: 'That Movie List - Support'
       },
       reply_to: {
         email: 'hello@thegeekdeveloper.com',
-        name: 'Movies4U Support'
+        name: 'That Movie List - Support'
       },
       personalizations: [
         {
