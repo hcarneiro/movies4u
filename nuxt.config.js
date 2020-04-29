@@ -119,7 +119,7 @@ module.exports = {
         async: true,
         cookies: ['_ga', '_gat', '_gid'],
         accepted: () => {
-          if (dev) {
+          if (process.env.NODE_ENV !== 'production') {
             return
           }
 
