@@ -58,8 +58,74 @@ module.exports = {
     '@nuxtjs/pwa',
     'nuxt-webfontloader',
     '@nuxtjs/eslint-module',
-    'nuxt-sass-resources-loader'
+    'nuxt-sass-resources-loader',
+    ['nuxt-cookie-control', {
+      barPosition: 'bottom-right',
+      blockIframe: true,
+      colors: {
+        barTextColor: '#fff',
+        barBackground: '#005771',
+        barButtonColor: '#333333',
+        barButtonBackground: '#ffc105',
+        barButtonHoverColor: '#333333',
+        barButtonHoverBackground: '#cc9a04',
+        modalButtonBackground: '#ffc105',
+        modalButtonHoverColor: '#333333',
+        controlButtonBackground: '#005771',
+        controlButtonHoverBackground: '#cc9a04',
+        controlButtonIconHoverColor: '#fff',
+        controlButtonIconColor: '#333333',
+        modalButtonHoverBackground: '#cc9a04',
+        checkboxActiveBackground: '#ede1e1',
+        checkboxInactiveBackground: '#ede1e1',
+        checkboxActiveCircleBackground: '#00c58e',
+        checkboxInactiveCircleBackground: '#f44336',
+        checkboxDisabledBackground: '#dddddd',
+        checkboxDisabledCircleBackground: '#ffffff'
+      },
+      text: {
+        barTitle: 'Cookie consent',
+        barDescription: 'We use cookies and other tracking technologies to improve your browsing experience on our site, analyze site traffic, and understand where our audiences come from. By choosing Accept all, you consent to our use of cookies and other tracking technologies.'
+      }
+    }],
+    '@nuxtjs/sitemap'
   ],
+
+  cookies: {
+    necessary: [
+      {
+        name: {
+          en: 'Default cookies'
+        },
+
+        description: {
+          en: "Used for remembering user's login."
+        },
+        cookies: ['auth_token', '_auth_token']
+      }
+    ],
+    optional: [
+      {
+        name: {
+          en: 'Google Analytics'
+        },
+        description: {
+          en:
+            'Google Analytics is a web analytics service offered by Google that tracks and reports website traffic.'
+        },
+        src: 'https://www.googletagmanager.com/gtag/js?id=UA-164975966-1',
+        async: true,
+        cookies: ['_ga', '_gat_gtag_UA-164975966-1', '_gid'],
+        accepted: () => {
+          window.dataLayer = window.dataLayer || []
+          function gtag() { dataLayer.push(arguments) }
+          gtag('js', new Date())
+
+          gtag('config', 'UA-164975966-1')
+        }
+      }
+    ]
+  },
   /*
   ** SASS Resources
   */

@@ -17,8 +17,13 @@
         <p class="is-size-7">
           Created by <a href="https://www.thegeekdeveloper.com" target="_blank">The Geek Developer</a>
         </p>
+        <p class="is-size-7">
+          <a href="https://www.thatmovielist.com/terms-and-conditions/">Terms and Conditions</a> | <a href="https://www.thatmovielist.com/privacy/">Privacy</a>
+        </p>
       </div>
     </footer>
+
+    <CookieControl />
   </div>
 </template>
 
