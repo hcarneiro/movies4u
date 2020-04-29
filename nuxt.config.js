@@ -117,7 +117,7 @@ module.exports = {
         },
         src: 'https://www.googletagmanager.com/gtag/js?id=UA-164975966-1',
         async: true,
-        cookies: ['_ga', '_gat_gtag_UA-164975966-1', '_gid'],
+        cookies: ['_ga', '_gat', '_gid'],
         accepted: () => {
           window.dataLayer = window.dataLayer || []
           window.gtag = function () { window.dataLayer.push(arguments) }
