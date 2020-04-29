@@ -60,6 +60,7 @@ module.exports = {
     '@nuxtjs/eslint-module',
     'nuxt-sass-resources-loader',
     ['nuxt-cookie-control', {
+      controlButton: false,
       barPosition: 'bottom-right',
       blockIframe: true,
       colors: {
