@@ -19,13 +19,13 @@
                 <b-icon icon="email" /> Email
               </network>
               <network network="facebook">
-                <b-icon icon="facebook-box" /> Facebook
+                <b-icon icon="facebook" /> Facebook
               </network>
               <network network="twitter">
-                <b-icon icon="twitter-box" /> Twitter
+                <b-icon icon="twitter" /> Twitter
               </network>
               <network network="linkedin">
-                <b-icon icon="linkedin-box" /> LinkedIn
+                <b-icon icon="linkedin" /> LinkedIn
               </network>
               <network network="pinterest">
                 <b-icon icon="pinterest" /> Pinterest

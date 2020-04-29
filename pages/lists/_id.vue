@@ -15,9 +15,11 @@
           </h1>
           <p class="subtitle">
             <template v-for="(category, index) in list.categories">
-              <b-tag :key="index" rounded>
-                {{ category.name }}
-              </b-tag>
+              <nuxt-link :key="index" :to="`/genres/${slug(getTitle(category))}-${category.id}$/movies`">
+                <b-tag rounded>
+                  {{ category.name }}
+                </b-tag>
+              </nuxt-link>
             </template>
           </p>
           <p class="subtitle">
@@ -48,7 +50,7 @@
             :rating="movie.vote_average"
             :thumb="movie.poster_path | getBackdrop"
             :base-url="`/${movie.type}`"
-            :show-delete="true"
+            :show-delete="isCreator"
             @deleteCard="deleteCard"
           />
         </div>
@@ -68,7 +70,7 @@
             :rating="tv.vote_average"
             :thumb="tv.poster_path | getBackdrop"
             :base-url="`/${tv.type}`"
-            :show-delete="true"
+            :show-delete="isCreator"
             @deleteCard="deleteCard"
           />
         </div>
@@ -91,6 +93,8 @@
 import { find, filter, map } from 'lodash'
 import { mapState } from 'vuex'
 import noThumbPoster from '~/assets/no-poster.png'
+import slug from '~/plugins/get-slug'
+import getTitle from '~/plugins/get-title'
 import Card from '~/components/Card'
 import bus from '~/plugins/bus'
 
@@ -113,6 +117,9 @@ export default {
       },
       genres: (state) => {
         return state.genres
+      },
+      user: (state) => {
+        return state.auth.currentUser
       }
     }),
     movies() {
@@ -125,6 +132,11 @@ export default {
       return map(this.list.categories, (category) => {
         return category.name
       }).join(', ')
+    },
+    isCreator() {
+      const creator = find(this.list.users, { id: this.list.creatorId })
+
+      return this.user.id === creator.id
     }
   },
   created() {
@@ -133,6 +145,8 @@ export default {
     this.$store.dispatch('lists/getList', id)
   },
   methods: {
+    slug,
+    getTitle,
     listCreatorName(list) {
       const creator = find(list.users, { id: list.creatorId })
       if (!creator) {
