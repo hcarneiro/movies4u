@@ -61,6 +61,7 @@ module.exports = {
     '@nuxtjs/eslint-module',
     'nuxt-sass-resources-loader',
     ['nuxt-cookie-control', {
+      domain: 'thatmovielist.com',
       controlButton: false,
       barPosition: 'bottom-right',
       blockIframe: true,
@@ -119,10 +120,6 @@ module.exports = {
         async: true,
         cookies: ['_ga', '_gat', '_gid'],
         accepted: () => {
-          if (process.env.NODE_ENV !== 'production') {
-            return
-          }
-
           window.dataLayer = window.dataLayer || []
           window.gtag = function () { window.dataLayer.push(arguments) }
 
