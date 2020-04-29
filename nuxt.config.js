@@ -12,7 +12,9 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: 'Your source for movie inspiration to watch. Create your movie lists, share them with others, and use the community\'s lists for inspiration.' },
       { hid: 'keywords', name: 'keywords', keywords: 'Movies, TV Shows, People, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
-      { hid: 'robots', name: 'robots', content: 'index, follow' }
+      { hid: 'robots', name: 'robots', content: 'index, follow' },
+      { hid: 'og-title', name: 'og:title', content: '%s - That Movie List' },
+      { hid: 'apple-mobile-web-app-title', name: 'apple-mobile-web-app-title', content: 'That Movie List' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -76,7 +78,8 @@ module.exports = {
   ** Meta configuration
   */
   meta: {
-    twitterCard: 'summary'
+    twitterCard: 'summary',
+    ogSiteName: 'That Movie List'
   },
   /*
   ** Google Fonts

@@ -52,7 +52,8 @@ export default {
       title: 'Create account',
       meta: [
         { hid: 'description', name: 'description', content: 'Verify account' },
-        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' }
+        { hid: 'robots', name: 'robots', content: 'noindex, nofollow' },
+        { hid: 'og-title', name: 'og:title', content: 'Create account' }
       ]
     }
   }

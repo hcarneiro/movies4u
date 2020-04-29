@@ -171,7 +171,8 @@ export default {
       title: 'Create account',
       meta: [
         { hid: 'description', name: 'description', content: 'Account creation' },
-        { hid: 'robots', name: 'robots', content: 'index, nofollow' }
+        { hid: 'robots', name: 'robots', content: 'index, nofollow' },
+        { hid: 'og-title', name: 'og:title', content: 'Create account' }
       ]
     }
   }

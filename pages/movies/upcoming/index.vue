@@ -185,7 +185,8 @@ export default {
       title: 'Upcoming movies',
       meta: [
         { hid: 'description', name: 'description', content: 'Upcoming movies' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Upcoming Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Upcoming Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'Upcoming movies' }
       ]
     }
   }

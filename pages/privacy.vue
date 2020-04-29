@@ -196,3 +196,16 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  head() {
+    return {
+      title: 'Privacy Policy',
+      meta: [
+        { hid: 'og-title', name: 'og:title', content: 'Privacy Policy' }
+      ]
+    }
+  }
+}
+</script>

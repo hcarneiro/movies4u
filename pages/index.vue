@@ -183,11 +183,12 @@ export default {
   },
   head() {
     return {
-      title: 'Movie list to watch',
+      title: 'That Movie List',
       titleTemplate: null,
       meta: [
         { hid: 'description', name: 'description', content: 'Trending movies' },
-        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Trending Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' }
+        { hid: 'keywords', name: 'keywords', keywords: 'Movies, Trending Movies, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
+        { hid: 'og-title', name: 'og:title', content: 'That Movie List' }
       ]
     }
   }
