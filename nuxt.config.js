@@ -13,7 +13,8 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'Your source for movie inspiration to watch. Create your movie lists, share them with others, and use the community\'s lists for inspiration.' },
       { hid: 'keywords', name: 'keywords', keywords: 'Movies, TV Shows, People, Movie Lists, Movie Inspiration, Movie Wishlist, Inspiration List' },
       { hid: 'robots', name: 'robots', content: 'index, follow' },
-      { hid: 'og-title', name: 'og:title', content: '%s - That Movie List' },
+      { hid: 'og-title', name: 'og:title', content: 'That Movie List' },
+      { hid: 'og-image', property: 'og:image', content: 'https://www.thatmovielist.com/images/verify-token.jpg' },
       { hid: 'apple-mobile-web-app-title', name: 'apple-mobile-web-app-title', content: 'That Movie List' }
     ],
     link: [
