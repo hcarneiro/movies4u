@@ -1,7 +1,7 @@
 {
-  "name": "that-movie-list",
+  "name": "ThatMovieList",
   "version": "1.0.0",
-  "description": "The place for all your movies and TV information",
+  "description": "Your source for movie inspiration to watch. Create your movie lists, share them with others, and use the community's lists for inspiration.",
   "author": "thegeekdeveloper",
   "private": true,
   "scripts": {

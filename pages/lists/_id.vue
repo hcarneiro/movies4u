@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { find, filter } from 'lodash'
+import { find, filter, map } from 'lodash'
 import { mapState } from 'vuex'
 import noThumbPoster from '~/assets/no-poster.png'
 import Card from '~/components/Card'
@@ -120,6 +120,11 @@ export default {
     },
     tvshows() {
       return filter(this.list.movies, { type: 'tv' }) || []
+    },
+    keywords() {
+      return map(this.list.categories, (category) => {
+        return category.name
+      }).join(', ')
     }
   },
   created() {
@@ -151,7 +156,7 @@ export default {
       meta: [
         { hid: 'description', name: 'description', content: this.list.description },
         { hid: 'og-image', property: 'og:image', content: this.list.thumbnail ? this.list.thumbnail : this.env.NODE_ENV !== 'development' ? `https://www.thatmovielist.com${noThumbPoster}` : `http://localhost:3000${noThumbPoster}` },
-        { hid: 'keywords', name: 'keywords', keywords: this.list.categories },
+        { hid: 'keywords', name: 'keywords', keywords: this.keywords },
         { hid: 'robots', name: 'robots', content: this.list.public ? 'index, follow' : 'noindex, nofollow' }
       ]
     }
