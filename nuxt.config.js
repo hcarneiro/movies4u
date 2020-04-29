@@ -101,7 +101,7 @@ module.exports = {
         description: {
           en: "Used for remembering user's login."
         },
-        cookies: ['auth_token', '_auth_token']
+        cookies: ['auth_token', '_auth_token', 'cookie_control_consent', 'cookie_control_enabled_cookies']
       }
     ],
     optional: [
