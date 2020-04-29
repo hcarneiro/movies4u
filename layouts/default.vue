@@ -20,6 +20,8 @@
         </p>
       </div>
     </footer>
+
+    <CookieControl />
   </div>
 </template>
 

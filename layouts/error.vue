@@ -311,6 +311,8 @@
         An error occurred while rendering the page. Check developer tools console for details.
       </p>
     </div>
+
+    <CookieControl />
   </div>
 </template>
 
