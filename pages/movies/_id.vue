@@ -293,7 +293,7 @@
     </div>
     <div v-else class="container ss-detail-container">
       <h1 class="title">
-        Movie not found
+        This movie has no details yet
       </h1>
       <NuxtLink class="error-link" to="/">
         Back to the home page
