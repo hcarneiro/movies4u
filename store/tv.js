@@ -259,7 +259,7 @@ export const actions = {
   updateTopRated({ commit, rootState }, page) {
     const currentPage = page || rootState.tv.topRatedPage
 
-    return this.$axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
+    return this.$axios.get(`https://api.themoviedb.org/3/tv/top_rated?api_key=${rootState.env.TMDB_API_KEY}&language=en-US&page=${currentPage}&append_to_response=videos`)
       .then((response) => {
         if (response.status === 200) {
           commit('updateTopRated', response.data.results)

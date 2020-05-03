@@ -178,6 +178,9 @@ export default {
         .then(() => {
           this.isReady = true
         })
+        .catch(() => {
+          this.isReady = true
+        })
     }
   },
   head() {

@@ -110,7 +110,7 @@ export default {
         return state.tv.onTvList.slice(0, 5)
       },
       page: (state) => {
-        return state.tv.onTvList
+        return state.tv.onTvpage
       },
       genres: (state) => {
         return state.genres
@@ -176,6 +176,9 @@ export default {
 
       Promise.all(promises)
         .then(() => {
+          this.isReady = true
+        })
+        .catch(() => {
           this.isReady = true
         })
     }
