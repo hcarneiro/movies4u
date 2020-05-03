@@ -308,7 +308,7 @@
       </p>
 
       <p v-else class="description">
-        An error occurred while rendering the page. Check developer tools console for details.
+        An error occurred while rendering the page.
       </p>
     </div>
 

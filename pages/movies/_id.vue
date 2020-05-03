@@ -291,6 +291,14 @@
         </div>
       </div>
     </div>
+    <div v-else class="container ss-detail-container">
+      <h1 class="title">
+        This movie has no details yet
+      </h1>
+      <NuxtLink class="error-link" to="/">
+        Back to the home page
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -372,8 +380,12 @@ export default {
   },
   created() {
     this.id = this.$route.params.id.split('-').pop()
+
     this.$store.dispatch('movies/clearData', this.id)
     this.$store.dispatch('movies/getMovie', this.id)
+      .catch(() => {
+        this.isReady = false
+      })
     this.$store.dispatch('movies/getCrew', this.id)
     this.$store.dispatch('movies/getRecommendations', this.id)
     this.$store.dispatch('lists/getUserLists')
