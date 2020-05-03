@@ -293,6 +293,14 @@
         </div>
       </div>
     </div>
+    <div v-else class="container ss-detail-container">
+      <h1 class="title">
+        TV Show not found
+      </h1>
+      <NuxtLink class="error-link" to="/">
+        Back to the home page
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -369,6 +377,9 @@ export default {
     this.id = this.$route.params.id.split('-').pop()
     this.$store.dispatch('tv/clearData', this.id)
     this.$store.dispatch('tv/getShow', this.id)
+      .catch(() => {
+        this.isReady = false
+      })
     this.$store.dispatch('tv/getCrew', this.id)
     this.$store.dispatch('tv/getRecommendations', this.id)
     this.$store.dispatch('lists/getUserLists')
